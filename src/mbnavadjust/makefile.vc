@@ -1,0 +1,53 @@
+# MSVC Makefile for MB-system at the src/mbnavadjust directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean | install]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+!INCLUDE ..\..\X11decs.opt
+
+LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbview.lib $(MOTIFLIBS) $(DIRENTLIB) 
+
+
+OBJS =  mbnavadjust.obj mbnavadjust_creation.obj mbnavadjust_callbacks.obj mbnavadjust_util.obj mbnavadjust_prog.obj mbnavadjust_io.obj
+
+# targets
+all:  mbnavadjust.exe
+
+### compile the source files
+mbnavadjust.obj: mbnavadjust.c mbnavadjust_creation.h mbnavadjust.h mbnavadjust_extrawidgets.h ../mbaux/mb_aux.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavadjust.c
+mbnavadjust_creation.obj: mbnavadjust_creation.c mbnavadjust_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavadjust_creation.c
+mbnavadjust_callbacks.obj: mbnavadjust_callbacks.c mbnavadjust.h mbnavadjust_creation.h \
+	mbnavadjust_extrawidgets.h ../mbaux/mb_xgraphics.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -I$(MOTIFINCDIR) -c mbnavadjust_callbacks.c
+mbnavadjust_util.obj: mbnavadjust_util.c mbnavadjust_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavadjust_util.c
+mbnavadjust_io.obj: mbnavadjust_io.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavadjust_io.c
+mbnavadjust_prog.obj: mbnavadjust_prog.c mbnavadjust.h  ../mbio/mb_format.h \
+		../mbio/mb_io.h ../mbio/mb_status.h ../mbio/mb_define.h ../mbaux/mb_aux.h ../mbaux/mb_xgraphics.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -c mbnavadjust_prog.c
+
+mbnavadjust.exe:	mbnavadjust.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbnavadjust.c mbnavadjust_creation.c mbnavadjust_callbacks.c \
+	mbnavadjust_util.c mbnavadjust_prog.c mbnavadjust_io.c $(LDFLAGS) /I$(INCDIR) -I$(MOTIFINCDIR) -I$(X11INC)
+
+# cleanup
+clean:
+	-del *.exe *.lib *.obj *.res *.exp *.pdb
+
+install:
+	move /Y *.exe $(BINDIR)/
+!IFDEF DEBUG
+	move /Y *.pdb $(BINDIR)/
+!ENDIF
+

@@ -1,0 +1,59 @@
+# MSVC Makefile for MB-system at the src/surf directory level
+#
+# Usage:
+#   nmake -f Makefile.msc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+
+# variables
+STATICLIB = $(LIBDIR)/sapi_static.lib
+SHAREDLIB = $(LIBDIR)/sapi_w$(BITS).dll
+IMPLIB = $(LIBDIR)/sapi.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref Ws2_32.lib $(ONCRPCLIB) $(PROJLIB) $(LDEBUG)
+
+### put together the static library
+OBJS =  mem_surf.obj pb_math.obj sapi_build.obj sapi_data.obj sapi_files.obj sapi_globals.obj \
+	sapi_simple.obj util_surf.obj xdr_surf.obj
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): sapi.def $(OBJ)
+	$(LD) $(LDFLAGS) -def:sapi.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) $<
+
+### compile the source files
+mem_surf.obj:     mem_surf.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+pb_math.obj:      pb_math.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+sapi_build.obj:   sapi_build.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+sapi_data.obj:    sapi_data.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+sapi_files.obj:   sapi_files.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+sapi_globals.obj: sapi_globals.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+sapi_simple.obj:  sapi_simple.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+util_surf.obj:    util_surf.c  mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+xdr_surf.obj:     xdr_surf.c  mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.res
+	-del *.exp
+	-del *.pdb

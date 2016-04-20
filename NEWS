@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------
+MB-SYSTEM NEWS FILE:
+-------------------------------------------------------------------------------
+Version: $Id: NEWS 2080 2013-05-23 22:33:37Z caress $
+-------------------------------------------------------------------------------
+
+In the GNU package standard, the NEWS file lists the history of user-visible
+changes to a package. For the the MB-System open source software package for the
+processing and display of swath sonar data, this information is included in the
+ChangeLog file. Both the NEWS file and the ChangeLog file are located at the top
+of the MB-System source code distribution directory structure.
+
+-------------------------------------------------------------------------------

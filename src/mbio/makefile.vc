@@ -1,0 +1,234 @@
+# MSVC Makefile for MB-system at the src/mbio directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+ 
+# variables
+STATICLIB = $(LIBDIR)/mbio_static.lib
+SHAREDLIB = $(LIBDIR)/mbio_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mbio.lib
+
+LD = link
+AR = lib
+LDFLAGS = -incremental:no -opt:ref
+OTHERLIBS = Ws2_32.lib $(NETCDFLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbbsio.lib $(GMTLIB)
+
+### put together the static library
+OBJS = mb_format.obj mb_error.obj mb_swap.obj \
+	mb_compare.obj mb_navint.obj mb_read_init.obj mb_write_init.obj \
+	mb_close.obj mb_fileio.obj mb_mem.obj mb_coor_scale.obj \
+	mb_check_info.obj mb_time.obj mb_angle.obj mb_absorption.obj mb_proj.obj mb_spline.obj \
+	mb_get_value.obj mb_defaults.obj mb_process.obj mb_esf.obj mb_get.obj \
+	mb_get_all.obj mb_read.obj mb_put_all.obj mb_put_comment.obj \
+	mb_buffer.obj mb_platform.obj mb_platform_math.obj mb_read_ping.obj mb_write_ping.obj \
+	mb_access.obj mb_segy.obj mb_rt.obj mbsys_sb.obj mbsys_hsds.obj mbsys_sb2100.obj \
+	mbsys_simrad.obj mbsys_simrad2.obj mbsys_simrad3.obj mbsys_mr1.obj \
+	mbsys_mr1b.obj mbsys_mr1v2001.obj mbsys_ldeoih.obj mbsys_reson.obj \
+	mbsys_elac.obj mbsys_elacmk2.obj mbsys_sb2000.obj mbsys_hsmd.obj \
+	mbsys_dsl.obj mbsys_mstiff.obj mbsys_oic.obj mbsys_hdcs.obj \
+	mbsys_singlebeam.obj mbsys_xse.obj mbsys_hs10.obj mbsys_atlas.obj \
+	mbsys_surf.obj mbsys_reson8k.obj mbsys_netcdf.obj mbsys_navnetcdf.obj \
+	mbsys_reson7k.obj mbsys_jstar.obj mbsys_image83p.obj mbsys_hysweep.obj \
+	mbsys_benthos.obj mbsys_swathplus.obj mbsys_3datdepthlidar.obj \
+	mbr_sbsiomrg.obj mbr_sbsiocen.obj mbr_sbsiolsi.obj mbr_sburicen.obj \
+	mbr_sburivax.obj mbr_sbifremr.obj mbr_hsatlraw.obj mbr_hsldedmb.obj \
+	mbr_hsuricen.obj mbr_hsurivax.obj mbr_hsldeoih.obj mbr_hsunknwn.obj \
+	mbr_sb2100rw.obj mbr_sb2100bi.obj mbr_emoldraw.obj mbr_em12darw.obj \
+	mbr_em12ifrm.obj mbr_em300raw.obj mbr_em300mba.obj mbr_em710raw.obj \
+	mbr_em710mba.obj mbr_mr1prhig.obj mbr_mr1aldeo.obj mbr_mr1bldeo.obj \
+	mbr_mr1prvr2.obj mbr_mbldeoih.obj mbr_cbat9001.obj mbr_cbat8101.obj \
+	mbr_hypc8101.obj mbr_bchrtunb.obj mbr_elmk2unb.obj mbr_bchrxunb.obj \
+	mbr_l3xseraw.obj mbr_sbsioswb.obj mbr_sb2000sb.obj mbr_sb2000ss.obj \
+	mbr_hsmdaraw.obj mbr_hsmdldih.obj mbr_dsl120pf.obj mbr_dsl120sf.obj \
+	mbr_mstiffss.obj mbr_oicgeoda.obj mbr_oicmbari.obj mbr_omghdcsj.obj \
+	mbr_mgd77dat.obj mbr_mgd77txt.obj mbr_mgd77tab.obj \
+	mbr_asciixyz.obj mbr_hydrob93.obj mbr_mbarirov.obj \
+	mbr_mbarrov2.obj mbr_mbpronav.obj mbr_hs10jams.obj mbr_hsds2raw.obj \
+	mbr_hsds2lam.obj mbr_xtfr8101.obj mbr_mbnetcdf.obj mbr_nvnetcdf.obj \
+	mbr_samesurf.obj mbr_reson7kr.obj mbr_edgjstar.obj mbr_segysegy.obj \
+	mbr_image83p.obj mbr_imagemba.obj mbr_hir2rnav.obj mbr_hysweep1.obj \
+	mbr_xtfb1624.obj mbr_swplssxi.obj mbr_swplssxp.obj mbr_3ddepthp.obj \
+	mbsys_gsf.obj    mbr_gsfgenmb.obj mbr_wasspenl.obj mbsys_wassp.obj  \
+	mbr_photgram.obj mbsys_stereopair.obj
+
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): mbio.def $(OBJS)
+	$(LD) $(LDFLAGS) $(OTHERLIBS) -def:mbio.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) /I$(PROJINCDIR) /I../bsio $<
+
+### compile the source files
+mb_format.obj:	mb_format.c mb_format.h mb_status.h mb_define.h mb_io.h
+mb_error.obj:	mb_error.c mb_format.h mb_status.h mb_define.h
+mb_swap.obj:	mb_swap.c mb_swap.h mb_define.h
+mb_compare.obj:	mb_compare.c mb_define.h
+mb_navint.obj:	mb_navint.c mb_status.h mb_define.h
+mb_read_init.obj:	mb_read_init.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_write_init.obj:	mb_write_init.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_close.obj:	mb_close.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_fileio.obj:	mb_fileio.c mb_status.h mb_define.h
+mb_mem.obj:	mb_mem.c mb_status.h mb_define.h
+mb_coor_scale.obj:	mb_coor_scale.c mb_status.h mb_define.h
+mb_check_info.obj:	mb_check_info.c mb_status.h mb_define.h
+mb_time.obj:	mb_time.c mb_status.h mb_define.h
+mb_angle.obj:	mb_angle.c mb_status.h mb_define.h
+mb_absorption.obj:	mb_absorption.c mb_status.h mb_define.h
+mb_proj.obj:	mb_proj.c mb_status.h mb_define.h $(PROJINCDIR)/proj_api.h projections.h
+mb_spline.obj:	mb_spline.c mb_status.h mb_define.h
+mb_get_value.obj:	mb_get_value.c mb_define.h
+mb_defaults.obj:	mb_defaults.c mb_status.h mb_define.h
+mb_process.obj:		mb_process.c mb_status.h mb_define.h mb_io.h mb_process.h
+mb_esf.obj:	mb_esf.c mb_status.h mb_define.h mb_io.h mb_process.h
+mb_get.obj:	mb_get.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_get_all.obj:	mb_get_all.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_read.obj:	mb_read.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_put_all.obj:	mb_put_all.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_put_comment.obj:	mb_put_comment.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_buffer.obj:	mb_buffer.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_platform.obj: mb_platform.c mb_status.h mb_io.h mb_define.h 
+mb_platform_math.obj: mb_platform_math.c mb_status.h mb_io.h mb_define.h 
+mb_read_ping.obj:	mb_read_ping.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_write_ping.obj:	mb_write_ping.c mb_format.h mb_status.h mb_io.h mb_define.h
+mb_access.obj:	mb_access.c mb_format.h mb_status.h mb_io.h mb_define.h mb_segy.h
+mb_segy.obj:	mb_segy.c mb_format.h mb_status.h mb_io.h mb_define.h mb_segy.h
+mb_rt.obj:	mb_rt.c mb_format.h mb_status.h mb_io.h mb_define.h
+mbsys_sb.obj:	mbsys_sb.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_sb.h
+mbsys_hsds.obj:	mbsys_hsds.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_hsds.h
+mbsys_sb2100.obj:	mbsys_sb2100.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_sb2100.h
+mbsys_simrad.obj:	mbsys_simrad.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_simrad.h
+mbsys_simrad2.obj: mbsys_simrad2.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_simrad2.h
+mbsys_simrad3.obj: mbsys_simrad3.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_simrad3.h
+mbsys_mr1.obj:	mbsys_mr1.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_mr1.h
+mbsys_mr1b.obj:	mbsys_mr1b.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_mr1b.h
+mbsys_mr1v2001.obj:	mbsys_mr1v2001.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_mr1v2001.h ../bsio/mbbs.h
+mbsys_ldeoih.obj:	mbsys_ldeoih.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_ldeoih.h
+mbsys_reson.obj:	mbsys_reson.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_reson.h
+mbsys_elac.obj:	mbsys_elac.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_elac.h
+mbsys_elacmk2.obj:	mbsys_elacmk2.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_elacmk2.h
+mbsys_sb2000.obj:	mbsys_sb2000.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_sb2000.h
+mbsys_hsmd.obj:	mbsys_hsmd.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_hsmd.h
+mbsys_dsl.obj:	mbsys_dsl.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_dsl.h
+mbsys_gsf.obj:	mbsys_gsf.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_gsf.h
+mbsys_mstiff.obj:	mbsys_mstiff.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_mstiff.h
+mbsys_oic.obj:	mbsys_oic.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_oic.h
+mbsys_hdcs.obj:	mbsys_hdcs.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_hdcs.h
+mbsys_singlebeam.obj:	mbsys_singlebeam.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_singlebeam.h
+mbsys_xse.obj:	mbsys_xse.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_xse.h
+mbsys_hs10.obj:	mbsys_hs10.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_hs10.h
+mbsys_atlas.obj:	mbsys_atlas.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_atlas.h
+mbsys_surf.obj:	mbsys_surf.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_surf.h
+mbsys_reson8k.obj:	mbsys_reson8k.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_reson8k.h
+mbsys_netcdf.obj:	mbsys_netcdf.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_netcdf.h
+mbsys_navnetcdf.obj:	mbsys_navnetcdf.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_navnetcdf.h
+mbsys_reson7k.obj:	mbsys_reson7k.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_reson7k.h mb_segy.h
+mbsys_jstar.obj:	mbsys_jstar.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_jstar.h mb_segy.h
+mbsys_image83p.obj:	mbsys_image83p.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_image83p.h mb_segy.h
+mbsys_hysweep.obj:	mbsys_hysweep.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_hysweep.h mb_segy.h
+mbsys_benthos.obj:	mbsys_benthos.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_benthos.h
+mbsys_swathplus.obj: mbsys_swathplus.c mb_status.h mb_format.h mb_io.h mb_define.h mbsys_swathplus.h
+mbr_sbsiomrg.obj:	mbr_sbsiomrg.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb.h mbf_sbsiomrg.h
+mbr_sbsiocen.obj: mbr_sbsiocen.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb.h mbf_sbsiocen.h
+mbr_sbsiolsi.obj: mbr_sbsiolsi.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb.h mbf_sbsiolsi.h
+mbr_sburicen.obj: mbr_sburicen.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb.h mbf_sburicen.h
+mbr_sburivax.obj: mbr_sburivax.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb.h mbf_sburicen.h
+mbr_sbifremr.obj: mbr_sbifremr.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb.h mbf_sbifremr.h
+mbr_hsatlraw.obj: mbr_hsatlraw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hsds.h mbf_hsatlraw.h
+mbr_hsldedmb.obj: mbr_hsldedmb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hsds.h mbf_hsldedmb.h
+mbr_hsuricen.obj: mbr_hsuricen.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hsds.h mbf_hsuricen.h
+mbr_hsurivax.obj: mbr_hsurivax.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hsds.h mbf_hsuricen.h
+mbr_hsldeoih.obj: mbr_hsldeoih.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hsds.h mbf_hsldeoih.h
+mbr_hsunknwn.obj: mbr_hsunknwn.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hsds.h
+mbr_sb2100rw.obj: mbr_sb2100rw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_sb2100rw.h mbsys_sb2100.h
+mbr_sb2100bi.obj: mbr_sb2100bi.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb2100.h
+mbr_emoldraw.obj: mbr_emoldraw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_simrad.h
+mbr_em12darw.obj: mbr_em12darw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_em12darw.h mbsys_simrad.h
+mbr_em12ifrm.obj: mbr_em12ifrm.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_em12ifrm.h mbsys_simrad.h
+mbr_em300raw.obj: mbr_em300raw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_simrad2.h
+mbr_em300mba.obj: mbr_em300mba.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_simrad2.h
+mbr_em710raw.obj: mbr_em710raw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_simrad3.h
+mbr_em710mba.obj: mbr_em710mba.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_simrad3.h
+mbr_mr1prhig.obj: mbr_mr1prhig.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mr1prhig.h mbsys_mr1.h
+mbr_mr1aldeo.obj: mbr_mr1aldeo.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mr1aldeo.h mbsys_mr1.h
+mbr_mr1bldeo.obj: mbr_mr1bldeo.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mr1bldeo.h mbsys_mr1b.h
+
+mbr_mr1prvr2.obj: mbr_mr1prvr2.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_mr1v2001.h \
+		../bsio/mbbs.h ../bsio/mbbs_defines.h ../bsio/mbbs_mem.h
+
+mbr_mbldeoih.obj: mbr_mbldeoih.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_ldeoih.h
+mbr_cbat9001.obj: mbr_cbat9001.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_cbat9001.h mbsys_reson.h
+mbr_cbat8101.obj: mbr_cbat8101.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_cbat8101.h mbsys_reson.h
+mbr_hypc8101.obj: mbr_hypc8101.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_hypc8101.h mbsys_reson.h
+mbr_bchrtunb.obj: mbr_bchrtunb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_bchrtunb.h mbsys_elac.h
+mbr_elmk2unb.obj: mbr_elmk2unb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_elmk2unb.h mbsys_elacmk2.h
+mbr_bchrxunb.obj: mbr_bchrxunb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_bchrxunb.h mbsys_elac.h
+mbr_l3xseraw.obj: mbr_l3xseraw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_xse.h
+mbr_sbsioswb.obj: mbr_sbsioswb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_sbsioswb.h mbsys_sb.h
+mbr_sb2000sb.obj: mbr_sb2000sb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb2000.h
+mbr_sb2000ss.obj: mbr_sb2000ss.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_sb2000.h
+mbr_hsmdaraw.obj: mbr_hsmdaraw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_hsmdaraw.h mbsys_hsmd.h
+mbr_hsmdldih.obj: mbr_hsmdldih.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_hsmdldih.h mbsys_hsmd.h
+mbr_dsl120pf.obj: mbr_dsl120pf.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_dsl120pf.h mbsys_dsl.h
+mbr_dsl120sf.obj: mbr_dsl120sf.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_dsl120sf.h mbsys_dsl.h
+mbr_gsfgenmb.obj: mbr_gsfgenmb.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_gsfgenmb.h mbsys_gsf.h
+mbr_mstiffss.obj: mbr_mstiffss.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mstiffss.h mbsys_mstiff.h
+mbr_oicgeoda.obj: mbr_oicgeoda.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_oicgeoda.h mbsys_oic.h
+mbr_oicmbari.obj: mbr_oicmbari.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_oicmbari.h mbsys_oic.h
+mbr_omghdcsj.obj: mbr_omghdcsj.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_omghdcsj.h mbsys_hdcs.h
+mbr_mgd77dat.obj: mbr_mgd77dat.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mgd77dat.h mbsys_singlebeam.h
+mbr_asciixyz.obj: mbr_asciixyz.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_singlebeam.h
+mbr_hydrob93.obj: mbr_hydrob93.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_singlebeam.h
+mbr_mbarirov.obj: mbr_mbarirov.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mbarirov.h mbsys_singlebeam.h
+mbr_mbarrov2.obj: mbr_mbarrov2.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mbarrov2.h mbsys_singlebeam.h
+mbr_mbpronav.obj: mbr_mbpronav.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_mbpronav.h mbsys_singlebeam.h
+mbr_hs10jams.obj: mbr_hs10jams.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hs10.h
+mbr_hsds2raw.obj: mbr_hsds2raw.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_atlas.h
+mbr_hsds2lam.obj: mbr_hsds2lam.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_atlas.h
+mbr_xtfr8101.obj: mbr_xtfr8101.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbf_xtfr8101.h mbsys_reson.h
+mbr_mbnetcdf.obj: mbr_mbnetcdf.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_netcdf.h
+mbr_nvnetcdf.obj: mbr_nvnetcdf.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_navnetcdf.h
+mbr_samesurf.obj: mbr_samesurf.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_surf.h
+mbr_reson7kr.obj: mbr_reson7kr.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_reson7k.h mb_segy.h
+mbr_edgjstar.obj: mbr_edgjstar.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_jstar.h mb_segy.h
+mbr_segysegy.obj: mbr_segysegy.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_singlebeam.h mb_segy.h
+mbr_image83p.obj: mbr_image83p.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_image83p.h
+mbr_imagemba.obj: mbr_imagemba.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_image83p.h
+mbr_hir2rnav.obj: mbr_hir2rnav.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_singlebeam.h
+mbr_hysweep1.obj: mbr_hysweep1.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_hysweep.h
+mbr_xtfb1624.obj: mbr_xtfb1624.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_benthos.h
+mbr_swplssxi.obj: mbr_swplssxi.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_swathplus.h
+mbr_swplssxp.obj: mbr_swplssxp.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_swathplus.h
+mbsys_wassp.obj:  mbsys_wassp.c  mb_status.h mb_format.h mb_io.h mb_define.h mbsys_wassp.h
+mbr_wasspenl.obj: mbr_wasspenl.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_3datdepthlidar.h
+mbr_mgd77txt.obj: mbr_mgd77txt.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_3datdepthlidar.h
+mbr_mgd77tab.obj: mbr_mgd77tab.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_3datdepthlidar.h
+mbsys_stereopair.obj: mbsys_stereopair.c mb_status.h mbsys_stereopair.h
+mbr_photgram.obj: mbr_photgram.c mb_status.h mbsys_stereopair.h
+
+
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.res
+	-del *.exp
+	-del *.pdb

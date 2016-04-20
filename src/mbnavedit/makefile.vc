@@ -1,0 +1,51 @@
+# MSVC Makefile for MB-system at the src/mbnavedit directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean | install]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+!INCLUDE ..\..\X11decs.opt
+
+LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbview.lib $(MOTIFLIBS) $(DIRENTLIB)
+
+
+OBJS =  mbnavedit.obj mbnavedit_creation.obj mbnavedit_callbacks.obj mbnavedit_util.obj mbnavedit_prog.obj
+
+# targets
+all:  mbnavedit.exe
+
+### compile the source files
+mbnavedit.obj: mbnavedit.c mbnavedit_creation.h mbnavedit.h mbnavedit_extrawidgets.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavedit.c
+mbnavedit_creation.obj: mbnavedit_creation.c mbnavedit_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavedit_creation.c
+mbnavedit_callbacks.obj: mbnavedit_callbacks.c mbnavedit.h mbnavedit_creation.h \
+	mbnavedit_extrawidgets.h ../mbaux/mb_xgraphics.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavedit_callbacks.c
+mbnavedit_util.obj: mbnavedit_util.c mbnavedit_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavedit_util.c
+mbnavedit_prog.obj: mbnavedit_prog.c mbnavedit.h ../mbio/mb_format.h ../mbio/mb_io.h ../mbio/mb_status.h \
+		../mbio/mb_define.h ../mbaux/mb_aux.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -I$(MOTIFINCDIR) -I$(X11INC) -c mbnavedit_prog.c
+
+mbnavedit.exe:	mbnavedit.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbnavedit.c mbnavedit_creation.c mbnavedit_callbacks.c mbnavedit_util.c \
+	mbnavedit_prog.c $(LDFLAGS) /I$(INCDIR) -I$(MOTIFINCDIR) -I$(X11INC)
+
+# cleanup
+clean:
+	-del *.exe *.lib *.obj *.res *.exp *.pdb
+
+install:
+	move /Y *.exe $(BINDIR)/
+!IFDEF DEBUG
+	move /Y *.pdb $(BINDIR)/
+!ENDIF
+

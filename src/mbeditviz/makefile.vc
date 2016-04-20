@@ -1,0 +1,51 @@
+# MSVC Makefile for MB-system at the src/mbeditviz directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean | install]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+!INCLUDE ..\..\X11decs.opt
+
+
+LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbview_static.lib $(MOTIFLIBS) Opengl32.lib GlU32.Lib Gdi32.lib
+
+
+OBJS =  mbeditviz_main.obj mbeditviz_callbacks.obj mbeditviz_creation.obj mbeditviz_prog.obj
+
+# targets
+all:  mbeditviz.exe
+
+### compile the source files
+mbeditviz_creation.obj: mbeditviz_creation.c mbeditviz_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbview -I$(MOTIFINCDIR)) -I$(X11INC) -c mbeditviz_creation.c
+
+mbeditviz_main.obj: mbeditviz_main.c ../mbview/mbview.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbview -I$(MOTIFINCDIR) -I$(X11INC) -c mbeditviz_main.c
+
+mbeditviz_callbacks.obj: mbeditviz_callbacks.c ../mbview/mbview.h ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+	$(CC) $(CFLAGS) -I../mbio -I../mbview -I$(MOTIFINCDIR) -I$(X11INC) -c mbeditviz_callbacks.c
+
+mbeditviz_prog.obj: mbeditviz_prog.c mbeditviz.h ../mbview/mbview.h ../mbio/mb_define.h \
+        ../mbio/mb_status.h ../mbio/mb_format.h ../mbaux/mb_aux.h
+	$(CC) $(CFLAGS)  -DMBEDITVIZ_DECLARE_GLOBALS -I../mbio -I../mbview -I../mbaux -I$(MOTIFINCDIR) -I$(X11INC) -c mbeditviz_prog.c
+
+mbeditviz.exe:	mbeditviz_main.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbeditviz_main.c mbeditviz_callbacks.c mbeditviz_prog.c mbeditviz_creation.c $(LDFLAGS) /I$(INCDIR)  -I$(MOTIFINCDIR) -I$(X11INC)
+
+# cleanup
+clean:
+	-del *.exe *.lib *.obj *.res *.exp *.pdb
+
+install:
+	move /Y *.exe $(BINDIR)/
+!IFDEF DEBUG
+	move /Y *.pdb $(BINDIR)/
+!ENDIF
+

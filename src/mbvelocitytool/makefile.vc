@@ -1,0 +1,56 @@
+# MSVC Makefile for MB-system at the src/mbvelocitytool directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean | install]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+!INCLUDE ..\..\X11decs.opt
+
+LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbview.lib $(MOTIFLIBS) $(DIRENTLIB) 
+
+
+OBJS =  mbvelocity.obj mbvelocity_callbacks.obj mbvelocity_creation.obj mbvelocity_bxutils.obj mbvelocity_prog.obj 
+
+# targets
+all:  mbvelocitytool.exe
+
+### compile the source files
+mbvelocity.obj: mbvelocity.c mbvelocity.h mbvelocity_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbvelocity.c
+mbvelocity_callbacks.obj: mbvelocity_callbacks.c mbvelocity.h ../mbaux/mb_xgraphics.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -I$(MOTIFINCDIR) -I$(X11INC) -c mbvelocity_callbacks.c
+mbvelocity_creation.obj: mbvelocity_creation.c mbvelocity.h mbvelocity_creation.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbvelocity_creation.c
+mbvelocity_bxutils.obj: mbvelocity_bxutils.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mbvelocity_bxutils.c
+mbvelocity_prog.obj: mbvelocity_prog.c mbvelocity.h ../mbio/mb_format.h ../mbio/mb_io.h \
+		../mbio/mb_status.h ../mbio/mb_define.h ../mbaux/mb_aux.h
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I../mbaux -c mbvelocity_prog.c
+
+
+mbvelocitytool.exe:	mbvelocity.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbvelocity.c mbvelocity_callbacks.c mbvelocity_creation.c \
+	mbvelocity_bxutils.c mbvelocity_prog.c \
+	$(LDFLAGS) /I$(INCDIR) -I$(MOTIFINCDIR) -I$(X11INC)
+	move /Y mbvelocity.exe mbvelocitytool.exe
+!IFDEF DEBUG
+	move /Y mbvelocity.pdb mbvelocitytool.pdb
+!ENDIF
+
+# cleanup
+clean:
+	-del *.exe *.lib *.obj *.res *.exp *.pdb
+
+install:
+	move /Y *.exe $(BINDIR)/
+!IFDEF DEBUG
+	move /Y *.pdb $(BINDIR)/
+!ENDIF
+

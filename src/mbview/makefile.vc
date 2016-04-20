@@ -1,0 +1,94 @@
+# MSVC Makefile for MB-system at the src/mbview directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+!INCLUDE ..\..\X11decs.opt
+
+# variables
+STATICLIB = $(LIBDIR)/mbview_static.lib
+SHAREDLIB = $(LIBDIR)/mbview_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mbview.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref $(ONCRPCLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(MOTIFLIBS) $(DIRENTLIB) \
+          Ws2_32.lib Opengl32.lib GlU32.Lib Gdi32.lib
+
+OBJS = MB3DView.obj MB3DSiteList.obj MB3DRouteList.obj MB3DNavList.obj mbview_callbacks.obj \
+       mbview_process.obj mbview_plot.obj mbview_primary.obj mbview_secondary.obj \
+       mbview_pick.obj mbview_profile.obj mbview_site.obj mbview_route.obj mbview_nav.obj \
+       mbview_vector.obj mbview_bxutils.obj mb_glwdrawa.obj Mb3dsdg.obj \
+       mb3dsoundings_callbacks.obj MBpedit.obj mbpingedit_callbacks.obj glx_win.obj mb_xgraphics.obj 
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): mbview.def  $(OBJS)
+	$(LD) $(LDFLAGS) -def:mbview.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+# PRECISO DE AUTOMATIZAR o -D_86_ para a Bitagem. Em 64 deve ser -D_AMD64_ Isto para o winnt.h não berrar
+.c.obj:
+	$(CC) -c -DMBVIEW_LIBRARY $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) /I$(MOTIFINCDIR) -I$(X11INC) $<
+
+
+MB3DView.obj: MB3DView.c MB3DView.h mbview.h mbviewprivate.h ../mbio/mb_define.h \
+        ../mbio/mb_status.h ../mbio/mb_format.h
+MB3DSiteList.obj: MB3DSiteList.c MB3DSiteList.h mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+MB3DRouteList.obj: MB3DRouteList.c MB3DRouteList.h mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+MB3DNavList.obj: MB3DNavList.c MB3DNavList.h mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_callbacks.obj: mbview_callbacks.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_process.obj: mbview_process.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_plot.obj: mbview_plot.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_primary.obj: mbview_primary.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_secondary.obj: mbview_secondary.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_pick.obj: mbview_pick.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_profile.obj: mbview_profile.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_site.obj: mbview_site.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_route.obj: mbview_route.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_nav.obj: mbview_nav.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_vector.obj: mbview_vector.c mbview.h mbviewprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+mbview_bxutils.obj: mbview_bxutils.c
+mb_glwdrawa.obj: mb_glwdrawa.c mb_glwdrawa.h mb_glwdrawap.h
+Mb3dsdg.obj: Mb3dsdg.c Mb3dsdg.h
+mb3dsoundings_callbacks.obj: mb3dsoundings_callbacks.c Mb3dsdg.h mb3dsoundingsprivate.h
+MBpedit.obj: MBpedit.c MBpedit.h
+mbpingedit_callbacks.obj: mbpingedit_callbacks.c Mb3dsdg.h mbpingeditprivate.h \
+        ../mbio/mb_define.h ../mbio/mb_status.h ../mbio/mb_format.h
+
+glx_win.obj: glx_win.c
+
+mb_xgraphics.obj: ..\mbaux\mb_xgraphics.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c ..\mbaux\mb_xgraphics.c
+
+# cleanup
+clean:
+	-del *.lib *.obj *.res *.exp *.pdb

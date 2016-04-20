@@ -1,0 +1,140 @@
+# MSVC Makefile for MB-system at the src/utilities directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+
+LD = link
+AR = lib
+LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib
+
+# targets
+all: mbhsdump.exe mbformat.exe mbdefaults.exe mbdatalist.exe mbinfo.exe mbset.exe mbprocess.exe mbcopy.exe mblist.exe \
+	mbnavlist.exe mbsvplist.exe mbbackangle.exe mbclean.exe mbclean_j.exe mbareaclean.exe mbhistogram.exe mbgrid.exe \
+	mbmosaic.exe mblevitus.exe mbrollbias.exe mbextractsegy.exe mbsegylist.exe mbsegyinfo.exe \
+	mbsegygrid.exe mbsegypsd.exe mbauvnavusbl.exe mbgetesf.exe mbneptune2esf.exe \
+	mbstripnan.exe mb7k2jstar.exe mb7kpreprocess.exe mbrolltimelag.exe mbauvloglist.exe mb7k2ss.exe \
+	mbabsorption.exe mbdumpesf.exe mbtime.exe mbctdlist.exe mbfilter.exe mbroutetime.exe \
+	mbhysweeppreprocess.exe mbkongsbergpreprocess.exe \
+	mbinsreprocess.exe mbpreprocess.exe mbrphsbias.exe mbsslayout.exe mbswplspreprocess.exe
+#	mbsvpselect.exe  
+
+
+mbhsdump.exe:	mbhsdump.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbhsdump.c $(LDFLAGS) /I$(INCDIR)
+mbinsreprocess.exe:	mbinsreprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbinsreprocess.c $(LDFLAGS) /I$(INCDIR)
+mbpreprocess.exe:	mbpreprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbpreprocess.c $(LDFLAGS) /I$(INCDIR)
+mbrphsbias.exe:	mbrphsbias.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbrphsbias.c $(LDFLAGS) /I$(INCDIR)
+mbsslayout.exe:	mbsslayout.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsslayout.c $(LDFLAGS) /I$(INCDIR)
+mbswplspreprocess.exe:	mbswplspreprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbswplspreprocess.c $(LDFLAGS) /I$(INCDIR)
+mbsvpselect.exe:	mbsvpselect.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsvpselect.c geodesic.c $(LDFLAGS) /I$(INCDIR)
+mbformat.exe:	mbformat.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbformat.c $(LDFLAGS) /I$(INCDIR)
+mbdefaults.exe:	mbdefaults.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbdefaults.c $(LDFLAGS) /I$(INCDIR)
+mbdatalist.exe: mbdatalist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbdatalist.c $(LDFLAGS) /I$(INCDIR)
+mbinfo.exe:	mbinfo.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbinfo.c $(LDFLAGS) /I$(INCDIR)
+mbset.exe:	mbset.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbset.c $(LDFLAGS) /I$(INCDIR)
+mbprocess.exe:	mbprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbprocess.c $(LDFLAGS) /I$(INCDIR)
+mbcopy.exe:	mbcopy.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbcopy.c $(LDFLAGS) /I$(INCDIR)
+mblist.exe:	mblist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mblist.c $(LDFLAGS) /I$(INCDIR)
+mbnavlist.exe:	mbnavlist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbnavlist.c $(LDFLAGS) /I$(INCDIR)
+mbsvplist.exe:	mbsvplist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsvplist.c $(LDFLAGS) /I$(INCDIR)
+mbbackangle.exe:	mbbackangle.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbbackangle.c $(LDFLAGS) /I$(INCDIR)
+mbclean.exe:	mbclean.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbclean.c $(LDFLAGS) /I$(INCDIR)
+mbclean_j.exe:	mbclean_j.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbclean_j.c $(LDFLAGS) /I$(INCDIR)
+mbareaclean.exe:	mbareaclean.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbareaclean.c $(LDFLAGS) /I$(INCDIR)
+mbhistogram.exe:	mbhistogram.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbhistogram.c $(LDFLAGS) /I$(INCDIR)
+mbgrid.exe:	mbgrid.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbgrid.c $(LDFLAGS) /I$(INCDIR)
+mbmosaic.exe:	mbmosaic.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbmosaic.c $(LDFLAGS) /I$(INCDIR)
+mblevitus.exe:	mblevitus.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mblevitus.c $(LDFLAGS) /I$(INCDIR)
+mbrollbias.exe:	mbrollbias.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbrollbias.c $(LDFLAGS) /I$(INCDIR)
+mbextractsegy.exe:	mbextractsegy.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbextractsegy.c $(LDFLAGS) /I$(INCDIR)
+mbsegylist.exe:	mbsegylist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsegylist.c $(LDFLAGS) /I$(INCDIR)
+mbsegyinfo.exe:	mbsegyinfo.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsegyinfo.c $(LDFLAGS) /I$(INCDIR)
+mbsegygrid.exe:	mbsegygrid.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsegygrid.c $(LDFLAGS) /I$(INCDIR)
+mbsegypsd.exe:	mbsegypsd.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsegypsd.c $(LDFLAGS) $(FFTW3LIB) /I$(INCDIR) /I$(FFTW3INC)
+mbauvnavusbl.exe:	mbauvnavusbl.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbauvnavusbl.c $(LDFLAGS)  /I$(INCDIR)
+mbgetesf.exe:	mbgetesf.c 
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbgetesf.c $(LDFLAGS) /I$(INCDIR)
+mbneptune2esf.exe:	mbneptune2esf.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbneptune2esf.c $(LDFLAGS)  /I$(INCDIR)
+mbps.exe:	mbps.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbps.c $(LDFLAGS) /I$(INCDIR)
+mbstripnan.exe:	mbstripnan.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbstripnan.c $(LDFLAGS) /I$(INCDIR)
+mb7k2jstar.exe:	mb7k2jstar.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mb7k2jstar.c $(LDFLAGS) /I$(INCDIR)
+mb7kpreprocess.exe:	mb7kpreprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mb7kpreprocess.c $(LDFLAGS) /I$(INCDIR)
+mbrolltimelag.exe:	mbrolltimelag.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbrolltimelag.c $(LDFLAGS) /I$(INCDIR)
+mbauvloglist.exe:	mbauvloglist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbauvloglist.c $(LDFLAGS) /I$(INCDIR)
+mb7k2ss.exe:	mb7k2ss.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mb7k2ss.c $(LDFLAGS) /I$(INCDIR)
+mbabsorption.exe:	mbabsorption.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbabsorption.c $(LDFLAGS) /I$(INCDIR)
+mbdumpesf.exe:	mbdumpesf.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbdumpesf.c $(LDFLAGS) /I$(INCDIR)
+mbtime.exe:	mbtime.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbtime.c $(LDFLAGS) /I$(INCDIR)
+mbctdlist.exe:	mbctdlist.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbctdlist.c $(LDFLAGS) /I$(INCDIR)
+mbfilter.exe:	mbfilter.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbfilter.c $(LDFLAGS) /I$(INCDIR)
+mbroutetime.exe:	mbroutetime.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbroutetime.c $(LDFLAGS) /I$(INCDIR)
+mbhysweeppreprocess.exe:	mbhysweeppreprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbhysweeppreprocess.c $(LDFLAGS) /I$(INCDIR)
+mbkongsbergpreprocess.exe:	mbkongsbergpreprocess.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbkongsbergpreprocess.c $(LDFLAGS) /I$(INCDIR)
+
+# cleanup
+clean:
+	-del *.exe *.lib *.obj *.res *.exp *.ilk
+	-del *.pdb
+
+install:
+	move /Y *.exe $(BINDIR)/
+!IFDEF DEBUG
+	move /Y *.pdb $(BINDIR)/
+!ENDIF
+

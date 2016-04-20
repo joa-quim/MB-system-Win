@@ -1,0 +1,40 @@
+# MSVC Makefile for MB-system at the src/otps directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean | install]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domian
+ 
+!INCLUDE ..\..\nmake.opt
+
+LDFLAGS = -nologo Ws2_32.lib $(ONCRPCLIB) $(GETOPTLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(LDEBUG) \
+	$(LIBDIR)/mbio.lib \
+	$(LIBDIR)/mbgsf.lib \
+	$(LIBDIR)/sapi.lib \
+	$(LIBDIR)/mbbsio.lib  \
+	$(LIBDIR)/mbaux.lib
+
+# targets
+all: mbotps.exe
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) $<
+
+### compile the source files
+mbotps.exe:	mbotps.c ../mbio/mb_status.h ../mbio/mb_define.h otps.h
+	$(CC) $(CFLAGS) -I../mbio mbotps.c $(LDFLAGS)
+
+# cleanup
+clean:
+	-del *.exe *.lib *.obj *.exp *.pdb
+
+install:
+	move /Y *.exe $(BINDIR)/
+!IFDEF DEBUG
+	move /Y *.pdb $(BINDIR)/
+!ENDIF

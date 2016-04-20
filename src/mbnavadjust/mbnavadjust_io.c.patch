@@ -1,0 +1,16 @@
+Index: mbnavadjust_io.c
+===================================================================
+--- mbnavadjust_io.c	(revision 2271)
++++ mbnavadjust_io.c	(working copy)
+@@ -197,7 +197,11 @@
+                         project->zoffsetwidth = 5.0;
+ 
+                         /* create data directory */
++#ifdef _WIN32
++                        if (mkdir(project->datadir) != 0)
++#else
+                         if (mkdir(project->datadir,00775) != 0)
++#endif
+                                 {
+                                 fprintf(stderr,"Error creating data directory %s\n", project->datadir);
+                                 *error = MB_ERROR_INIT_FAIL;

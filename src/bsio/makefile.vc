@@ -1,0 +1,62 @@
+# MSVC Makefile for MB-system at the src/bsio directory level
+#
+# Usage:
+#   nmake -f makefile.vc
+#   nmake -f makefile.vc clean
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domian
+ 
+!INCLUDE ..\..\nmake.opt
+
+# variables
+STATICLIB = $(LIBDIR)/mbbsio_static.lib
+SHAREDLIB = $(LIBDIR)/mbbsio_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mbbsio.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref Ws2_32.lib $(ONCRPCLIB) $(LDEBUG)
+
+### put together the static library 
+OBJS =  mbbs_io.obj mbbs_iomrv1.obj mbbs_iomrv2.obj  mbbs_memalloc.obj mbbs_misc.obj \
+		mbbs_swapbytes.obj mbbs_tm.obj mbbs_utils.obj mbbs_wrhdrfields.obj mbbs_wrsampflags.obj
+
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): mbbsio.def $(OBJ)
+	$(LD) $(LDFLAGS) -def:mbbsio.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) $<
+
+### compile the source files
+mbbs_io.obj:        mbbs_io.c $(INCDIR)/mbbs_defines.h $(INCDIR)/mbbs_mem.h
+mbbs_iomrv1.obj:    mbbs_iomrv1.c $(INCDIR)/mbbs_defines.h
+mbbs_iomrv2.obj:    mbbs_iomrv2.c $(INCDIR)/mbbs_defines.h
+mbbs_memalloc.obj:  mbbs_memalloc.c $(INCDIR)/mbbs_mem.h
+mbbs_misc.obj:      mbbs_misc.c $(INCDIR)/mbbs_defines.h $(INCDIR)/mbbs_mem.h
+mbbs_swapbytes.obj:	mbbs_swapbytes.c $(INCDIR)/mbbs_mem.h
+mbbs_tm.obj:        mbbs_tm.c $(INCDIR)/mbbs_defines.h
+mbbs_utils.obj:     mbbs_utils.c $(INCDIR)/mbbs_defines.h
+mbbs_wrhdrfields.obj: mbbs_wrhdrfields.c $(INCDIR)/mbbs_defines.h
+mbbs_wrsampflags.obj: mbbs_wrsampflags.c $(INCDIR)/mbbs_defines.h
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.res
+	-del *.exp
+	-del *.pdb

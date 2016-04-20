@@ -1,0 +1,65 @@
+# MSVC Makefile for MB-system at the src/mbaux directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+
+# variables
+STATICLIB = $(LIBDIR)/mbaux_static.lib
+SHAREDLIB = $(LIBDIR)/mbaux_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mbaux.lib
+
+PNGLIB      = C:/programs/compa_libs/lpng166/compileds/VC12_$(BITS)/lib/png.lib
+JPGLIB      = C:/programs/compa_libs/jpeg-6b/compileds/VC12_$(BITS)/lib/libjpeg.lib
+ICONVLIB    = C:/programs/compa_libs/libiconv-1.14/compileds/VC12_$(BITS)/lib/libiconv.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref Ws2_32.lib $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbbsio.lib
+
+OBJS = mb_zgrid.obj mb_surface.obj mb_cheb.obj mb_delaun.obj mb_track.obj mb_truecont.obj \
+	mb_intersectgrid.obj mb_readwritegrd.obj
+
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): mbaux.def $(OBJS)
+	$(LD) $(LDFLAGS) -def:mbaux.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) $<
+
+mb_zgrid.o:	mb_zgrid.c mb_define.h mb_aux.h
+mb_surface.o:	mb_surface.c mb_aux.h
+mb_cheb.o:	mb_cheb.c mb_status.h mb_aux.h
+mb_delaun.o:	mb_delaun.c mb_status.h mb_aux.h
+mb_track.o:	mb_track.c mb_status.h mb_aux.h
+mb_truecont.o:	mb_truecont.c mb_status.h mb_aux.h
+mb_intersectgrid.o:	mb_intersectgrid.c ../mbio/mb_status.h mb_aux.h
+mb_readwritegrd.o:	mb_readwritegrd.c ../mbio/mb_status.h mb_aux.h
+
+# This one is now compiled in ../mbview/makefile.vc
+#mb_xgraphics.obj: mb_xgraphics.c
+#	$(CC) $(CFLAGS) $(SHUTUPFLAGS) -I../mbio -I$(MOTIFINCDIR) -I$(X11INC) -c mb_xgraphics.c
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.res
+	-del *.exp
+	-del *.pdb

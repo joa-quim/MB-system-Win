@@ -1,0 +1,51 @@
+# MSVC Makefile for MB-system at the src/gmt directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2014
+#
+# LICENSING
+#	Public domian
+ 
+!INCLUDE ..\..\nmake.opt
+
+# variables
+STATICLIB = $(LIBDIR)/mbgmt_static.lib
+SHAREDLIB = $(LIBDIR)/mbgmt_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mbgmt.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref Ws2_32.lib $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbaux.lib $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbbsio.lib $(MOTIFLIBS)
+
+OBJS = mbcontour.obj mbswath.obj mbgrdtiff.obj 
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): $(OBJS)
+	$(LD) $(LDFLAGS) -dll -implib:$(IMPLIB) -out:$@ -base:0x5A4C0000 $(OBJS)
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) $<
+
+### compile the source files
+mbcontour.obj: mbcontour.c ../mbio/mb_status.h ../mbio/mb_define.h ../mbaux/mb_aux.h
+mbswath.obj: mbswath.c ../mbio/mb_status.h ../mbio/mb_define.h ../mbio/mb_format.h
+mbgrdtiff.obj: mbgrdtiff.c ../mbio/mb_status.h ../mbio/mb_define.h ../mbio/mb_format.h
+
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.ilk
+	-del *.exp
+	-del *.pdb

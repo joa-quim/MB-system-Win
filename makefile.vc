@@ -1,0 +1,271 @@
+# MSVC Makefile for MB-system
+#
+# Usage:
+#   nmake -f makefile.vc
+#   nmake -f makefile.vc [clean | instal]
+#
+# Note: The make instal (one single ell) target is really meaningfull only for the
+#       modules that produce exes as the libs are directly created on lib and need
+#       to be manually copied into "bin"
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+
+# Load file with the Bitage setting
+!INCLUDE Bitage.txt
+
+target-lib: bsio_dir gsf_dir surf_dir mr1pr_dir mbio_dir mbaux_dir mbview_dir gmt_dir otps_dir utilities_dir \
+	mbedit_dir mbnavadjust_dir mbnavedit_dir mbvelocitool_dir
+
+clean:
+	cd src/bsio
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/gmt
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/gsf
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/surf
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbview
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mr1pr
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbio
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbaux
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/utilities
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbedit
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbnavadjust
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbnavedit
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd src/mbvelocitytool
+	$(MAKE) /f makefile.vc clean
+	cd ../..
+	cd lib && del *.exp
+	cd ../..
+
+bsio_dir:
+	cd src/bsio
+	copy /Y mbbs.h ..\..\include
+	copy /Y mbbs_defines.h ..\..\include
+	copy /Y mbbs_mem.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+gmt_dir:
+	cd src/gmt
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+gsf_dir:
+	cd src/gsf
+	copy /Y gsf.h ..\..\include
+	copy /Y gsf_ft.h ..\..\include
+	copy /Y gsf_enc.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbaux_dir:
+	cd src/mbaux
+	copy /Y mb_aux.h ..\..\include
+	copy /Y mb_xgraphics.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbio_dir:
+	cd src/mbio
+	copy /Y mb_format.h ..\..\include
+	copy /Y mb_status.h ..\..\include
+	copy /Y mb_io.h ..\..\include
+	copy /Y mb_swap.h ..\..\include
+	copy /Y mb_define.h ..\..\include
+	copy /Y mb_process.h ..\..\include
+	copy /Y mb_segy.h ..\..\include
+	copy /Y mb_info.h ..\..\include
+	copy /Y mbsys_sb.h ..\..\include
+	copy /Y mbsys_hsds.h ..\..\include
+	copy /Y mbsys_sb2100.h ..\..\include
+	copy /Y mbsys_simrad.h ..\..\include
+	copy /Y mbsys_simrad2.h ..\..\include
+	copy /Y mbsys_simrad3.h ..\..\include
+	copy /Y mbsys_mr1.h ..\..\include
+	copy /Y mbsys_mr1b.h ..\..\include
+	copy /Y mbsys_mr1v2001.h ..\..\include
+	copy /Y mbsys_ldeoih.h ..\..\include
+	copy /Y mbsys_reson.h ..\..\include
+	copy /Y mbsys_elac.h ..\..\include
+	copy /Y mbsys_elacmk2.h ..\..\include
+	copy /Y mbsys_sb2000.h ..\..\include
+	copy /Y mbsys_hsmd.h ..\..\include
+	copy /Y mbsys_dsl.h ..\..\include
+	copy /Y mbsys_gsf.h ..\..\include
+	copy /Y mbsys_mstiff.h ..\..\include
+	copy /Y mbsys_oic.h ..\..\include
+	copy /Y mbsys_hdcs.h ..\..\include
+	copy /Y mbsys_singlebeam.h ..\..\include
+	copy /Y mbsys_xse.h ..\..\include
+	copy /Y mbsys_hs10.h ..\..\include
+	copy /Y mbsys_reson8k.h ..\..\include
+	copy /Y mbsys_netcdf.h ..\..\include
+	copy /Y mbsys_navnetcdf.h ..\..\include
+	copy /Y mbsys_atlas.h ..\..\include
+	copy /Y mbsys_surf.h ..\..\include
+	copy /Y mbsys_reson7k.h ..\..\include
+	copy /Y mbsys_jstar.h ..\..\include
+	copy /Y mbsys_image83p.h ..\..\include
+	copy /Y mbsys_hysweep.h ..\..\include
+	copy /Y mbsys_benthos.h ..\..\include
+	copy /Y mbsys_swathplus.h ..\..\include
+	copy /Y mbsys_3datdepthlidar.h ..\..\include
+	copy /Y mbsys_wassp.h ..\..\include
+	copy /Y mbf_sbsiomrg.h ..\..\include
+	copy /Y mbf_sbsiocen.h ..\..\include
+	copy /Y mbf_sbsiolsi.h ..\..\include
+	copy /Y mbf_sburicen.h ..\..\include
+	copy /Y mbf_sbifremr.h ..\..\include
+	copy /Y mbf_hsatlraw.h ..\..\include
+	copy /Y mbf_hsldedmb.h ..\..\include
+	copy /Y mbf_hsuricen.h ..\..\include
+	copy /Y mbf_hsldeoih.h ..\..\include
+	copy /Y mbf_sb2100rw.h ..\..\include
+	copy /Y mbf_em12darw.h ..\..\include
+	copy /Y mbf_em12ifrm.h ..\..\include
+	copy /Y mbf_mr1prhig.h ..\..\include
+	copy /Y mbf_mr1aldeo.h ..\..\include
+	copy /Y mbf_mr1bldeo.h ..\..\include
+	copy /Y mbf_cbat9001.h ..\..\include
+	copy /Y mbf_cbat8101.h ..\..\include
+	copy /Y mbf_hypc8101.h ..\..\include
+	copy /Y mbf_bchrtunb.h ..\..\include
+	copy /Y mbf_elmk2unb.h ..\..\include
+	copy /Y mbf_bchrxunb.h ..\..\include
+	copy /Y mbf_sbsioswb.h ..\..\include
+	copy /Y mbf_hsmdaraw.h ..\..\include
+	copy /Y mbf_hsmdldih.h ..\..\include
+	copy /Y mbf_dsl120pf.h ..\..\include
+	copy /Y mbf_dsl120sf.h ..\..\include
+	copy /Y mbf_gsfgenmb.h ..\..\include
+	copy /Y mbf_mstiffss.h ..\..\include
+	copy /Y mbf_oicgeoda.h ..\..\include
+	copy /Y mbf_oicmbari.h ..\..\include
+	copy /Y mbf_omghdcsj.h ..\..\include
+	copy /Y mbf_mgd77dat.h ..\..\include
+	copy /Y mbf_mbarirov.h ..\..\include
+	copy /Y mbf_mbarrov2.h ..\..\include
+	copy /Y mbf_mbpronav.h ..\..\include
+	copy /Y mbf_xtfr8101.h ..\..\include
+	copy /Y mb_config.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbview_dir:
+	cd src/mbview
+	copy /Y mbview.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mr1pr_dir:
+	cd src/mr1pr
+	copy /Y mem.h ..\..\include
+	copy /Y mr1pr.h ..\..\include
+	copy /Y mr1pr_defines.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+surf_dir:
+	cd src/surf
+	copy /Y mb_sapi.h ..\..\include
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+otps_dir:
+	cd src/otps
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+utilities_dir:
+	cd src/utilities
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbedit_dir:
+	cd src/mbedit
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbnavadjust_dir:
+	cd src/mbnavadjust
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbnavedit_dir:
+	cd src/mbnavedit
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbvelocitool_dir:
+	cd src/mbvelocitytool
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+instal:
+	cd src/utilities
+	$(MAKE) /f makefile.vc install
+	cd ../..
+	cd src/mbedit
+	$(MAKE) /f makefile.vc install
+	cd ../..
+	cd src/mbnavadjust
+	$(MAKE) /f makefile.vc install
+	cd ../..
+	cd src/mbnavedit
+	$(MAKE) /f makefile.vc install
+	cd ../..
+	cd src/mbvelocitytool
+	$(MAKE) /f makefile.vc install
+	cd ../..
+	cd src/macros
+	copy /Y mbm_xbt           ..\..\bin$(BITS)\mbm_xbt
+	copy /Y mbm_plot          ..\..\bin$(BITS)\mbm_plot
+	copy /Y mbm_grdplot       ..\..\bin$(BITS)\mbm_grdplot
+	copy /Y mbm_grd3dplot     ..\..\bin$(BITS)\mbm_grd3dplot
+	copy /Y mbm_xyplot        ..\..\bin$(BITS)\mbm_xyplot
+	copy /Y mbm_stat          ..\..\bin$(BITS)\mbm_stat
+	copy /Y mbm_grid          ..\..\bin$(BITS)\mbm_grid
+	copy /Y mbm_grd2arc       ..\..\bin$(BITS)\mbm_grd2arc
+	copy /Y mbm_arc2grd       ..\..\bin$(BITS)\mbm_arc2grd
+	copy /Y mbm_grdcut        ..\..\bin$(BITS)\mbm_grdcut
+	copy /Y mbm_grdinfo       ..\..\bin$(BITS)\mbm_grdinfo
+	copy /Y mbm_grdtiff       ..\..\bin$(BITS)\mbm_grdtiff
+	copy /Y mbm_utm           ..\..\bin$(BITS)\mbm_utm
+	copy /Y mbm_grd2geovrml   ..\..\bin$(BITS)\mbm_grd2geovrml
+	copy /Y mbm_copy          ..\..\bin$(BITS)\mbm_copy
+	copy /Y mbm_route2mission ..\..\bin$(BITS)\mbm_route2mission
+	copy /Y mbm_makedatalist  ..\..\bin$(BITS)\mbm_makedatalist
+	copy /Y mbm_histplot      ..\..\bin$(BITS)\mbm_histplot
+	copy /Y mbm_multiprocess  ..\..\bin$(BITS)\mbm_multiprocess
+	copy /Y mbm_multidatalist ..\..\bin$(BITS)\mbm_multidatalist
+	copy /Y mbm_multicopy     ..\..\bin$(BITS)\mbm_multicopy
+	copy /Y mbm_bpr           ..\..\bin$(BITS)\mbm_bpr
+	cd ../..
+

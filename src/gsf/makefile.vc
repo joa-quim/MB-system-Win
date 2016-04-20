@@ -1,0 +1,53 @@
+# MSVC Makefile for MB-system at the src/gsf directory level
+#
+# Usage:
+#   nmake -f makefile.vc
+#   nmake -f makefile.vc clean
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+ 
+# variables
+STATICLIB = $(LIBDIR)/mbgsf_static.lib
+SHAREDLIB = $(LIBDIR)/mbgsf_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mbgsf.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref Ws2_32.lib $(LDEBUG)
+
+OBJS = gsf.obj gsf_dec.obj gsf_enc.obj gsf_indx.obj gsf_info.obj
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): gsf.def $(OBJS)
+	$(LD) $(LDFLAGS) -def:gsf.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+.c.obj:
+	$(CC) -c $(SHUTUPFLAGS) $(CFLAGS) $<
+
+gsf.obj:	gsf.c gsf.h gsf_dec.h gsf_enc.h gsf_ft.h gsf_indx.h
+gsf_dec.obj:	gsf_dec.c gsf.h gsf_dec.h gsf_enc.h gsf_ft.h gsf_indx.h
+gsf_enc.obj:	gsf_enc.c gsf.h gsf_dec.h gsf_enc.h gsf_ft.h gsf_indx.h
+gsf_indx.obj:	gsf_indx.c gsf.h gsf_dec.h gsf_enc.h gsf_ft.h gsf_indx.h
+gsf_info.obj:	gsf_indx.c gsf.h gsf_dec.h gsf_enc.h gsf_ft.h gsf_indx.h
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.res
+	-del *.exp
+	-del *.pdb

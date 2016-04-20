@@ -1,0 +1,51 @@
+# MSVC Makefile for MB-system at the src/mr1pr directory level
+#
+# Usage:
+#   nmake -f makefile.vc [clean]
+#
+# Author:
+#	Joaquim Luis jluis@ualg.pt
+#	2012
+#
+# LICENSING
+#	Public domain
+ 
+!INCLUDE ..\..\nmake.opt
+
+# variables
+STATICLIB = $(LIBDIR)/mr1pr_static.lib
+SHAREDLIB = $(LIBDIR)/mr1pr_w$(BITS).dll
+IMPLIB = $(LIBDIR)/mr1pr.lib
+
+LD = link
+AR = lib
+LDFLAGS = -nologo -incremental:no -opt:ref $(ONCRPCLIB) $(LDEBUG)
+
+OBJS = io.obj iov1.obj misc.obj memalloc.obj
+
+# targets
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): mr1pr.def  $(OBJS)
+	$(LD) $(LDFLAGS) -def:mr1pr.def -dll -implib:$(IMPLIB) \
+	  -out:$@ -base:0x5A4C0000 $(OBJS)
+
+.c.obj:
+	$(CC) -c -DHAVE_CONFIG_H $(SHUTUPFLAGS) $(CFLAGS) /I$(INCDIR) $<
+
+io.o:	io.c mr1pr_defines.h
+iov1.o:	iov1.c mr1pr_defines.h
+misc.o:	misc.c mr1pr_defines.h mem.h
+memalloc.o:	memalloc.c mr1pr_defines.h mem.h
+
+# cleanup
+clean:
+	-del *.obj
+	-del *.res
+	-del *.exp
+	-del *.pdb
