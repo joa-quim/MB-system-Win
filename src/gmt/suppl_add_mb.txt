@@ -1,0 +1,6 @@
+include_directories(${ONCRPCINC})
+include_directories(${GETOPTINC})
+include_directories(${PROJINCDIR})
+include_directories(${MBINC})
+
+target_link_libraries (supplib ${PROJLIB} ${ONCRPCLIB} ${GETOPTLIB} ${MBIOLIB} ${MBAUXLIB} )

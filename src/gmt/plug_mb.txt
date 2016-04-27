@@ -1,0 +1,104 @@
+# path (relative) of the new pluggin source code
+set (THIS_PLUGG_SUPPL_DIRS mb)
+
+# Support code for the modules: (Needed in gsfmllib)
+set (THIS_PLUGG_SRCS mb/mbgmt_module.h mb/mbgmt_module.c)
+ 
+# Name of the new pluggin shared lib
+set (THIS_PLUGG_NAME mbgmtlib)
+
+# ------------------------------------------------------------------------------- #
+# If you don't have any external libs and includes to declare or config files to
+# generate than most likely no changes below here. The exception is (on Windows)
+# the name of the XXXXX_DLL_RENAME variable (search for RUNTIME_OUTPUT_NAME ). 
+# ------------------------------------------------------------------------------- #
+
+# process supplement directories
+if (UNIX)
+	set (CMAKE_SHARED_MODULE_SUFFIX .so)
+endif (UNIX)
+foreach (_dir ${THIS_PLUGG_SUPPL_DIRS})
+	add_subdirectory (${_dir})
+	list (APPEND GMT_BINARY_DIR_PATH
+		"${CMAKE_CURRENT_BINARY_DIR}/${_dir}/\${CMAKE_CONFIG_TYPE:-.}")
+endforeach (_dir)
+# supplement library files
+get_subdir_var_files (THIS_PLUGG_LIB_SRCS LIB_SRCS ${THIS_PLUGG_SUPPL_DIRS})
+
+# include supplement directories
+foreach (_dir ${THIS_PLUGG_SUPPL_DIRS})
+	include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
+endforeach (_dir)
+
+# Extra includes
+include_directories(${ONCRPCINC})
+include_directories(${GETOPTINC})
+include_directories(${PROJINCDIR})
+include_directories(${MBINC})
+
+if (WIN32)
+	add_library (${THIS_PLUGG_NAME}
+		${GMT_GEN_HDRS}
+		${THIS_PLUGG_SRCS}
+		${THIS_PLUGG_LIB_SRCS})
+else (WIN32)
+	add_library (${THIS_PLUGG_NAME} MODULE
+		${GMT_GEN_HDRS}
+		${THIS_PLUGG_SRCS}
+		${THIS_PLUGG_LIB_SRCS})
+endif (WIN32)
+
+add_dependencies (${THIS_PLUGG_NAME} gen_gmt_headers) # make ${THIS_PLUGG_NAME} after gen_gmt_headers
+add_dependencies (${THIS_PLUGG_NAME} pslib) # make ${THIS_PLUGG_NAME} after pslib
+add_dependencies (${THIS_PLUGG_NAME} gmtlib) # make ${THIS_PLUGG_NAME} after pslib
+
+# No SOVERSION & VERSION for a MODULE, only for SHARED libs
+target_link_libraries (${THIS_PLUGG_NAME}
+	gmtlib pslib
+	${PROJLIB} ${ONCRPCLIB} ${GETOPTLIB} ${MBIOLIB} ${MBAUXLIB} 
+	)
+
+set_target_properties (${THIS_PLUGG_NAME}
+	PROPERTIES
+	OUTPUT_NAME supplements
+	RUNTIME_OUTPUT_NAME supplements
+	LIBRARY_OUTPUT_DIRECTORY plugins
+	RUNTIME_OUTPUT_DIRECTORY plugins
+	PREFIX ""
+	LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
+	DEFINE_SYMBOL "LIBRARY_EXPORTS")
+
+# The MB_DLL_RENAME IS (IF) SET IN ConfigUser.cmake
+if (WIN32 AND MB_DLL_RENAME)
+	set_target_properties (${THIS_PLUGG_NAME} PROPERTIES RUNTIME_OUTPUT_NAME ${MB_DLL_RENAME})
+endif ()
+if (WIN32)
+	target_link_libraries (${THIS_PLUGG_NAME} Ws2_32.lib)
+endif ()
+
+if (HAVE_DLADDR AND HAVE_LIBDL)
+	# link the dynamic linking loader library
+	target_link_libraries (${THIS_PLUGG_NAME} dl)
+endif (HAVE_DLADDR AND HAVE_LIBDL)
+
+if (HAVE_M_LIBRARY)
+	# link the math library
+	target_link_libraries (${THIS_PLUGG_NAME} m)
+endif (HAVE_M_LIBRARY)
+
+# install target
+install (TARGETS ${THIS_PLUGG_NAME}
+	LIBRARY DESTINATION ${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins # UNIX
+	COMPONENT Runtime
+	RUNTIME DESTINATION ${GMT_BINDIR}/gmt_plugins # Windows
+	COMPONENT Runtime)
+
+
+# generate and install Mac/Windows debugging symbols
+if (WIN32)
+	create_debug_sym (${GMT_BINDIR}/gmt_plugins ${THIS_PLUGG_NAME})
+else (WIN32)
+	create_debug_sym (${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins ${THIS_PLUGG_NAME})
+endif (WIN32)
+
+add_dependencies (check ${_gmt_progs} ${THIS_PLUGG_NAME})

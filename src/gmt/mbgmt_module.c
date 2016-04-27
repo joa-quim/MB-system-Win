@@ -41,9 +41,12 @@ struct Gmt_moduleinfo {
 };
 
 struct Gmt_moduleinfo g_mbgmt_module[] = {
-	{"mbcontour", "mbgmt", "Plot contours"},
-	{"mbswath", "mbgmt", "Plot swath bathymetry, amplitude, or backscatter"},
-	{"mbgrdtiff", "mbgmt", "Create geotiff images"},
+	{"mbcontour", "mbgmt", "Plot contours", ""},
+	{"mbswath",   "mbgmt", "Plot swath bathymetry, amplitude, or backscatter", ""},
+	{"mbgrdtiff", "mbgmt", "Create geotiff images", ""},
+	{"mbclean_j", "mbgmt", "Identifies and flags artifacts in swath sonar bathymetry data", ""},
+	{"mbgrid_j",  "mbgmt", "grid bathymetry, amplitude, or sidescan data of a set of swath sonar data files", ""},
+	{"mbimport",  "mbgmt", "Get swath bathymetry, amplitude, or backscatter Image into Matlab", "<D{,CC(,MI}"},
 	{NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 
@@ -59,21 +62,19 @@ void gmt_mbgmt_module_show_all (void *V_API) {
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-	sprintf (message, "%-16s %s\n",
-		g_mbgmt_module[module_id].name, g_mbgmt_module[module_id].purpose);
+		sprintf(message, "%-16s %s\n", g_mbgmt_module[module_id].name, g_mbgmt_module[module_id].purpose);
 		GMT_Message (V_API, GMT_TIME_NONE, message);
 		module_id++;
 	}
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char * gmt_mbgmt_module_info (void *API, char *candidate) {
+const char *gmt_mbgmt_module_info (void *API, char *candidate) {
 	int module_id = 0;
 
 	/* Match actual_name against g_module[module_id].name */
-	while ( g_mbgmt_module[module_id].name != NULL &&
-			strcmp (candidate, g_mbgmt_module[module_id].name) )
-		++module_id;
+	while (g_mbgmt_module[module_id].name != NULL && strcmp (candidate, g_mbgmt_module[module_id].name))
+		module_id++;
 
 	/* Return Module keys or NULL */
 	return (g_mbgmt_module[module_id].keys);

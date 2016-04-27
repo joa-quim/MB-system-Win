@@ -1,0 +1,110 @@
+# List of extra  files to include in the installer
+SET (PATO_MB  "C:/progs_cygw/MB-GMT5/compileds/VC12_32")
+SET (PATO_BIN "${PATO_MB}/bin")
+SET (PATO_LIB "${PATO_MB}/bin")
+install (PROGRAMS 
+	C:/programs/compa_libs/fftw-3.3.4/compileds/VC12_32/lib/libfftw-3.3_w32.dll
+	C:/programs/compa_libs/libiconv-1.14/compileds/VC12_32/lib/libiconv_w32.dll
+	C:/programs/compa_libs/lpng166/compileds/VC12_32/lib/libpng_w32.dll
+	C:/programs/compa_libs/pcre_SVN/compileds/VC12_32/lib/pcreposix_w32.dll
+	C:/programs/compa_libs/hdf-4.2.9/compileds/VC12_32/lib/xdr_w32.dll 
+	C:/programs/compa_libs/xerces-c-3.1.1/compileds/VC12_32/lib/xerces-c_3_1_w32.dll 
+	C:/programs/compa_libs/X11/compileds/VC12_32/lib/libX11.dll
+	C:/programs/compa_libs/X11/compileds/VC12_32/lib/libXcb.dll
+	C:/programs/compa_libs/X11/compileds/VC12_32/lib/libXau.dll
+	C:/programs/compa_libs/X11/compileds/VC12_32/lib/libXext.dll
+	C:/programs/compa_libs/libxml2-2.9.1/compileds/VC12_32/lib/libxml2_w32.dll
+	C:/programs/compa_libs/oncrpc/compileds/VC12_32/lib/oncrpc_w32.dll
+	${PATO_LIB}/mbaux_w32.dll
+	${PATO_LIB}/mbio_w32.dll
+	${PATO_LIB}/mbview_w32.dll
+	${PATO_LIB}/mbbsio_w32.dll
+	${PATO_LIB}/mbgsf_w32.dll
+	${PATO_LIB}/mr1pr_w32.dll
+	${PATO_LIB}/sapi_w32.dll
+	${PATO_BIN}/mb7k2jstar.exe
+	${PATO_BIN}/mb7k2ss.exe
+	${PATO_BIN}/mb7kpreprocess.exe
+	${PATO_BIN}/mbabsorption.exe
+	${PATO_BIN}/mbareaclean.exe
+	${PATO_BIN}/mbauvloglist.exe
+	${PATO_BIN}/mbauvnavusbl.exe
+	${PATO_BIN}/mbbackangle.exe
+	${PATO_BIN}/mbclean.exe
+	${PATO_BIN}/mbcopy.exe
+	${PATO_BIN}/mbctdlist.exe
+	${PATO_BIN}/mbdatalist.exe
+	${PATO_BIN}/mbdefaults.exe
+	${PATO_BIN}/mbdumpesf.exe
+	${PATO_BIN}/mbedit.exe
+	${PATO_BIN}/mbextractsegy.exe
+	${PATO_BIN}/mbfilter.exe
+	${PATO_BIN}/mbformat.exe
+	${PATO_BIN}/mbgetesf.exe
+	${PATO_BIN}/mbgrid.exe
+	${PATO_BIN}/mbhistogram.exe
+	${PATO_BIN}/mbhsdump.exe
+	${PATO_BIN}/mbhysweeppreprocess.exe
+	${PATO_BIN}/mbinfo.exe
+	${PATO_BIN}/mbinsreprocess.exe
+	${PATO_BIN}/mbkongsbergpreprocess.exe
+	${PATO_BIN}/mblevitus.exe
+	${PATO_BIN}/mblist.exe
+	${PATO_BIN}/mbmosaic.exe
+	${PATO_BIN}/mbnavadjust.exe
+	${PATO_BIN}/mbnavedit.exe
+	${PATO_BIN}/mbnavlist.exe
+	${PATO_BIN}/mbneptune2esf.exe
+	${PATO_BIN}/mbpreprocess.exe
+	${PATO_BIN}/mbprocess.exe
+	${PATO_BIN}/mbrollbias.exe
+	${PATO_BIN}/mbrolltimelag.exe
+	${PATO_BIN}/mbroutetime.exe
+	${PATO_BIN}/mbrphsbias.exe
+	${PATO_BIN}/mbsegygrid.exe
+	${PATO_BIN}/mbsegyinfo.exe
+	${PATO_BIN}/mbsegylist.exe
+	${PATO_BIN}/mbsegypsd.exe
+	${PATO_BIN}/mbset.exe
+	${PATO_BIN}/mbsslayout.exe
+	${PATO_BIN}/mbstripnan.exe
+	${PATO_BIN}/mbsvplist.exe
+	${PATO_BIN}/mbswplspreprocess.exe
+	${PATO_BIN}/mbtime.exe
+	${PATO_BIN}/mbvelocitytool.exe
+	${PATO_BIN}/mbm_bpr
+	${PATO_BIN}/mbm_copy
+	${PATO_BIN}/mbm_grd2geovrml
+	${PATO_BIN}/mbm_grd3dplot
+	${PATO_BIN}/mbm_grdplot
+	${PATO_BIN}/mbm_grdplot_bat
+	${PATO_BIN}/mbm_grdtiff
+	${PATO_BIN}/mbm_grid
+	${PATO_BIN}/mbm_histplot
+	${PATO_BIN}/mbm_makedatalist
+	${PATO_BIN}/mbm_multicopy
+	${PATO_BIN}/mbm_multidatalist
+	${PATO_BIN}/mbm_multiprocess
+	${PATO_BIN}/mbm_plot
+	${PATO_BIN}/mbm_plot_bat
+	${PATO_BIN}/mbm_route2mission
+	${PATO_BIN}/mbm_stat
+	${PATO_BIN}/mbm_utm
+	${PATO_BIN}/mbm_xbt
+	${PATO_BIN}/mbm_xyplot
+
+	${PATO_BIN}/velocity
+	${PATO_BIN}/xkeysymdb 
+	${PATO_BIN}/README_MB.txt 
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
+install (DIRECTORY ${PATO_MB}/share/mbsystem/
+	DESTINATION ${GMT_DATADIR}/mbsystem
+	COMPONENT MB)
+
+install (PROGRAMS 
+	${PATO_MB}/share/mbsystem/LevitusAnnual82.dat
+	${PATO_MB}/share/mbsystem/Projections.dat
+	DESTINATION ${GMT_DATADIR}/mbsystem
+	COMPONENT MB)
