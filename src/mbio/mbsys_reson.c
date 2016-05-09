@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson.c	3.00	8/20/94
- *	$Id: mbsys_reson.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_reson.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 1994-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -39,7 +39,7 @@
 #include "mb_define.h"
 #include "mbsys_reson.h"
 
-static char rcs_id[]="$Id: mbsys_reson.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_reson.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_reson_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -1045,7 +1045,7 @@ int mbsys_reson_extract_altitude(int verbose, void *mbio_ptr, void *store_ptr,
 			{
 			if (store->bath[i] != 0
 			    && store->quality[i] >= 3
-			    && fabs(store->bath_acrosstrack[i]) < xtrack_min)
+			    &&  (double)abs(store->bath_acrosstrack[i]) < xtrack_min)
 			    {
 			    xtrack_min = fabs(dacrscale * store->bath_acrosstrack[i]);
 			    bath_best = depthscale * store->bath[i];

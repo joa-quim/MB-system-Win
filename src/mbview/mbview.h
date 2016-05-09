@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbview.h	10/9/2002
- *    $Id: mbview.h 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbview.h 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c); 2002-2016 by
  *    David W. Caress (caress@mbari.org);
@@ -82,8 +82,8 @@
 #define	MBV_VIEW_ON		1
 
 /* lon lat style mode */
-#define MBV_LONLAT_DECIMAL	0
-#define	MBV_LONLAT_MINUTES	1
+#define MBV_LONLAT_DEGREESDECIMAL	0
+#define	MBV_LONLAT_DEGREESMINUTES	1
 
 /* colortable view mode defines */
 #define	MBV_COLORTABLE_NORMAL		0

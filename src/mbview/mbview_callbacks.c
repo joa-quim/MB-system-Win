@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbview_callbacks.c	10/7/2002
- *    $Id: mbview_callbacks.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbview_callbacks.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2002-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -110,7 +110,7 @@ static Cardinal 	ac;
 static Arg      	args[256];
 static char		value_text[MB_PATH_MAXLINE];
 
-static char rcs_id[]="$Id: mbview_callbacks.c 2268 2016-03-15 02:11:26Z caress $";
+static char rcs_id[]="$Id: mbview_callbacks.c 2272 2016-05-05 01:14:09Z caress $";
 
 /* function prototypes */
 /*------------------------------------------------------------------------------*/
@@ -449,7 +449,7 @@ int mbview_reset_shared(int mode)
 		}
 
 	/* global lon lat print style */
-	shared.lonlatstyle = MBV_LONLAT_MINUTES;
+	shared.lonlatstyle = MBV_LONLAT_DEGREESMINUTES;
 
 	/* site data */
 	shared.shareddata.site_mode = MBV_SITE_OFF;
@@ -3660,6 +3660,64 @@ fprintf(stderr,"do_mbview_display_utm: instance:%zu\n", instance);
 		/* draw */
 fprintf(stderr,"Calling mbview_plotlowhigh from do_mbview_display_utm\n");
 		mbview_plotlowhigh(instance);
+		}
+}
+
+/*------------------------------------------------------------------------------*/
+void
+do_mbview_annotation_degreesminutes( Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmAnyCallbackStruct *acs;
+    acs = (XmAnyCallbackStruct*)call_data;
+	size_t	instance;
+	struct mbview_world_struct *view;
+	struct mbview_struct *data;
+
+	/* get instance */
+	ac = 0;
+	XtSetArg(args[ac], XmNuserData, (XtPointer) &instance); ac++;
+	XtGetValues(w, args, ac);
+
+fprintf(stderr,"do_mbview_annotation_degreesminutes: instance:%zu\n", instance);
+
+	/* get view */
+	view = &(mbviews[instance]);
+	data = &(view->data);
+
+	/* reproject as utm if the togglebutton has been set */
+	if (XmToggleButtonGetState(view->mb3dview.mbview_toggleButton_annotation_degreesminutes))
+		{
+		shared.lonlatstyle = MBV_LONLAT_DEGREESMINUTES;
+        mbview_pick_text(instance);
+		}
+}
+
+/*------------------------------------------------------------------------------*/
+void
+do_mbview_annotation_degreesdecimal( Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmAnyCallbackStruct *acs;
+    acs = (XmAnyCallbackStruct*)call_data;
+	size_t	instance;
+	struct mbview_world_struct *view;
+	struct mbview_struct *data;
+
+	/* get instance */
+	ac = 0;
+	XtSetArg(args[ac], XmNuserData, (XtPointer) &instance); ac++;
+	XtGetValues(w, args, ac);
+
+fprintf(stderr,"do_mbview_annotation_degreesdecimal: instance:%zu\n", instance);
+
+	/* get view */
+	view = &(mbviews[instance]);
+	data = &(view->data);
+
+	/* reproject as utm if the togglebutton has been set */
+	if (XmToggleButtonGetState(view->mb3dview.mbview_toggleButton_annotation_degreesdecimal))
+		{
+		shared.lonlatstyle = MBV_LONLAT_DEGREESDECIMAL;
+        mbview_pick_text(instance);
 		}
 }
 

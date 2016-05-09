@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_grdio.c	12/10/2007
- *    $Id: mb_readwritegrd.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_readwritegrd.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2007-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -41,7 +41,7 @@
 #define ModelTypeGeographic	     2
 #define GCS_WGS_84		  4326
 
-static char rcs_id[] = "$Id: mb_readwritegrd.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mb_readwritegrd.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------------*/
 int mb_read_gmt_grd(int verbose, char *grdfile,
@@ -389,7 +389,8 @@ int mb_write_gmt_grd(int verbose,
 	int	utmzone;
 	char	NorS;
 	time_t	right_now;
-	char	date[32], user[MB_PATH_MAXLINE], *user_ptr, host[MB_PATH_MAXLINE] = {""}, *pch;
+	char	date[32], user[MB_PATH_MAXLINE], *user_ptr;
+	char	host[MB_PATH_MAXLINE] = {""}, *host_ptr;
 	int	first = MB_NO;
 	double	min = 0.0;
 	double	max = 0.0;
@@ -508,7 +509,7 @@ int mb_write_gmt_grd(int verbose,
 		strcpy(program_name, "\0");
 	right_now = time((time_t *)0);
 	strcpy(date,ctime(&right_now));
-        date[strlen(date)-1] = '\0';
+    date[strlen(date)-1] = '\0';
 	if ((user_ptr = getenv("USER")) == NULL)
 		if ((user_ptr = getenv("LOGNAME")) == NULL)
 			user_ptr = getenv("USERNAME");
@@ -519,8 +520,9 @@ int mb_write_gmt_grd(int verbose,
 	gethostname(host, MB_PATH_MAXLINE);
 	if (host[0] == '\0')		/* Don't know why but the above fails on Win. So get the same info from ENV */
 		{
-		pch = getenv("USERDOMAIN");
-		strcpy(host, pch);
+		host_ptr = getenv("USERDOMAIN");
+		if (host_ptr != NULL)
+			strcpy(host, host_ptr);
 		}
 	sprintf(remark,"\n\tProjection: %s\n\tGrid created by %s\n\tMB-system Version %s\n\tRun by <%s> on <%s> at <%s>",
 		projection,program_name,MB_VERSION,user,host,date);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_prog.c	3/23/00
- *    $Id: mbnavadjust_prog.c 2270 2016-03-25 02:15:32Z caress $
+ *    $Id: mbnavadjust_prog.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -81,7 +81,7 @@ struct swathraw
 	};
 
 /* id variables */
-static char rcs_id[] = "$Id: mbnavadjust_prog.c 2270 2016-03-25 02:15:32Z caress $";
+static char rcs_id[] = "$Id: mbnavadjust_prog.c 2272 2016-05-05 01:14:09Z caress $";
 static char program_name[] = "mbnavadjust";
 static char help_message[] =  "mbnavadjust is an interactive navigation adjustment package for swath sonar data.\n";
 static char usage_message[] = "mbnavadjust [-Iproject -V -H]";
@@ -15921,7 +15921,7 @@ int mbnavadjust_open_visualization(int which_grid)
 
 		/* read in the grd file */
 		if (status == MB_SUCCESS
-			&& mbv_file_name != NULL)
+			&& strlen(mbv_file_name) > 0)
 			status = mb_read_gmt_grd(mbna_verbose, mbv_file_name,
 							&mbv_primary_grid_projection_mode,
 							mbv_primary_grid_projection_id,

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_simrad.c	3.00	8/5/94
- *	$Id: mbsys_simrad.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_simrad.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 1994-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -48,7 +48,7 @@
 #define MBSYS_SIMRAD_C
 #include "mbsys_simrad.h"
 
-static char rcs_id[]="$Id: mbsys_simrad.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_simrad.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_simrad_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -1304,15 +1304,15 @@ int mbsys_simrad_ttimes(int verbose, void *mbio_ptr, void *store_ptr,
 		if (interleave == MB_YES)
 			{
 			if (ping->bath_mode == 12
-			    && fabs(ping->bath_acrosstrack[28])
-				< fabs(ping->bath_acrosstrack[29]))
+			    &&  abs(ping->bath_acrosstrack[28])
+				<  abs(ping->bath_acrosstrack[29]))
 			    istep = 1;
 			else if (ping->bath_mode == 13
-			    && fabs(ping->bath_acrosstrack[31])
-				< fabs(ping->bath_acrosstrack[30]))
+			    &&  abs(ping->bath_acrosstrack[31])
+				<  abs(ping->bath_acrosstrack[30]))
 			    istep = 1;
-			else if (fabs(ping->bath_acrosstrack[*nbeams/2-1])
-			    < fabs(ping->bath_acrosstrack[*nbeams/2]))
+			else if ( abs(ping->bath_acrosstrack[*nbeams/2-1])
+			    <  abs(ping->bath_acrosstrack[*nbeams/2]))
 			    istep = 1;
 			else
 			    istep = 0;
@@ -2746,15 +2746,15 @@ int mbsys_simrad_makess(int verbose, void *mbio_ptr, void *store_ptr,
 		if (interleave == MB_YES)
 			{
 			if (ping->bath_mode == 12
-			    && fabs(ping->bath_acrosstrack[28])
-				< fabs(ping->bath_acrosstrack[29]))
+			    &&  abs(ping->bath_acrosstrack[28])
+				<  abs(ping->bath_acrosstrack[29]))
 			    istep = 1;
 			else if (ping->bath_mode == 13
-			    && fabs(ping->bath_acrosstrack[31])
-				< fabs(ping->bath_acrosstrack[30]))
+			    &&  abs(ping->bath_acrosstrack[31])
+				<  abs(ping->bath_acrosstrack[30]))
 			    istep = 1;
-			else if (fabs(ping->bath_acrosstrack[ping->beams_bath/2-1])
-			    < fabs(ping->bath_acrosstrack[ping->beams_bath/2]))
+			else if ( abs(ping->bath_acrosstrack[ping->beams_bath/2-1])
+			    <  abs(ping->bath_acrosstrack[ping->beams_bath/2]))
 			    istep = 1;
 			else
 			    istep = 0;

@@ -1325,19 +1325,10 @@ gsfUnpackStream (int handle, int desiredRecord, gsfDataID *dataID, gsfRecords *r
                     gsfError = GSF_READ_TO_END_OF_FILE;
                 else
                     gsfError = GSF_PARTIAL_RECORD_AT_END_OF_FILE;
-# ifdef WIN32
-				/* JL. On Windows the value of the external variable gsfError is not visible in mbr_gsfgenmb.c so I return it. */
-				return gsfError;
-#else
                 return (-1);
-#endif
             }
             gsfError = GSF_READ_ERROR;
-# ifdef WIN32
-			return gsfError;
-#else
             return (-1);
-#endif
         }
 
         /* convert from gsf to host byte order, gsf byte order = network byte order */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_hysweep.c	3.00	12/23/2011
- *	$Id: mbsys_hysweep.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_hysweep.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2011-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -39,7 +39,7 @@
 /* turn on debug statements here */
 /* #define MSYS_HYSWEEP_DEBUG 1 */
 
-static char rcs_id[]="$Id: mbsys_hysweep.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_hysweep.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_hysweep_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -2510,7 +2510,7 @@ int mbsys_hysweep_makess(int verbose, void *mbio_ptr, void *store_ptr,
 										+ store->RMBint_heave;
 				nbathsort++;
 
-				if (found == MB_NO || fabs(store->RMB_sounding_across[i] < minxtrack))
+				if (found == MB_NO || fabs(store->RMB_sounding_across[i]) < minxtrack)
 					{
 					minxtrack = fabs(store->RMB_sounding_across[i]);
 					iminxtrack = i;

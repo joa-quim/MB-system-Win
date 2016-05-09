@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_absorption.c		2/10/2008
- *    $Id: mb_absorption.c 2264 2016-02-02 19:59:53Z caress $
+ *    $Id: mb_absorption.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2008-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -210,7 +210,6 @@ int mb_potential_temperature(int verbose,
 {
 	char	*function_name = "mb_potential_temperature";
 	int	status = MB_SUCCESS;
-	double	Pn, Pd;
 		
 	/* Polynomial coefficients */
 	double	a1 = 8.65483913395442e-6;

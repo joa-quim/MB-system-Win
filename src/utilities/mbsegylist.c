@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsegylist.c	5/29/2004
- *    $Id: mbsegylist.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbsegylist.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -58,7 +58,7 @@ int printsimplevalue(int verbose,
 	int ascii, int *invert, int *flipsign, int *error);
 int printNaN(int verbose, int ascii, int *invert, int *flipsign, int *error);
 
-static char rcs_id[] = "$Id: mbsegylist.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbsegylist.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 	int	first_u = MB_YES;
 	time_t	time_u;
 	time_t	time_u_ref;
-	double	time_interval;
+	double	time_interval = 0.0;
 	double	minutes;
 	int	degrees;
 	char	hemi;
@@ -624,12 +624,13 @@ int main (int argc, char **argv)
 						break;
 					case 'V': /* time in seconds since last ping */
 					case 'v':
+						time_interval = time_d - time_d_old;
 						if (ascii == MB_YES)
 						    {
 						    if ( fabs(time_interval) > 100. )
-							printf("%g",time_interval);
+								printf("%g",time_interval);
 						    else
-							printf("%7.3f",time_interval);
+								printf("%7.3f",time_interval);
 						    }
 						else
 						    {

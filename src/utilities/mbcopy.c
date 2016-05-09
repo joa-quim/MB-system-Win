@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbcopy.c	2/4/93
- *    $Id: mbcopy.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbcopy.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -97,7 +97,7 @@ int mbcopy_reson8k_to_gsf(int verbose,
 		void *ombio_ptr,
 		int *error);
 
-static char rcs_id[] = "$Id: mbcopy.c 2268 2016-03-15 02:11:26Z caress $";
+static char rcs_id[] = "$Id: mbcopy.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -2519,15 +2519,15 @@ int mbcopy_simrad_to_simrad2(int verbose,
 			if (interleave == MB_YES)
 				{
 				if (iping->bath_mode == 12
-				    && fabs(iping->bath_acrosstrack[28])
-					< fabs(iping->bath_acrosstrack[29]))
+				    && abs(iping->bath_acrosstrack[28])
+					< abs(iping->bath_acrosstrack[29]))
 				    istep = 1;
 				else if (iping->bath_mode == 13
-				    && fabs(iping->bath_acrosstrack[31])
-					< fabs(iping->bath_acrosstrack[30]))
+				    && abs(iping->bath_acrosstrack[31])
+					< abs(iping->bath_acrosstrack[30]))
 				    istep = 1;
-				else if (fabs(iping->bath_acrosstrack[oping->png_nbeams/2-1])
-				    < fabs(iping->bath_acrosstrack[oping->png_nbeams/2]))
+				else if (abs(iping->bath_acrosstrack[oping->png_nbeams/2-1])
+				    < abs(iping->bath_acrosstrack[oping->png_nbeams/2]))
 				    istep = 1;
 				else
 				    istep = 0;

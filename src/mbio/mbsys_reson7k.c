@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson7k.c	3.00	3/23/2004
- *	$Id: mbsys_reson7k.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_reson7k.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -44,7 +44,7 @@
 /* turn on debug statements here */
 /* #define MSYS_RESON7KR_DEBUG 1 */
 
-static char svn_id[]="$Id: mbsys_reson7k.c 2261 2016-01-07 01:49:22Z caress $";
+static char svn_id[]="$Id: mbsys_reson7k.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_reson7k_zero7kheader(int verbose, s7k_header	*header,
@@ -11457,7 +11457,7 @@ int mbsys_reson7k_makess(int verbose, void *mbio_ptr, void *store_ptr,
 				bathsort[nbathsort] = bathymetry->depth[i] + bathymetry->vehicle_height;
 				nbathsort++;
 
-				if (found == MB_NO || fabs(bathymetry->acrosstrack[i] < minxtrack))
+				if (found == MB_NO || fabs(bathymetry->acrosstrack[i]) < minxtrack)
 					{
 					minxtrack = fabs(bathymetry->acrosstrack[i]);
 					iminxtrack = i;

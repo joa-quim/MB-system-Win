@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_jstar.c	10/4/94
- *	$Id: mbsys_jstar.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_jstar.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2005-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -39,7 +39,7 @@
 #include "mb_segy.h"
 #include "mbsys_jstar.h"
 
-static char rcs_id[]="$Id: mbsys_jstar.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_jstar.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_jstar_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -1223,7 +1223,7 @@ int mbsys_jstar_insert(int verbose, void *mbio_ptr, void *store_ptr,
 		if (altitude >= 0.0 && xtrackmax >= 0.0 && jxtrackmax != nss / 2)
 			{
 			range = sqrt(xtrackmax * xtrackmax + altitude * altitude);
-			pixelsize = (range - altitude) / (fabs(jxtrackmax - nss / 2));
+			pixelsize = (range - altitude) / (abs(jxtrackmax - nss / 2));
 			nsamples = (int)MIN((double)(nss/2), (range / pixelsize));
 			}
 		else

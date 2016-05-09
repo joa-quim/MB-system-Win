@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbeditviz_prog.c		5/1/2007
- *    $Id: mbeditviz_prog.c 2267 2016-02-11 19:58:21Z caress $
+ *    $Id: mbeditviz_prog.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2007-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -52,7 +52,7 @@
 #include "mbeditviz.h"
 
 /* id variables */
-static char rcs_id[] = "$Id: mbeditviz_prog.c 2267 2016-02-11 19:58:21Z caress $";
+static char rcs_id[] = "$Id: mbeditviz_prog.c 2272 2016-05-05 01:14:09Z caress $";
 static char program_name[] = "MBeditviz";
 static char help_message[] = "MBeditviz is a bathymetry editor and patch test tool.";
 static char usage_message[] = "mbeditviz [-H -T -V]";
@@ -966,7 +966,7 @@ fprintf(stderr,"MEMORY FAILURE in mbeditviz_load_file\n");
 						ping->beamflagorg[ibeam] = beamflag[ibeam];
 						ping->beamcolor[ibeam] = MBV_COLOR_BLACK;
 						if (!mb_beam_check_flag_null(ping->beamflag[ibeam])
-							&& (isnan(bath[ibeam] || isnan(bathacrosstrack[ibeam] || isnan(bathalongtrack[ibeam])))))
+							&& (isnan(bath[ibeam]) || isnan(bathacrosstrack[ibeam]) || isnan(bathalongtrack[ibeam])))
 							
 {							ping->beamflag[ibeam] = MB_FLAG_NULL;
 fprintf(stderr,"\nEncountered NaN value in swath data from file: %s\n",swathfile);

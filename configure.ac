@@ -1,6 +1,6 @@
 dnl--------------------------------------------------------------------
 dnl    The MB-system:	configure.ac	12/7/2011
-dnl    $Id: configure.ac 2271 2016-04-01 19:54:30Z caress $
+dnl    $Id: configure.ac 2274 2016-05-05 16:00:39Z caress $
 dnl
 dnl    Copyright (c) 2011-2016 by
 dnl    D. W. Caress (caress@lamont.ldgo.columbia.edu)
@@ -11,19 +11,19 @@ dnl
 dnl    See README file for copying and redistribution conditions.
 dnl--------------------------------------------------------------------
 
-dnl Require automake 2.65 or later
-AC_PREREQ([2.65])
+dnl Require automake 2.69 or later
+AC_PREREQ([2.69])
 
 dnl Disable configure caching
 define([AC_CACHE_LOAD], )
 define([AC_CACHE_SAVE], )
 
 dnl Initialize and set version and version date
-AC_INIT([mbsystem],[5.5.2271],[http://listserver.mbari.org/sympa/arc/mbsystem],[mbsystem],[http://www.mbari.org/data/mbsystem/])
+AC_INIT([mbsystem],[5.5.2274],[http://listserver.mbari.org/sympa/arc/mbsystem],[mbsystem],[http://www.mbari.org/data/mbsystem/])
 
 AC_CONFIG_MACRO_DIR(m4)
 AC_LANG(C)
-AC_DEFINE(VERSION_DATE, "1 April 2016", [Set VERSION_DATE define in mb_config.h])
+AC_DEFINE(VERSION_DATE, "5 May 2016", [Set VERSION_DATE define in mb_config.h])
 
 dnl Check system arch
 AC_CANONICAL_HOST
@@ -32,7 +32,7 @@ AC_DISABLE_OPTION_CHECKING
 AS_ECHO([" "])
 AS_ECHO(["------------------------------------------------------------------------------"])
 AS_ECHO(["    The MB-system:	configure	12/7/2011"])
-AS_ECHO(["    $Id: configure.ac 2271 2016-04-01 19:54:30Z caress $"])
+AS_ECHO(["    $Id: configure.ac 2274 2016-05-05 16:00:39Z caress $"])
 AS_ECHO([" "])
 AS_ECHO(["    Copyright (c) 2011-2016 by"])
 AS_ECHO(["    D. W. Caress (caress@lamont.ldgo.columbia.edu)"])
