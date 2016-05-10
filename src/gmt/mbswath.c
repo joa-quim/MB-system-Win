@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbswath.c	5/30/93
- *    $Id: mbswath.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbswath.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -829,22 +829,23 @@ int GMT_mbswath (void *V_API, int mode, void *args)
 	    {
 	    if ((status = mb_datalist_open(verbose, &Ctrl->datalist,
 					    Ctrl->I.inputfile, MB_DATALIST_LOOK_UNSET, &error)) != MB_SUCCESS)
-		{
-		error = MB_ERROR_OPEN_FAIL;
-		fprintf(stderr,"\nUnable to open data list file: %s\n", Ctrl->I.inputfile);
-		fprintf(stderr,"\nProgram <%s> Terminated\n", program_name);
-		exit(error);
-		}
+			{
+			error = MB_ERROR_OPEN_FAIL;
+			fprintf(stderr,"\nUnable to open data list file: %s\n", Ctrl->I.inputfile);
+			fprintf(stderr,"\nProgram <%s> Terminated\n", program_name);
+			exit(error);
+			}
 	    if ((status = mb_datalist_read(verbose, Ctrl->datalist,
 			     file, &format, &Ctrl->file_weight, &error))
 			    == MB_SUCCESS)
-		read_data = MB_YES;
+			read_data = MB_YES;
 	    else
-		read_data = MB_NO;
+			read_data = MB_NO;
 	    }
 	else
 	    {
 	    strcpy(file, Ctrl->I.inputfile);
+		format = Ctrl->F.format;
 	    read_data = MB_YES;
 	    }
 

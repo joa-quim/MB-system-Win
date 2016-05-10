@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbviewprivate.h	9/24/2003
- *    $Id: mbviewprivate.h 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbviewprivate.h 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2003-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -517,6 +517,8 @@ void do_mbview_projection_popdown( Widget w, XtPointer client_data, XtPointer ca
 void do_mbview_display_spheroid( Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbview_display_geographic( Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbview_display_utm( Widget w, XtPointer client_data, XtPointer call_data);
+void do_mbview_annotation_degreesminutes( Widget w, XtPointer client_data, XtPointer call_data);
+void do_mbview_annotation_degreesdecimal( Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbview_glwda_expose( Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbview_glwda_resize( Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbview_glwda_input( Widget w, XtPointer client_data, XtPointer call_data);

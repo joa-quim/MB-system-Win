@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_sb.c	2/26/93
- *	$Id: mbsys_sb.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_sb.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -43,7 +43,7 @@
 #include "mb_define.h"
 #include "mbsys_sb.h"
 
-static char rcs_id[]="$Id: mbsys_sb.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_sb.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_sb_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -806,9 +806,9 @@ int mbsys_sb_extract_altitude(int verbose, void *mbio_ptr, void *store_ptr,
 		    for (i=0;i<mb_io_ptr->beams_bath_max;i++)
 			{
 			if (store->deph[i] > 0.0
-			    && fabs(store->dist[i]) < xtrack_min)
+			    && (double)abs(store->dist[i]) < xtrack_min)
 			    {
-			    xtrack_min = fabs(store->dist[i]);
+			    xtrack_min = (double)abs(store->dist[i]);
 			    bath_best = store->deph[i];
 			    }
 			}
@@ -819,9 +819,9 @@ int mbsys_sb_extract_altitude(int verbose, void *mbio_ptr, void *store_ptr,
 		    for (i=0;i<mb_io_ptr->beams_bath_max;i++)
 			{
 			if (store->deph[i] < 0.0
-			    && fabs(store->dist[i]) < xtrack_min)
+			    && (double)abs(store->dist[i]) < xtrack_min)
 			    {
-			    xtrack_min = fabs(store->dist[i]);
+			    xtrack_min = (double)abs(store->dist[i]);
 			    bath_best = -store->deph[i];
 			    }
 			}

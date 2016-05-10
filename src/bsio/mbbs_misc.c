@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbbs_misc.c	3/3/2014
- *	$Id: mbbs_misc.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbbs_misc.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -35,13 +35,14 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifndef WIN32
-#include <sys/time.h>		/* Why this include? time.h is included by mbbs_defines.h */
-#endif
 #include <math.h>
 
 #include "mbbs_defines.h"
 #include "mbbs_mem.h"
+#ifdef WIN32
+#include <float.h>
+#define isnan _isnan
+#endif
 
 int
 mbbs_pngdatabufsz(Ping *png, unsigned long long *pngsz)

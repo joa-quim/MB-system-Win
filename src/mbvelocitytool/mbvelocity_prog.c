@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:    mbvelocitytool.c        6/6/93
- *    $Id: mbvelocity_prog.c 2266 2016-02-11 19:01:33Z caress $
+ *    $Id: mbvelocity_prog.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -51,7 +51,7 @@
 #include "mbvelocity.h"
 
 /* id variables */
-static char rcs_id[] = "$Id: mbvelocity_prog.c 2266 2016-02-11 19:01:33Z caress $";
+static char rcs_id[] = "$Id: mbvelocity_prog.c 2272 2016-05-05 01:14:09Z caress $";
 static char program_name[] = "MBVELOCITYTOOL";
 static char help_message[] = "MBVELOCITYTOOL is an interactive water velocity profile editor  \nused to examine multiple water velocity profiles and to create  \nnew water velocity profiles which can be used for the processing  \nof multibeam sonar data.  In general, this tool is used to  \nexamine water velocity profiles obtained from XBTs, CTDs, or  \ndatabases, and to construct new profiles consistent with these  \nvarious sources of information.";
 static char usage_message[] = "mbvelocitytool [-Byr/mo/da/hr/mn/sc -Eyr/mo/da/hr/mn/sc \n\t-Fformat -Ifile -Ssvpfile -Wsvpfile -V -H]";
@@ -1140,7 +1140,10 @@ int mbvt_save_residuals(char *file)
 			rr = sqrt(residual_acrosstrack[i] * residual_acrosstrack[i]
 					  + (residual_altitude[i] + residual[i]) * (residual_altitude[i] + residual[i]));
 			xx = copysign(sqrt(rr * rr - residual_altitude[i] * residual_altitude[i]), residual_acrosstrack[i]);
-			dangle = asin(residual_acrosstrack[i] / rr) - asin(xx / rr);
+			if (rr > 0.0)
+				dangle = asin(residual_acrosstrack[i] / rr) - asin(xx / rr);
+			else
+				dangle = 0.0;
 		    fprintf(fp," %4d  %9.3f  %9.3f\n",
 				i, angle[i], dangle);
 			}

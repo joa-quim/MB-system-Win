@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_proj.c	7/16/2002
- *    $Id: mb_proj.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_proj.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2002-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -38,6 +38,7 @@
 /* standard include files */
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 /* mbio include files */
@@ -45,7 +46,13 @@
 #include "mb_define.h"
 #include "proj_api.h"
 
-static char rcs_id[]="$Id: mb_proj.c 2261 2016-01-07 01:49:22Z caress $";
+#ifndef WIN32
+#include "projections.h"
+#else
+char *GMT_runtime_bindir_win32 (char *result);
+#endif
+
+static char rcs_id[]="$Id: mb_proj.c 2272 2016-05-05 01:14:09Z caress $";
 
 #ifdef WIN32
 char *GMT_runtime_bindir_win32 (char *result);
@@ -87,6 +94,20 @@ int mb_proj_init(int verbose,
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       projection: %s\n",projection);
 		}
+
+	/* Normally the header file projections.h sets the location of the
+		projections.dat file in a string projectionfile, but on Windows instead
+		use GMT constructs to find the path to the bin directory and from it,
+		the location of the Projections.dat file.
+		This construct has been defined by Joaquim Luis. */
+#ifdef WIN32
+	GMT_runtime_bindir_win32 (projectionfile);
+	pch = strrchr(projectionfile, '\\');		/* Seek for the last '\' or '/'. One of them must exist. */
+	if (pch == NULL)
+		pch = strrchr(projectionfile, '/');
+	pch[0] = '\0';
+	strcat(projectionfile, "\\share\\mbsystem\\Projections.dat");
+#endif
 
 	/* check the existence of the projection database */
 	if ((fstat = stat(projectionfile, &file_status)) == 0

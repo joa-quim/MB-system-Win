@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbauvloglist.c	8/14/2006
- *    $Id: mbauvloglist.c 2264 2016-02-02 19:59:53Z caress $
+ *    $Id: mbauvloglist.c 2272 2016-05-05 01:14:09Z caress $
  *
  *    Copyright (c) 2006-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -62,7 +62,7 @@
 #define OUTPUT_MODE_CSV		1
 #define OUTPUT_MODE_BINARY	2
 
-static char rcs_id[] = "$Id: mbauvloglist.c 2264 2016-02-02 19:59:53Z caress $";
+static char rcs_id[] = "$Id: mbauvloglist.c 2272 2016-05-05 01:14:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -378,14 +378,15 @@ int main (int argc, char **argv)
 				nav_ok = MB_YES;
 			else
 				nav_ok = MB_NO;
-                        if (nav_num > 0 && nav_time_d[nav_num] <= nav_time_d[nav_num-1])
-                                nav_ok = MB_NO;
+            if (nav_num > 0 && nav_time_d[nav_num] <= nav_time_d[nav_num-1])
+                nav_ok = MB_NO;
 			if (nav_ok == MB_YES)
 			    nav_num++;
 			}
 		fclose(fp);
  		}
-fprintf(stderr,"%d %d records read from nav file %s\n",nav_alloc,nav_num,nav_file);
+	if (nav_merge == MB_YES)
+		fprintf(stderr,"%d %d records read from nav file %s\n",nav_alloc,nav_num,nav_file);
 		
 	/* open the input file */
 	if ((fp = fopen(file, "r")) == NULL)
