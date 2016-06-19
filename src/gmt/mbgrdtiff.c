@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgrdtiff.c	5/30/93
- *    $Id: mbgrdtiff.c 2272 2016-05-05 01:14:09Z caress $
+ *    $Id: mbgrdtiff.c 2275 2016-05-18 01:58:45Z caress $
  *
  *    Copyright (c) 1999-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -823,11 +823,7 @@ int GMT_mbgrdtiff (void *V_API, int mode, void *args)
 	
 	/* Determine if grid is to be projected */
 
-#if GMT_MINOR_VERSION > 2		/* We are at 5.3.X and above */
 	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
-#else
-	need_to_project = (GMT_IS_NONLINEAR_GRATICULE (GMT) || Ctrl->E.dpi > 0);
-#endif
 	if (need_to_project) GMT_Report (API, GMT_MSG_DEBUG, "Projected grid is non-orthogonal, nonlinear, or dpi was changed\n");
 	
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
@@ -1026,12 +1022,8 @@ int GMT_mbgrdtiff (void *V_API, int mode, void *args)
 				
 				if (P && gray_only)		/* Color table only has grays, pick r */
 					bitimage_8[byte++] = gmt_M_u255 (rgb[0]);
-				else if (Ctrl->M.active)	/* Convert rgb to gray using the GMT_YIQ transformation */
-#if GMT_MINOR_VERSION > 2		/* We are at 5.3.X and above */
+				else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
 					bitimage_8[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
-#else
-					bitimage_8[byte++] = gmt_M_u255 (GMT_YIQ (rgb));
-#endif
 				else {
 					for (k = 0; k < 3; k++) bitimage_24[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
 					if (Ctrl->Q.active && index != GMT_NAN - 3) /* Keep track of all r/g/b combinations used except for NaN */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_io.h	4/18/2014
- *    $Id: mbnavadjust_io.h 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbnavadjust_io.h 2275 2016-05-18 01:58:45Z caress $
  
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -121,7 +121,8 @@
 
 #define MBNA_INTERATION_MAX		10000
 #define MBNA_CONVERGENCE		0.000001
-#define MBNA_SMALL			0.0001
+#define MBNA_SMALL			0.1
+#define MBNA_ZSMALL			0.001
 
 /* minimum initial sigma_crossing (meters) */
 #define	SIGMA_MINIMUM	0.1

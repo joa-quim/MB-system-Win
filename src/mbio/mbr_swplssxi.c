@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_swplssxi.c	5/6/2013
- *	$Id: mbr_swplssxi.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbr_swplssxi.c 2275 2016-05-18 01:58:45Z caress $
  *
  *    Copyright (c) 2013-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 /* mbio include files */
 #include "mb_status.h"
@@ -64,7 +65,7 @@ int mbr_wt_swplssxi(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_swplssxi_rd_data(int verbose, void *mbio_ptr, void *store_ptr,
 	int *error);
 
-static char rcs_id[] = "$Id: mbr_swplssxi.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbr_swplssxi.c 2275 2016-05-18 01:58:45Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_swplssxi(int verbose, void *mbio_ptr, int *error)

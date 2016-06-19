@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbdumpesf.c	3/20/2008
- *    $Id: mbdumpesf.c 2265 2016-02-11 08:10:42Z caress $
+ *    $Id: mbdumpesf.c 2275 2016-05-18 01:58:45Z caress $
  *
  *    Copyright (c) 2008-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -39,7 +40,7 @@
 #include "mb_process.h"
 #include "mb_swap.h"
 
-static char rcs_id[] = "$Id: mbdumpesf.c 2265 2016-02-11 08:10:42Z caress $";
+static char rcs_id[] = "$Id: mbdumpesf.c 2275 2016-05-18 01:58:45Z caress $";
 
 #define OUTPUT_TEXT	0
 #define OUTPUT_ESF	1

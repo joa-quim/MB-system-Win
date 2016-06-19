@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbmakeplatform.c	9/5/2015
- *    $Id: mbmakeplatform.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbmakeplatform.c 2276 2016-06-11 05:17:46Z caress $
  *
  *    Copyright (c) 2015-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -22,7 +22,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbmakeplatform.c 2261 2016-01-07 01:49:22Z caress $";
+static char version_id[] = "$Id: mbmakeplatform.c 2276 2016-06-11 05:17:46Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -850,12 +850,12 @@ int main (int argc, char **argv)
 						status = mb_read_ping(verbose, mbio_ptr, store_ptr,
 									&kind, &error);
 				
-						/* if platform_source kind then extract data */
+						/* if platform_source kind then extract platform definition */
 						if (error <= MB_ERROR_NO_ERROR
 							&& kind == platform_source
 							&& platform_source != MB_DATA_NONE)
 							{
-							/* extract svp */
+							/* extract platform */
 							status = mb_extract_platform(verbose, mbio_ptr, store_ptr,
 										&kind, (void **) &platform,
 										&error);

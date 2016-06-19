@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbbackangle.c	1/6/95
- *    $Id: mbbackangle.c 2266 2016-02-11 19:01:33Z caress $
+ *    $Id: mbbackangle.c 2276 2016-06-11 05:17:46Z caress $
  *
  *    Copyright (c) 1995-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -83,7 +83,7 @@ int output_model(int verbose, FILE *tfp,
 	int *nmean, double *mean, double *sigma,
 	int *error);
 
-static char rcs_id[] = "$Id: mbbackangle.c 2266 2016-02-11 19:01:33Z caress $";
+static char rcs_id[] = "$Id: mbbackangle.c 2276 2016-06-11 05:17:46Z caress $";
 char program_name[] = "mbbackangle";
 
 /*--------------------------------------------------------------------*/
@@ -132,8 +132,8 @@ by MBprocess.";
 	char	swathfile[MB_PATH_MAXLINE];
 	char	amptablefile[MB_PATH_MAXLINE];
 	char	sstablefile[MB_PATH_MAXLINE];
-	FILE	*atfp;
-	FILE	*stfp;
+	FILE	*atfp = NULL;
+	FILE	*stfp = NULL;
 	int	beams_bath;
 	int	beams_amp;
 	int	pixels_ss;
@@ -167,12 +167,12 @@ by MBprocess.";
 	/* slope calculation variables */
 	int	nsmooth = 5;
 	int	ndepths;
-	double	*depths;
-	double	*depthsmooth;
-	double	*depthacrosstrack;
+	double	*depths = NULL;
+	double	*depthsmooth = NULL;
+	double	*depthacrosstrack = NULL;
 	int	nslopes;
-	double	*slopes;
-	double	*slopeacrosstrack;
+	double	*slopes = NULL;
+	double	*slopeacrosstrack = NULL;
 
 	/* topography parameters */
 	struct mbba_grid_struct grid;

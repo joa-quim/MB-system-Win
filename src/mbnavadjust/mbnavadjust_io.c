@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_io.c	3/23/00
- *    $Id: mbnavadjust_io.c 2269 2016-03-23 07:32:42Z caress $
+ *    $Id: mbnavadjust_io.c 2275 2016-05-18 01:58:45Z caress $
  *
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -59,7 +59,7 @@ extern int isnanf(float x);
 #define check_fnan(x) ((x) != (x))
 #endif
 
-static char version_id[] = "$Id: mbnavadjust_io.c 2269 2016-03-23 07:32:42Z caress $";
+static char version_id[] = "$Id: mbnavadjust_io.c 2275 2016-05-18 01:58:45Z caress $";
 static char program_name[] = "mbnavadjust i/o functions";
 
 /*--------------------------------------------------------------------*/
@@ -79,6 +79,7 @@ int mbnavadjust_new_project(int verbose, char *projectpath,
 	char	*function_name = "mbnavadjust_new_project";
 	int	status = MB_SUCCESS;
 	char	*slashptr, *nameptr;
+    char    *result;
 	struct stat statbuf;
 
 	/* print input debug statements */
@@ -128,7 +129,7 @@ int mbnavadjust_new_project(int verbose, char *projectpath,
                 strcpy(project->name,nameptr);
 		if (strlen(projectpath) == strlen(nameptr))
 			{
-			getcwd(project->path, MB_PATH_MAXLINE);
+			result = getcwd(project->path, MB_PATH_MAXLINE);
 			strcat(project->path, "/");
 			}
                 else
@@ -194,7 +195,6 @@ int mbnavadjust_new_project(int verbose, char *projectpath,
                         project->logfp = NULL;
                         project->precision = SIGMA_MINIMUM;
                         project->smoothing = MBNA_SMOOTHING_DEFAULT;
-                        project->zoffsetwidth = 5.0;
 
                         /* create data directory */
 #ifdef _WIN32
@@ -313,7 +313,7 @@ int mbnavadjust_read_project(int verbose, char *projectpath,
         strcpy(project->name,nameptr);
         if (strlen(projectpath) == strlen(nameptr))
             {
-            getcwd(project->path, MB_PATH_MAXLINE);
+            result = getcwd(project->path, MB_PATH_MAXLINE);
             strcat(project->path, "/");
             }
         else
@@ -1082,23 +1082,17 @@ fprintf(stderr, "read failed on tie: %s\n", buffer);
                                     status = MB_FAILURE;
 fprintf(stderr, "read failed on tie covariance: %s\n", buffer);
                                     }
-                                if (tie->sigmar1 <= 0.0)
+                                if (tie->sigmar1 <= MBNA_SMALL)
                                     {
-                                    tie->sigmax1[0] = 1.0;
-                                    tie->sigmax1[1] = 0.0;
-                                    tie->sigmax1[2] = 0.0;
+                                    tie->sigmar3 = MBNA_SMALL;
                                     }
-                                if (tie->sigmar2 <= 0.0)
+                                if (tie->sigmar2 <= MBNA_SMALL)
                                     {
-                                    tie->sigmax2[0] = 0.0;
-                                    tie->sigmax2[1] = 1.0;
-                                    tie->sigmax2[2] = 0.0;
-                                    }
-                                if (tie->sigmar3 <= 0.0)
+                                    tie->sigmar3 = MBNA_SMALL;
+                                     }
+                                if (tie->sigmar3 <= MBNA_ZSMALL)
                                     {
-                                    tie->sigmax3[0] = 0.0;
-                                    tie->sigmax3[1] = 0.0;
-                                    tie->sigmax3[2] = 1.0;
+                                    tie->sigmar3 = MBNA_ZSMALL;
                                     }
                                 }
                             else if (status == MB_SUCCESS)

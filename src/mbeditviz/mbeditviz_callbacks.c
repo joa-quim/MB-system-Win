@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbeditviz_callbacks.c		4/27/2007
- *    $Id: mbeditviz_callbacks.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbeditviz_callbacks.c 2276 2016-06-11 05:17:46Z caress $
  *
  *    Copyright (c) 2007-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -1979,6 +1979,7 @@ fprintf(stderr,"do_mbeditviz_pickarea_notify:%zu\n", instance);
 	mbev_status = mb3dsoundings_set_info_notify(mbev_verbose, &mbeditviz_mb3dsoundings_info, &mbev_error);
 	mbev_status = mb3dsoundings_set_bias_notify(mbev_verbose, &mbeditviz_mb3dsoundings_bias, &mbev_error);
 	mbev_status = mb3dsoundings_set_biasapply_notify(mbev_verbose, &mbeditviz_mb3dsoundings_biasapply, &mbev_error);
+	mbev_status = mb3dsoundings_set_flagsparsevoxels_notify(mbev_verbose, &mbeditviz_mb3dsoundings_flagsparsevoxels, &mbev_error);
 	mbev_status = mb3dsoundings_set_colorsoundings_notify(mbev_verbose, &mbeditviz_mb3dsoundings_colorsoundings, &mbev_error);
 	mbev_status = mb3dsoundings_set_optimizebiasvalues_notify(mbev_verbose, &mbeditviz_mb3dsoundings_optimizebiasvalues, &mbev_error);
 
@@ -2010,6 +2011,7 @@ fprintf(stderr,"do_mbeditviz_pickregion_notify:%zu\n", instance);
 	mbev_status = mb3dsoundings_set_info_notify(mbev_verbose, &mbeditviz_mb3dsoundings_info, &mbev_error);
 	mbev_status = mb3dsoundings_set_bias_notify(mbev_verbose, &mbeditviz_mb3dsoundings_bias, &mbev_error);
 	mbev_status = mb3dsoundings_set_biasapply_notify(mbev_verbose, &mbeditviz_mb3dsoundings_biasapply, &mbev_error);
+	mbev_status = mb3dsoundings_set_flagsparsevoxels_notify(mbev_verbose, &mbeditviz_mb3dsoundings_flagsparsevoxels, &mbev_error);
 	mbev_status = mb3dsoundings_set_colorsoundings_notify(mbev_verbose, &mbeditviz_mb3dsoundings_colorsoundings, &mbev_error);
 	mbev_status = mb3dsoundings_set_optimizebiasvalues_notify(mbev_verbose, &mbeditviz_mb3dsoundings_optimizebiasvalues, &mbev_error);
 
@@ -2088,6 +2090,7 @@ fprintf(stderr,"do_mbeditviz_picknav_notify:%zu\n", instance);
 	mbev_status = mb3dsoundings_set_info_notify(mbev_verbose, &mbeditviz_mb3dsoundings_info, &mbev_error);
 	mbev_status = mb3dsoundings_set_bias_notify(mbev_verbose, &mbeditviz_mb3dsoundings_bias, &mbev_error);
 	mbev_status = mb3dsoundings_set_biasapply_notify(mbev_verbose, &mbeditviz_mb3dsoundings_biasapply, &mbev_error);
+	mbev_status = mb3dsoundings_set_flagsparsevoxels_notify(mbev_verbose, &mbeditviz_mb3dsoundings_flagsparsevoxels, &mbev_error);
 	mbev_status = mb3dsoundings_set_colorsoundings_notify(mbev_verbose, &mbeditviz_mb3dsoundings_colorsoundings, &mbev_error);
 	mbev_status = mb3dsoundings_set_optimizebiasvalues_notify(mbev_verbose, &mbeditviz_mb3dsoundings_optimizebiasvalues, &mbev_error);
 

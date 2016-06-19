@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson.c	3.00	8/20/94
- *	$Id: mbsys_reson.c 2272 2016-05-05 01:14:09Z caress $
+ *	$Id: mbsys_reson.c 2276 2016-06-11 05:17:46Z caress $
  *
  *    Copyright (c) 1994-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 /* mbio include files */
 #include "mb_status.h"
@@ -39,7 +40,7 @@
 #include "mb_define.h"
 #include "mbsys_reson.h"
 
-static char rcs_id[]="$Id: mbsys_reson.c 2272 2016-05-05 01:14:09Z caress $";
+static char rcs_id[]="$Id: mbsys_reson.c 2276 2016-06-11 05:17:46Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_reson_alloc(int verbose, void *mbio_ptr, void **store_ptr,

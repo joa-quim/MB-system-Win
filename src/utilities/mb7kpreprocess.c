@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb7kpreprocess.c	10/12/2005
- *    $Id: mb7kpreprocess.c 2269 2016-03-23 07:32:42Z caress $
+ *    $Id: mb7kpreprocess.c 2275 2016-05-18 01:58:45Z caress $
  *
  *    Copyright (c) 2005-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -65,7 +65,7 @@
 #define	MB7KPREPROCESS_KLUGE_FIXTIMEJUMPBEAMEDITS	7
 #define	MB7KPREPROCESS_KLUGE_DONOTRECALCULATEBATHY	8
 #define	MB7KPREPROCESS_KLUGE_BEAMPATTERNSNELLTWEAK	9
-static char rcs_id[] = "$Id: mb7kpreprocess.c 2269 2016-03-23 07:32:42Z caress $";
+static char rcs_id[] = "$Id: mb7kpreprocess.c 2275 2016-05-18 01:58:45Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -1625,11 +1625,11 @@ sonardepth_sonardepth[nsonardepth]);*/
 		while ((result = fgets(buffer,MB_PATH_MAXLINE,tfp)) == buffer)
 			{
 			if (buffer[0] != '#')
-			{
-			/* read the time and time lag pair */
-			if (sscanf(buffer,"%lf %lf",&timelag_time_d[ntimelag],&timelag_model[ntimelag]) == 2)
-				ntimelag++;
-			}
+				{
+				/* read the time and time lag pair */
+				if (sscanf(buffer,"%lf %lf",&timelag_time_d[ntimelag],&timelag_model[ntimelag]) == 2)
+					ntimelag++;
+				}
 			}
 		fclose(tfp);
 
@@ -4421,7 +4421,7 @@ fprintf(stderr,"Fixing timestamp jumps in %d Reson data\n", nbatht);
 		fprintf(stdout, "\nTotal attitude data read: %d\n", ndat_rph);
 		for (i=0;i<ndat_rph;i++)
 			{
-			fprintf(stdout, "  ALT: %5d %17.6f %8.3f %8.3f %8.3f\n",
+			fprintf(stdout, "  ATT: %5d %17.6f %8.3f %8.3f %8.3f\n",
 				i, dat_rph_time_d[i], dat_rph_roll[i], dat_rph_pitch[i], dat_rph_heave[i]);
 			}
 		fprintf(stdout, "\nTotal Edgetech time stamp data read: %d\n", nedget);
@@ -7988,22 +7988,24 @@ fprintf(stderr,"Fixing timestamp jumps in %d Reson data\n", nbatht);
 	if (ndat_nav > 0)
 		{
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_nav_time_d,&error);
-		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_nav_time_d,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_nav_lon,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_nav_lat,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_nav_speed,&error);
 		}
 	if (ndat_sonardepth > 0)
 		{
+		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_sonardepth_time_d,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_sonardepth_sonardepth,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_sonardepth_sonardepthfilter,&error);
 		}
 	if (ndat_heading > 0)
 		{
+		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_heading_time_d,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_heading_heading,&error);
 		}
 	if (ndat_rph > 0)
 		{
+		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_rph_time_d,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_rph_roll,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_rph_pitch,&error);
 		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&dat_rph_heave,&error);

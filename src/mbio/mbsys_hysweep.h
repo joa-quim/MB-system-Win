@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_hysweep.h	12/23/2011
- *	$Id: mbsys_hysweep.h 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_hysweep.h 2276 2016-06-11 05:17:46Z caress $
  *
  *    Copyright (c) 2011-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -859,11 +859,13 @@ int mbsys_hysweep_deall(int verbose, void *mbio_ptr, void **store_ptr,
 int mbsys_hysweep_dimensions(int verbose, void *mbio_ptr, void *store_ptr,
 			int *kind, int *nbath, int *namp, int *nss, int *error);
 int mbsys_hysweep_sonartype(int verbose, void *mbio_ptr, void *store_ptr,
-                        int *sonartype, int *error);
+            int *sonartype, int *error);
 int mbsys_hysweep_sidescantype(int verbose, void *mbio_ptr, void *store_ptr,
-                        int *ss_type, int *error);
+            int *ss_type, int *error);
 int mbsys_hysweep_pingnumber(int verbose, void *mbio_ptr,
-		int *pingnumber, int *error);
+            int *pingnumber, int *error);
+int mbsys_hysweep_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
+            int *kind, void **platform_ptr, int *error);
 int mbsys_hysweep_extract(int verbose, void *mbio_ptr, void *store_ptr,
 			int *kind, int time_i[7], double *time_d,
 			double *navlon, double *navlat,
@@ -912,6 +914,6 @@ int mbsys_hysweep_copy(int verbose, void *mbio_ptr,
 			void *store_ptr, void *copy_ptr,
 			int *error);
 int mbsys_hysweep_makess(int verbose, void *mbio_ptr, void *store_ptr,
-                        int pixel_size_set, double *pixel_size,
-                        int swath_width_set, double *swath_width,
-                        int pixel_int, int *error);
+            int pixel_size_set, double *pixel_size,
+            int swath_width_set, double *swath_width,
+            int pixel_int, int *error);

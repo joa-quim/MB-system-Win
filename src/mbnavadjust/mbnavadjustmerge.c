@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjustmerge.c	4/14/2014
- *    $Id: mbnavadjustmerge.c 2272 2016-05-05 01:14:09Z caress $
+ *    $Id: mbnavadjustmerge.c 2275 2016-05-18 01:58:45Z caress $
  *
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -24,7 +24,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbnavadjustmerge.c 2272 2016-05-05 01:14:09Z caress $";
+static char version_id[] = "$Id: mbnavadjustmerge.c 2275 2016-05-18 01:58:45Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -2928,7 +2928,7 @@ tie->offset_x_m,tie->offset_y_m,tie->offset_z_m);
 		fclose(tfp);
 		}
 	sprintf(filename, "cd %s/%s.dir ; mbdatalist -Idatalist.mb-1 -O -Z -V", project_output.path,project_output.name);
-	system(filename);
+	shellstatus = system(filename);
 	sprintf(filename,"%s/%s.dir/mbgrid.cmd",project_output.path,project_output.name);
 	if ((tfp = fopen(filename,"w")) != NULL)
 		{

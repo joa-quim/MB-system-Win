@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbview_callbacks.c	10/7/2002
- *    $Id: mbview_callbacks.c 2272 2016-05-05 01:14:09Z caress $
+ *    $Id: mbview_callbacks.c 2276 2016-06-11 05:17:46Z caress $
  *
  *    Copyright (c) 2002-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -110,7 +110,7 @@ static Cardinal 	ac;
 static Arg      	args[256];
 static char		value_text[MB_PATH_MAXLINE];
 
-static char rcs_id[]="$Id: mbview_callbacks.c 2272 2016-05-05 01:14:09Z caress $";
+static char rcs_id[]="$Id: mbview_callbacks.c 2276 2016-06-11 05:17:46Z caress $";
 
 /* function prototypes */
 /*------------------------------------------------------------------------------*/
@@ -2294,6 +2294,8 @@ int mbview_open(int verbose, size_t instance, int *error)
 		XtSetValues(view->mb3dview.mbview_toggleButton_utm, args, ac);
 		XtSetValues(view->mb3dview.mbview_toggleButton_spheroid, args, ac);
 		XtSetValues(view->mb3dview.mbview_label_projection, args, ac);
+        XtSetValues(view->mb3dview.mbview_toggleButton_annotation_degreesminutes, args, ac);
+        XtSetValues(view->mb3dview.mbview_toggleButton_annotation_degreesdecimal, args, ac);
 		XtSetValues(view->mb3dview.mbview_pushButton_projection_dismiss, args, ac);
 		XtSetValues(view->mb3dview.mbview_dialogShell_profile, args, ac);
 		XtSetValues(view->mb3dview.mbview_form_profile, args, ac);
@@ -3279,12 +3281,12 @@ fprintf(stderr,"do_mbview_projection_popup: instance:%zu\n", instance);
 	view = &(mbviews[instance]);
 	data = &(view->data);
 
-    	XtManageChild(view->mb3dview.mbview_bulletinBoard_projection);
+    XtManageChild(view->mb3dview.mbview_bulletinBoard_projection);
 
 	/* set values of widgets */
 	if (data->display_projection_mode == MBV_PROJECTION_GEOGRAPHIC)
 		{
-	    	XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_geographic,
+	    XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_geographic,
 			TRUE, FALSE);
 		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_utm,
 			FALSE, FALSE);
@@ -3296,20 +3298,34 @@ fprintf(stderr,"do_mbview_projection_popup: instance:%zu\n", instance);
 		{
 		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_geographic,
 			FALSE, FALSE);
-	    	XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_utm,
+	    XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_utm,
 			TRUE, FALSE);
 		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_spheroid,
 			FALSE, FALSE);
 		}
 	else if (data->display_projection_mode == MBV_PROJECTION_SPHEROID)
 		{
-	    	XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_spheroid,
+	    XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_spheroid,
 			TRUE, FALSE);
 		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_utm,
 			FALSE, FALSE);
 		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_spheroid,
 			FALSE, FALSE);
 		}
+    if (shared.lonlatstyle == MBV_LONLAT_DEGREESMINUTES)
+        {
+ 	    XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_annotation_degreesminutes,
+			TRUE, FALSE);
+		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_annotation_degreesdecimal,
+			FALSE, FALSE);
+        }
+    else
+        {
+ 	    XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_annotation_degreesminutes,
+			FALSE, FALSE);
+		XmToggleButtonSetState(view->mb3dview.mbview_toggleButton_annotation_degreesdecimal,
+			TRUE, FALSE);
+        }
 
 	/* set label */
 	do_mbview_set_projection_label(instance);
@@ -3684,7 +3700,7 @@ fprintf(stderr,"do_mbview_annotation_degreesminutes: instance:%zu\n", instance);
 	view = &(mbviews[instance]);
 	data = &(view->data);
 
-	/* reproject as utm if the togglebutton has been set */
+	/* use degrees + minutes for pick annotation */
 	if (XmToggleButtonGetState(view->mb3dview.mbview_toggleButton_annotation_degreesminutes))
 		{
 		shared.lonlatstyle = MBV_LONLAT_DEGREESMINUTES;
@@ -3713,7 +3729,7 @@ fprintf(stderr,"do_mbview_annotation_degreesdecimal: instance:%zu\n", instance);
 	view = &(mbviews[instance]);
 	data = &(view->data);
 
-	/* reproject as utm if the togglebutton has been set */
+	/* use decimal degrees for pick annotation */
 	if (XmToggleButtonGetState(view->mb3dview.mbview_toggleButton_annotation_degreesdecimal))
 		{
 		shared.lonlatstyle = MBV_LONLAT_DEGREESDECIMAL;
@@ -5082,47 +5098,46 @@ event->xbutton.x,event->xbutton.y, data->mouse_mode);*/
 	  view->plot_interrupt_allowed = MB_YES;
       } /* end of button release events */
 
-      /* Deal with KeyPress events */
-      if(event->xany.type == KeyPress)
-      {
+    /* Deal with KeyPress events */
+    if(event->xany.type == KeyPress)
+        {
 /* fprintf(stderr,"KeyPress event\n"); */
-      /* Get key pressed - buffer[0] */
-      actual = XLookupString((XKeyEvent *)event,
-		    buffer, 1, &keysym, NULL);
+        /* Get key pressed - buffer[0] */
+        actual = XLookupString((XKeyEvent *)event, buffer, 1, &keysym, NULL);
 
-      /* process events */
-      switch (buffer[0])
-	    {
-	    case 'R':
-	    case 'r':
-		    do_mbview_reset_view(w, client_data, call_data);
-		    break;
-	    default:
-		    break;
-	  } /* end of key switch */
+        /* process events */
+        switch (buffer[0])
+            {
+            case 'R':
+            case 'r':
+                do_mbview_reset_view(w, client_data, call_data);
+                break;
+            default:
+                break;
+            } /* end of key switch */
+  
+         } /* end of key press events */
 
-       } /* end of key press events */
+    /* if needed replot profile */
+    if (replotprofile == MB_YES)
+        {
+        /* extract profile if pick is right type */
+        if (data->pickinfo_mode == MBV_PICK_TWOPOINT)
+           mbview_extract_pick_profile(instance);
+        else if (data->pickinfo_mode == MBV_PICK_ROUTE)
+           mbview_extract_route_profile(instance);
+        else if (data->pickinfo_mode == MBV_PICK_NAV)
+           mbview_extract_nav_profile(instance);
+  
+        /* now replot profile */
+        mbview_plotprofile(instance);
+        }
 
-       /* if needed replot profile */
-       if (replotprofile == MB_YES)
-	  {
-	  /* extract profile if pick is right type */
-	  if (data->pickinfo_mode == MBV_PICK_TWOPOINT)
-	     mbview_extract_pick_profile(instance);
-	  else if (data->pickinfo_mode == MBV_PICK_ROUTE)
-	     mbview_extract_route_profile(instance);
-	  else if (data->pickinfo_mode == MBV_PICK_NAV)
-	     mbview_extract_nav_profile(instance);
-
-	  /* now replot profile */
-	  mbview_plotprofile(instance);
-	  }
-
-     /* update action buttons according to pick state */
+    /* update action buttons according to pick state */
 /* fprintf(stderr,"About to call mbview_action_sensitivity %zu\n",instance); */
-     mbview_action_sensitivity(instance);
+    mbview_action_sensitivity(instance);
 
-     } /* end of inputs from window */
+    } /* end of inputs from window */
 
 }
 
