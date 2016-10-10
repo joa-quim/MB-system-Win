@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjustmerge.c	4/14/2014
- *    $Id: mbnavadjustmerge.c 2275 2016-05-18 01:58:45Z caress $
+ *    $Id: mbnavadjustmerge.c 2282 2016-08-26 01:10:17Z caress $
  *
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -24,7 +24,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbnavadjustmerge.c 2275 2016-05-18 01:58:45Z caress $";
+static char version_id[] = "$Id: mbnavadjustmerge.c 2282 2016-08-26 01:10:17Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -44,41 +44,44 @@ static char version_id[] = "$Id: mbnavadjustmerge.c 2275 2016-05-18 01:58:45Z ca
 #include "mbnavadjust_io.h"
 
 /* local defines */
-#define MBNAVADJUSTMERGE_MODE_NONE 	0
-#define MBNAVADJUSTMERGE_MODE_ADD 	1
+#define MBNAVADJUSTMERGE_MODE_NONE 		0
+#define MBNAVADJUSTMERGE_MODE_ADD 		1
 #define MBNAVADJUSTMERGE_MODE_MERGE 	2
-#define MBNAVADJUSTMERGE_MODE_COPY 	3
+#define MBNAVADJUSTMERGE_MODE_COPY 		3
 #define MBNAVADJUSTMERGE_MODE_MODIFY 	4
-#define NUMBER_MODS_MAX			1000
-#define MOD_MODE_NONE 			0
-#define MOD_MODE_SET_GLOBAL_TIE 	1
-#define MOD_MODE_SET_GLOBAL_TIE_XYZ	2
-#define MOD_MODE_SET_GLOBAL_TIE_XY	3
-#define MOD_MODE_SET_GLOBAL_TIE_Z	4
-#define MOD_MODE_UNSET_GLOBAL_TIE	5
-#define MOD_MODE_ADD_CROSSING 		6
-#define MOD_MODE_SET_TIE 		7
-#define MOD_MODE_SET_TIE_XYZ		8
-#define MOD_MODE_SET_TIE_XY		9
-#define MOD_MODE_SET_TIE_Z		10
-#define MOD_MODE_UNSET_TIE		11
-#define MOD_MODE_SET_TIES_XYZ_ALL	12
-#define MOD_MODE_SET_TIES_XY_ALL	13
-#define MOD_MODE_SET_TIES_Z_ALL	14
-#define MOD_MODE_SET_TIES_XYZ_FILE	15
-#define MOD_MODE_SET_TIES_XY_FILE	16
-#define MOD_MODE_SET_TIES_Z_FILE	17
-#define MOD_MODE_SET_TIES_XYZ_SURVEY	18
-#define MOD_MODE_SET_TIES_XY_SURVEY	19
-#define MOD_MODE_SET_TIES_Z_SURVEY	20
-#define MOD_MODE_SET_TIES_XYZ_BLOCK	21
-#define MOD_MODE_SET_TIES_XY_BLOCK	22
-#define MOD_MODE_SET_TIES_Z_BLOCK	23
-#define MOD_MODE_SET_TIES_ZOFFSET_BLOCK	24
-#define MOD_MODE_SKIP_UNSET_CROSSINGS	25
-#define MOD_MODE_INSERT_DISCONTINUITY   26
-#define MOD_MODE_REIMPORT_FILE   27
-#define MOD_MODE_REIMPORT_ALL_FILES   28
+#define NUMBER_MODS_MAX										1000
+#define MOD_MODE_NONE 										0
+#define MOD_MODE_SET_GLOBAL_TIE 							1
+#define MOD_MODE_SET_GLOBAL_TIE_XYZ							2
+#define MOD_MODE_SET_GLOBAL_TIE_XY							3
+#define MOD_MODE_SET_GLOBAL_TIE_Z							4
+#define MOD_MODE_UNSET_GLOBAL_TIE							5
+#define MOD_MODE_ADD_CROSSING 								6
+#define MOD_MODE_SET_TIE 									7
+#define MOD_MODE_SET_TIE_XYZ								8
+#define MOD_MODE_SET_TIE_XY									9
+#define MOD_MODE_SET_TIE_Z									10
+#define MOD_MODE_UNSET_TIE									11
+#define MOD_MODE_SET_TIES_XYZ_ALL							12
+#define MOD_MODE_SET_TIES_XY_ALL							13
+#define MOD_MODE_SET_TIES_Z_ALL								14
+#define MOD_MODE_SET_TIES_XYZ_FILE							15
+#define MOD_MODE_SET_TIES_XY_FILE							16
+#define MOD_MODE_SET_TIES_Z_FILE							17
+#define MOD_MODE_SET_TIES_XYZ_SURVEY						18
+#define MOD_MODE_SET_TIES_XY_SURVEY							19
+#define MOD_MODE_SET_TIES_Z_SURVEY							20
+#define MOD_MODE_SET_TIES_XYZ_BLOCK							21
+#define MOD_MODE_SET_TIES_XY_BLOCK							22
+#define MOD_MODE_SET_TIES_Z_BLOCK							23
+#define MOD_MODE_SET_TIES_ZOFFSET_BLOCK						24
+#define MOD_MODE_SET_TIES_XY_BY_TIME   						25
+#define MOD_MODE_SKIP_UNSET_CROSSINGS						26
+#define MOD_MODE_UNSET_SKIPPED_CROSSINGS_BLOCK 				27
+#define MOD_MODE_UNSET_SKIPPED_CROSSINGS_BETWEEN_SURVEYS   	28
+#define MOD_MODE_INSERT_DISCONTINUITY                      	29
+#define MOD_MODE_REIMPORT_FILE             					30
+#define MOD_MODE_REIMPORT_ALL_FILES   						31
 
 struct mbnavadjust_mod
 	{
@@ -97,6 +100,7 @@ struct mbnavadjust_mod
 	double	xsigma;
 	double	ysigma;
 	double	zsigma;
+	double	dt;
 	};
 
 /*--------------------------------------------------------------------*/
@@ -133,7 +137,10 @@ int main (int argc, char **argv)
 				"\t--set-ties-xyonly-by-block=survey1/survey2\n"
 				"\t--set-ties-zonly-by-block=survey1/survey2\n"
 				"\t--set-ties-zoffset-by-block=survey1/survey2/zoffset\n"
+				"\t--set-ties-xyonly-by-time=timethreshold\n"
 				"\t--skip-unset-crossings\n"
+				"\t--unset-skipped-crossings-by-block=survey1/survey2\n"
+				"\t--unset-skipped-crossings-between-surveys\n"
 				"\t--insert-discontinuity=file:section\n"
 				"\t--reimport-file=file\n"
 				"\t--reimport-all-files\n"
@@ -159,41 +166,44 @@ int main (int argc, char **argv)
 	 */
 	static struct option options[] =
 		{
-		{"verbose",			no_argument, 		NULL, 		0},
-		{"help",			no_argument, 		NULL, 		0},
-		{"input",			required_argument, 	NULL, 		0},
-		{"output",			required_argument, 	NULL, 		0},
-		{"set-global-tie",		required_argument, 	NULL, 		0},
-		{"set-global-tie-xyz",		required_argument, 	NULL, 		0},
-		{"set-global-tie-xyonly",	required_argument, 	NULL, 		0},
-		{"set-global-tie-zonly",	required_argument, 	NULL, 		0},
-		{"unset-global-tie",		required_argument, 	NULL, 		0},
-		{"add-crossing",		required_argument, 	NULL, 		0},
-		{"set-tie",			required_argument, 	NULL, 		0},
-		{"set-tie-xyz",			required_argument, 	NULL, 		0},
-		{"set-tie-xyonly",		required_argument, 	NULL, 		0},
-		{"set-tie-zonly",		required_argument, 	NULL, 		0},
-		{"unset-tie",			required_argument, 	NULL, 		0},
-		{"set-ties-xyz-all",	no_argument, 	NULL, 		0},
-		{"set-ties-xyonly-all",	no_argument, 	NULL, 		0},
-		{"set-ties-zonly-all",	no_argument, 	NULL, 		0},
-		{"set-ties-xyz-with-file",	required_argument, 	NULL, 		0},
-		{"set-ties-xyonly-with-file",	required_argument, 	NULL, 		0},
-		{"set-ties-zonly-with-file",	required_argument, 	NULL, 		0},
-		{"set-ties-xyz-with-survey",	required_argument, 	NULL, 		0},
-		{"set-ties-xyonly-with-survey",	required_argument, 	NULL, 		0},
-		{"set-ties-zonly-with-survey",	required_argument, 	NULL, 		0},
-		{"set-ties-xyz-by-block",	required_argument, 	NULL, 		0},
-		{"set-ties-xyonly-by-block",	required_argument, 	NULL, 		0},
-		{"set-ties-zonly-by-block",	required_argument, 	NULL, 		0},
-		{"set-ties-zoffset-by-block",	required_argument, 	NULL, 		0},
-		{"skip-unset-crossings",	no_argument, 		NULL, 		0},
-		{"insert-discontinuity",	required_argument, 	NULL, 		0},
-		{"reimport-file",	required_argument, 	NULL, 		0},
-		{"reimport-all-files",	no_argument, 	NULL, 		0},
-		{"import-tie-list",	required_argument, 	NULL, 		0},
-		{"export-tie-list",	required_argument, 	NULL, 		0},
-		{NULL,				0, 			NULL, 		0}
+		{"verbose",										no_argument, 		NULL, 		0},
+		{"help",										no_argument, 		NULL, 		0},
+		{"input",										required_argument, 	NULL, 		0},
+		{"output",										required_argument, 	NULL, 		0},
+		{"set-global-tie",								required_argument, 	NULL, 		0},
+		{"set-global-tie-xyz",							required_argument, 	NULL, 		0},
+		{"set-global-tie-xyonly",						required_argument, 	NULL, 		0},
+		{"set-global-tie-zonly",						required_argument, 	NULL, 		0},
+		{"unset-global-tie",							required_argument, 	NULL, 		0},
+		{"add-crossing",								required_argument, 	NULL, 		0},
+		{"set-tie",										required_argument, 	NULL, 		0},
+		{"set-tie-xyz",									required_argument, 	NULL, 		0},
+		{"set-tie-xyonly",								required_argument, 	NULL, 		0},
+		{"set-tie-zonly",								required_argument, 	NULL, 		0},
+		{"unset-tie",									required_argument, 	NULL, 		0},
+		{"set-ties-xyz-all",							no_argument, 		NULL, 		0},
+		{"set-ties-xyonly-all",							no_argument, 		NULL, 		0},
+		{"set-ties-zonly-all",							no_argument, 		NULL, 		0},
+		{"set-ties-xyz-with-file",						required_argument, 	NULL, 		0},
+		{"set-ties-xyonly-with-file",					required_argument, 	NULL, 		0},
+		{"set-ties-zonly-with-file",					required_argument, 	NULL, 		0},
+		{"set-ties-xyz-with-survey",					required_argument, 	NULL, 		0},
+		{"set-ties-xyonly-with-survey",					required_argument, 	NULL, 		0},
+		{"set-ties-zonly-with-survey",					required_argument, 	NULL, 		0},
+		{"set-ties-xyz-by-block",						required_argument, 	NULL, 		0},
+		{"set-ties-xyonly-by-block",					required_argument, 	NULL, 		0},
+		{"set-ties-zonly-by-block",						required_argument, 	NULL, 		0},
+		{"set-ties-zoffset-by-block",					required_argument, 	NULL, 		0},
+		{"set-ties-xyonly-by-time",						required_argument, 	NULL, 		0},
+		{"skip-unset-crossings",						no_argument, 		NULL, 		0},
+		{"unset-skipped-crossings-by-block",			required_argument, 	NULL, 		0},
+		{"unset-skipped-crossings-between-surveys",		no_argument, 		NULL, 		0},
+		{"insert-discontinuity",						required_argument, 	NULL, 		0},
+		{"reimport-file",								required_argument, 	NULL, 		0},
+		{"reimport-all-files",							no_argument, 		NULL, 		0},
+		{"import-tie-list",								required_argument, 	NULL, 		0},
+		{"export-tie-list",								required_argument, 	NULL, 		0},
+		{NULL,											0, 					NULL, 		0}
 		};
 		
 	/* mbnavadjustmerge controls */
@@ -1049,6 +1059,60 @@ int main (int argc, char **argv)
 							optarg);	
 					}
 				}
+			
+			/*-------------------------------------------------------
+			 * set all ties between nav points separated by more time than timethreshold to xyonly
+				--set-ties-xyonly-by-time=timethreshold[y | d | h | m] */
+			else if (strcmp("set-ties-xyonly-by-time", options[option_index].name) == 0)
+				{
+				if (num_mods < NUMBER_MODS_MAX)
+					{
+					if ((nscan = sscanf(optarg, "%lfy",
+						       &mods[num_mods].dt)) == 1)
+						{
+						mods[num_mods].dt *= MB_SECINYEAR;
+						mods[num_mods].mode = MOD_MODE_SET_TIES_XY_BY_TIME;
+						num_mods++;
+						}
+					else if ((nscan = sscanf(optarg, "%lfd",
+						       &mods[num_mods].dt)) == 1)
+						{
+						mods[num_mods].dt *= MB_SECINDAY;
+						mods[num_mods].mode = MOD_MODE_SET_TIES_XY_BY_TIME;
+						num_mods++;
+						}
+					else if ((nscan = sscanf(optarg, "%lfh",
+						       &mods[num_mods].dt)) == 1)
+						{
+						mods[num_mods].dt *= MB_SECINHOUR;
+						mods[num_mods].mode = MOD_MODE_SET_TIES_XY_BY_TIME;
+						num_mods++;
+						}
+					else if ((nscan = sscanf(optarg, "%lfm",
+						       &mods[num_mods].dt)) == 1)
+						{
+						mods[num_mods].dt *= MB_SECINMINUTE;
+						mods[num_mods].mode = MOD_MODE_SET_TIES_XY_BY_TIME;
+						num_mods++;
+						}
+					else if ((nscan = sscanf(optarg, "%lf",
+						       &mods[num_mods].dt)) == 1)
+						{
+						mods[num_mods].mode = MOD_MODE_SET_TIES_XY_BY_TIME;
+						num_mods++;
+						}
+					else
+						{
+						fprintf(stderr,"Failure to parse --set-ties-xyonly-by-time=%s\n\tmod command ignored\n\n",
+							optarg);	
+						}
+					}
+				else
+					{
+					fprintf(stderr,"Maximum number of mod commands reached:\n\t--set-ties-xyonly-by-time=%s command ignored\n\n",
+							optarg);	
+					}
+				}
 				
 			/*-------------------------------------------------------
 			 * set all crossings without ties in the input project(s) to be skipped
@@ -1063,6 +1127,22 @@ int main (int argc, char **argv)
 				else
 					{
 					fprintf(stderr,"Maximum number of mod commands reached:\n\tskip-unset-crossings command ignored\n\n");	
+					}
+				}
+				
+			/*-------------------------------------------------------
+			 * unset all skipped crossings between two surveys
+				--unset-skipped-crossings-between-surveys */
+			else if (strcmp("unset-skipped-crossings-between-surveys", options[option_index].name) == 0)
+				{
+				if (num_mods < NUMBER_MODS_MAX)
+					{
+					mods[num_mods].mode = MOD_MODE_UNSET_SKIPPED_CROSSINGS_BETWEEN_SURVEYS;
+					num_mods++;
+					}
+				else
+					{
+					fprintf(stderr,"Maximum number of mod commands reached:\n\tunset-skipped-crossings-by-block command ignored\n\n");	
 					}
 				}
 				
@@ -1177,14 +1257,17 @@ int main (int argc, char **argv)
 		fprintf(stderr,"dbg2       export_tie_list_set:        %d\n",export_tie_list_set);
 		fprintf(stderr,"dbg2       export_tie_list_path:       %s\n",export_tie_list_path);
 		fprintf(stderr,"dbg2       num_mods:                   %d\n",num_mods);
+		fprintf(stderr,"dbg2       mod# mode survey1 file1 section1 survey2 file2 section2 "
+						"xoffset yoffset zoffset xsigma ysigma zsigma dt\n");
 		for (i=0;i<num_mods;i++)
 			{
-			fprintf(stderr,"dbg2       mods[%d]: %d  %d %d %d   %d %d %d  %f %f %f  %f %f %f\n",
+			fprintf(stderr,"dbg2       mods[%d]: %d  %d %d %d   %d %d %d  %f %f %f  %f %f %f  %f\n",
 				i, mods[i].mode,
 				mods[i].survey1, mods[i].file1, mods[i].section1,
-				mods[i].survey1, mods[i].file1, mods[i].section1,
+				mods[i].survey2, mods[i].file2, mods[i].section2,
 				mods[i].xoffset, mods[i].yoffset, mods[i].zoffset,
-				mods[i].xsigma, mods[i].ysigma, mods[i].zsigma);
+				mods[i].xsigma, mods[i].ysigma, mods[i].zsigma,
+				mods[i].dt);
 			}
 		}
 
@@ -2503,6 +2586,32 @@ tie->offset_x_m,tie->offset_y_m,tie->offset_z_m);
 					}
 				break;
 
+			case MOD_MODE_SET_TIES_XY_BY_TIME:
+fprintf(stderr,"\nCommand set-ties-xyonly-by-time=%f\n", mods[imod].dt);
+				
+				for (icrossing=0;icrossing<project_output.num_crossings;icrossing++)
+					{
+					crossing = (struct mbna_crossing *) &project_output.crossings[icrossing];
+					file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
+					file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
+					for (itie=0;itie<crossing->num_ties;itie++)
+						{
+						tie = &crossing->ties[itie];
+						if (fabs(tie->snav_2_time_d - tie->snav_1_time_d) >= mods[imod].dt)
+							{
+							tie = &crossing->ties[itie];
+							tie->status = MBNA_TIE_XY;
+
+fprintf(stderr,"Set tie mode XY-only:  %d:%d  %2.2d:%4.4d:%4.4d:%2.2d   %2.2d:%4.4d:%4.4d:%2.2d  %.3f %.3f %.3f\n",
+icrossing, itie,
+file1->block, crossing->file_id_1, crossing->section_1, tie->snav_1,
+file2->block, crossing->file_id_2, crossing->section_2, tie->snav_2,
+tie->offset_x_m,tie->offset_y_m,tie->offset_z_m);
+							}
+						}
+					}
+				break;
+				
 			case MOD_MODE_SKIP_UNSET_CROSSINGS:
 fprintf(stderr,"\nCommand skip-unset-crossings\n");
 
@@ -2522,6 +2631,50 @@ file2->block, crossing->file_id_2, crossing->section_2);
 					}
 				break;
 
+			case MOD_MODE_UNSET_SKIPPED_CROSSINGS_BLOCK:
+fprintf(stderr,"\nCommand unset-skipped-crossings-by-block=%2.2d/%2.2d\n", mods[imod].survey1, mods[imod].survey2);
+				
+				for (icrossing=0;icrossing<project_output.num_crossings;icrossing++)
+					{
+					crossing = &(project_output.crossings[icrossing]);
+					file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
+					file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
+					if ((project_output.files[crossing->file_id_1].block == mods[imod].survey1
+							&& project_output.files[crossing->file_id_2].block == mods[imod].survey2)
+						|| (project_output.files[crossing->file_id_2].block == mods[imod].survey1
+							&& project_output.files[crossing->file_id_1].block == mods[imod].survey2))
+						{
+						if (crossing->status == MBNA_CROSSING_STATUS_SKIP)
+							crossing->status = MBNA_CROSSING_STATUS_NONE;
+fprintf(stderr,"Unset skipped crossing:   %d:%d  %2.2d:%4.4d:%4.4d   %2.2d:%4.4d:%4.4d\n",
+icrossing, itie,
+file1->block, crossing->file_id_1, crossing->section_1,
+file2->block, crossing->file_id_2, crossing->section_2);
+						}
+					}
+				break;
+
+			case MOD_MODE_UNSET_SKIPPED_CROSSINGS_BETWEEN_SURVEYS:
+fprintf(stderr,"\nCommand unset-skipped-crossings-between-surveys\n");
+				
+				for (icrossing=0;icrossing<project_output.num_crossings;icrossing++)
+					{
+					crossing = &(project_output.crossings[icrossing]);
+					file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
+					file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
+					if (project_output.files[crossing->file_id_1].block
+						!= project_output.files[crossing->file_id_2].block)
+						{
+						if (crossing->status == MBNA_CROSSING_STATUS_SKIP)
+							crossing->status = MBNA_CROSSING_STATUS_NONE;
+fprintf(stderr,"Unset skipped crossing:   %d:%d  %2.2d:%4.4d:%4.4d   %2.2d:%4.4d:%4.4d\n",
+icrossing, itie,
+file1->block, crossing->file_id_1, crossing->section_1,
+file2->block, crossing->file_id_2, crossing->section_2);
+						}
+					}
+				break;
+			
 			case MOD_MODE_INSERT_DISCONTINUITY:
 fprintf(stderr,"\nCommand insert-discontinuity=%2.2d:%2.2d\n", mods[imod].file1, mods[imod].section1);
 				
@@ -2620,6 +2773,16 @@ fprintf(stderr,"\nCommand reimport-all-files\n");
 			/* apply the new tie if it has been read */
 			if (done == MB_NO)
 				{
+fprintf(stderr, "\nAttempting to import tie from list: \n\t%s\n\t%s\n%1d %16.6f %16.6f %13.8f %13.8f %13.8f\n",
+import_tie_file_1_path,
+import_tie_file_2_path,
+import_tie_status,
+import_tie_snav_1_time_d,
+import_tie_snav_2_time_d,
+import_tie_offset_x_m,
+import_tie_offset_y_m,
+import_tie_offset_z_m);
+
 				/* figure out the file and block ids for the first file */
 				found = MB_NO;
 				strcpy(import_tie_file_1_name, (strrchr(import_tie_file_1_path,'/') + 1));
@@ -2648,7 +2811,10 @@ fprintf(stderr,"\nCommand reimport-all-files\n");
 									{
 									timediff = fabs(import_tie_snav_1_time_d - section1->snav_time_d[isnav]);
 									if (timediff < timediffmin)
+										{
 										import_tie_snav_1 = isnav;
+										timediffmin = timediff;
+										}
 									}
 								}
 							}
@@ -2685,7 +2851,10 @@ fprintf(stderr,"\nCommand reimport-all-files\n");
 										{
 										timediff = fabs(import_tie_snav_2_time_d - section2->snav_time_d[isnav]);
 										if (timediff < timediffmin)
+											{
 											import_tie_snav_2 = isnav;
+											timediffmin = timediff;
+											}
 										}
 									}
 								}
@@ -2693,149 +2862,177 @@ fprintf(stderr,"\nCommand reimport-all-files\n");
 						}
 					}
 				
-fprintf(stderr,"\nImport tie from list: %4.4d:%4.4d/%4.4d:%4.4d/%.3f/%.3f/%.3f/%.3f/%.3f/%.3f\n",
-import_tie_file_1,import_tie_section_1_id,import_tie_file_2,import_tie_section_2_id,
-import_tie_offset_x_m,import_tie_offset_y_m,import_tie_offset_z_m,
-import_tie_sigmar1,import_tie_sigmar2,import_tie_sigmar3);
 				
-				/* check to see if this crossing already exists */
-				found = MB_NO;
-				for (icrossing=0;icrossing<project_output.num_crossings && found == MB_NO;icrossing++)
-					{
-					crossing = &(project_output.crossings[icrossing]);
-					if (crossing->file_id_2 == import_tie_file_1 && crossing->file_id_1 == import_tie_file_2
-						&& crossing->section_2 == import_tie_section_1_id && crossing->section_1 == import_tie_section_2_id)
-						{
-						found = MB_YES;
-						current_crossing = icrossing;
-						crossing = (struct mbna_crossing *) &project_output.crossings[icrossing];
-						}
-					else if (crossing->file_id_1 == import_tie_file_1 && crossing->file_id_2 == import_tie_file_2
-						&& crossing->section_1 == import_tie_section_1_id && crossing->section_2 == import_tie_section_2_id)
-						{
-						found = MB_YES;
-						current_crossing = icrossing;
-						crossing = (struct mbna_crossing *) &project_output.crossings[icrossing];
-						}
-					}
-					
-				/* if the crossing does not exist, create it */
 				if (found == MB_NO)
 					{
-					/* allocate mbna_crossing array if needed */
-					if (project_output.num_crossings_alloc <= project_output.num_crossings)
-					    {
-					    project_output.crossings = (struct mbna_crossing *) realloc(project_output.crossings,
-							    sizeof(struct mbna_crossing) * (project_output.num_crossings_alloc + ALLOC_NUM));
-					    if (project_output.crossings != NULL)
-						    project_output.num_crossings_alloc += ALLOC_NUM;
-					    else
+fprintf(stderr, "Failure!!\n");
+					}
+				
+				else if (found == MB_YES)
+					{
+fprintf(stderr,"Success!!\nImport tie from list: %4.4d:%4.4d:%2.2d %4.4d:%4.4d:%2.2d  %.3f/%.3f/%.3f  %.3f/%.3f/%.3f\n",
+import_tie_file_1,import_tie_section_1_id,import_tie_snav_1,
+import_tie_file_2,import_tie_section_2_id,import_tie_snav_2,
+import_tie_offset_x_m,import_tie_offset_y_m,import_tie_offset_z_m,
+import_tie_sigmar1,import_tie_sigmar2,import_tie_sigmar3);
+					/* check to see if this crossing already exists */
+					found = MB_NO;
+					for (icrossing=0;icrossing<project_output.num_crossings && found == MB_NO;icrossing++)
 						{
-						status = MB_FAILURE;
-						error = MB_ERROR_MEMORY_FAIL;
+						crossing = &(project_output.crossings[icrossing]);
+						if (crossing->file_id_2 == import_tie_file_1 && crossing->file_id_1 == import_tie_file_2
+							&& crossing->section_2 == import_tie_section_1_id && crossing->section_1 == import_tie_section_2_id)
+							{
+							found = MB_YES;
+							current_crossing = icrossing;
+							crossing = (struct mbna_crossing *) &project_output.crossings[icrossing];
+							}
+						else if (crossing->file_id_1 == import_tie_file_1 && crossing->file_id_2 == import_tie_file_2
+							&& crossing->section_1 == import_tie_section_1_id && crossing->section_2 == import_tie_section_2_id)
+							{
+							found = MB_YES;
+							current_crossing = icrossing;
+							crossing = (struct mbna_crossing *) &project_output.crossings[icrossing];
+							}
 						}
-					    }
+						
+					/* if the crossing does not exist, create it */
+					if (found == MB_YES)
+						{
+fprintf(stderr,"Found existing crossing: %d  %2.2d:%4.4d:%4.4d   %2.2d:%4.4d:%4.4d\n",
+current_crossing,
+file1->block, crossing->file_id_1, crossing->section_1,
+file2->block, crossing->file_id_2, crossing->section_2);
+						}
+					else if (found == MB_NO)
+						{
+						/* allocate mbna_crossing array if needed */
+						if (project_output.num_crossings_alloc <= project_output.num_crossings)
+							{
+							project_output.crossings = (struct mbna_crossing *) realloc(project_output.crossings,
+									sizeof(struct mbna_crossing) * (project_output.num_crossings_alloc + ALLOC_NUM));
+							if (project_output.crossings != NULL)
+								project_output.num_crossings_alloc += ALLOC_NUM;
+							else
+								{
+								status = MB_FAILURE;
+								error = MB_ERROR_MEMORY_FAIL;
+								}
+							}
+		
+						/* add crossing to list */
+						current_crossing = project_output.num_crossings;
+						crossing = (struct mbna_crossing *) &project_output.crossings[current_crossing];
+						file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
+						file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
+						crossing->status = MBNA_CROSSING_STATUS_NONE;
+						crossing->truecrossing = MB_NO;
+						crossing->overlap = 0;
+						crossing->file_id_1 = import_tie_file_1;
+						crossing->section_1 = import_tie_section_1_id;
+						crossing->file_id_2 = import_tie_file_2;
+						crossing->section_2 = import_tie_section_2_id;
+						crossing->num_ties = 0;
+						current_crossing = project_output.num_crossings;
+						project_output.num_crossings++;
 	
-					/* add crossing to list */
-					current_crossing = project_output.num_crossings;
-					crossing = (struct mbna_crossing *) &project_output.crossings[current_crossing];
-					file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
-					file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
-					crossing->status = MBNA_CROSSING_STATUS_NONE;
-					crossing->truecrossing = MB_NO;
-					crossing->overlap = 0;
-					crossing->file_id_1 = import_tie_file_1;
-					crossing->section_1 = import_tie_section_1_id;
-					crossing->file_id_2 = import_tie_file_2;
-					crossing->section_2 = import_tie_section_2_id;
-					crossing->num_ties = 0;
-					current_crossing = project_output.num_crossings;
-					project_output.num_crossings++;
-
 fprintf(stderr,"Added crossing: %d  %2.2d:%4.4d:%4.4d   %2.2d:%4.4d:%4.4d\n",
 current_crossing,
 file1->block, crossing->file_id_1, crossing->section_1,
 file2->block, crossing->file_id_2, crossing->section_2);
-					}
-				
-				/* if the tie does not exist, create it */
-				if (crossing->num_ties == 0)
-					{
-					/* add tie and set number */
-					file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
-					file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
-					section1 = (struct mbna_section *) &file1->sections[crossing->section_1];
-					section2 = (struct mbna_section *) &file2->sections[crossing->section_2];
-					crossing->num_ties++;
-					project_output.num_ties++;
-					tie = &crossing->ties[0];
-		
-					if (crossing->status == MBNA_CROSSING_STATUS_NONE)
-						{
-						project_output.num_crossings_analyzed++;
-						if (crossing->truecrossing == MB_YES)
-							project_output.num_truecrossings_analyzed++;
 						}
-					crossing->status = MBNA_CROSSING_STATUS_SET;
-		
-					/* set nav points */
-					tie->snav_1 = import_tie_snav_1;
-					tie->snav_2 = import_tie_snav_2;
-		
-					/* augment tie counts for snavs */
-					section1->snav_num_ties[tie->snav_1]++;
-					section2->snav_num_ties[tie->snav_2]++;
-
+					
+					/* if the tie does not exist, create it */
+					if (crossing->num_ties > 0)
+						{
+						/* set nav points */
+						tie = &crossing->ties[0];
+						tie->snav_1 = import_tie_snav_1;
+						tie->snav_2 = import_tie_snav_2;
+fprintf(stderr,"Reset existing tie: %d:%d  %2.2d:%4.4d:%4.4d:%2.2d   %2.2d:%4.4d:%4.4d:%2.2d\n",
+current_crossing, 0,
+file1->block, crossing->file_id_1, crossing->section_1, tie->snav_1,
+file2->block, crossing->file_id_2, crossing->section_2, tie->snav_2);
+						}
+					else if (crossing->num_ties == 0)
+						{
+						/* add tie and set number */
+						file1 = (struct mbna_file *) &project_output.files[crossing->file_id_1];
+						file2 = (struct mbna_file *) &project_output.files[crossing->file_id_2];
+						section1 = (struct mbna_section *) &file1->sections[crossing->section_1];
+						section2 = (struct mbna_section *) &file2->sections[crossing->section_2];
+						crossing->num_ties++;
+						project_output.num_ties++;
+						tie = &crossing->ties[0];
+			
+						if (crossing->status == MBNA_CROSSING_STATUS_NONE)
+							{
+							project_output.num_crossings_analyzed++;
+							if (crossing->truecrossing == MB_YES)
+								project_output.num_truecrossings_analyzed++;
+							}
+						crossing->status = MBNA_CROSSING_STATUS_SET;
+			
+						/* set nav points */
+						tie->snav_1 = import_tie_snav_1;
+						tie->snav_2 = import_tie_snav_2;
+			
+						/* augment tie counts for snavs */
+						section1->snav_num_ties[tie->snav_1]++;
+						section2->snav_num_ties[tie->snav_2]++;
+	
 fprintf(stderr,"Added tie: %d:%d  %2.2d:%4.4d:%4.4d:%2.2d   %2.2d:%4.4d:%4.4d:%2.2d\n",
 current_crossing, 0,
 file1->block, crossing->file_id_1, crossing->section_1, tie->snav_1,
 file2->block, crossing->file_id_2, crossing->section_2, tie->snav_2);
-					}
-					
-				/* set the tie parameters */
-				for (itie=0;itie<crossing->num_ties;itie++)
-					{
-					tie = &crossing->ties[itie];
-					tie->status = import_tie_status;
-					tie->snav_1_time_d = section1->snav_time_d[tie->snav_1];
-					tie->snav_2_time_d = section2->snav_time_d[tie->snav_2];
-					mb_coor_scale(verbose,0.25 * (section1->latmin + section1->latmax + section2->latmin + section2->latmax),
-							&mtodeglon,&mtodeglat);
-					tie->offset_x = import_tie_offset_x_m * mtodeglon;
-					tie->offset_y = import_tie_offset_y_m * mtodeglat;
-					tie->offset_x_m = import_tie_offset_x_m;
-					tie->offset_y_m = import_tie_offset_y_m;
-					tie->offset_z_m = import_tie_offset_z_m;
-					tie->sigmar1 = import_tie_sigmar1;
-					tie->sigmax1[0] = import_tie_sigmax1[0];
-					tie->sigmax1[1] = import_tie_sigmax1[1];
-					tie->sigmax1[2] = import_tie_sigmax1[2];
-					tie->sigmar2 = import_tie_sigmar2;
-					tie->sigmax2[0] = import_tie_sigmax2[0];
-					tie->sigmax2[1] = import_tie_sigmax2[1];
-					tie->sigmax2[2] = import_tie_sigmax2[2];
-					tie->sigmar3 = import_tie_sigmar3;
-					tie->sigmax3[0] = import_tie_sigmax3[0];
-					tie->sigmax3[1] = import_tie_sigmax3[1];
-					tie->sigmax3[2] = import_tie_sigmax3[2];
-					tie->inversion_offset_x = section2->snav_lon_offset[tie->snav_2]
-								- section1->snav_lon_offset[tie->snav_1];
-					tie->inversion_offset_y = section2->snav_lat_offset[tie->snav_2]
-								- section1->snav_lat_offset[tie->snav_1];
-					tie->inversion_offset_x_m = tie->inversion_offset_x / mtodeglon;
-					tie->inversion_offset_y_m = tie->inversion_offset_y / mtodeglat;
-					tie->inversion_offset_z_m = section2->snav_z_offset[tie->snav_2]
-								- section1->snav_z_offset[tie->snav_1];
-					tie->inversion_status = MBNA_INVERSION_NONE;
-					if (project_output.inversion_status == MBNA_INVERSION_CURRENT)
-						project_output.inversion_status = MBNA_INVERSION_OLD;
-					project_output.grid_status = MBNA_GRID_OLD;
+						}
+						
+					/* set the tie parameters */
+					for (itie=0;itie<crossing->num_ties;itie++)
+						{
+						tie = &crossing->ties[itie];
 
+						tie->status = import_tie_status;
+						tie->snav_1_time_d = section1->snav_time_d[tie->snav_1];
+						tie->snav_2_time_d = section2->snav_time_d[tie->snav_2];
+						mb_coor_scale(verbose,0.25 * (section1->latmin + section1->latmax + section2->latmin + section2->latmax),
+								&mtodeglon,&mtodeglat);
+						tie->offset_x = import_tie_offset_x_m * mtodeglon;
+						tie->offset_y = import_tie_offset_y_m * mtodeglat;
+						tie->offset_x_m = import_tie_offset_x_m;
+						tie->offset_y_m = import_tie_offset_y_m;
+						tie->offset_z_m = import_tie_offset_z_m;
+						tie->sigmar1 = import_tie_sigmar1;
+						tie->sigmax1[0] = import_tie_sigmax1[0];
+						tie->sigmax1[1] = import_tie_sigmax1[1];
+						tie->sigmax1[2] = import_tie_sigmax1[2];
+						tie->sigmar2 = import_tie_sigmar2;
+						tie->sigmax2[0] = import_tie_sigmax2[0];
+						tie->sigmax2[1] = import_tie_sigmax2[1];
+						tie->sigmax2[2] = import_tie_sigmax2[2];
+						tie->sigmar3 = import_tie_sigmar3;
+						tie->sigmax3[0] = import_tie_sigmax3[0];
+						tie->sigmax3[1] = import_tie_sigmax3[1];
+						tie->sigmax3[2] = import_tie_sigmax3[2];
+						tie->inversion_offset_x = section2->snav_lon_offset[tie->snav_2]
+									- section1->snav_lon_offset[tie->snav_1];
+						tie->inversion_offset_y = section2->snav_lat_offset[tie->snav_2]
+									- section1->snav_lat_offset[tie->snav_1];
+						tie->inversion_offset_x_m = tie->inversion_offset_x / mtodeglon;
+						tie->inversion_offset_y_m = tie->inversion_offset_y / mtodeglat;
+						tie->inversion_offset_z_m = section2->snav_z_offset[tie->snav_2]
+									- section1->snav_z_offset[tie->snav_1];
+						tie->inversion_status = MBNA_INVERSION_NONE;
+						if (project_output.inversion_status == MBNA_INVERSION_CURRENT)
+							project_output.inversion_status = MBNA_INVERSION_OLD;
+						project_output.grid_status = MBNA_GRID_OLD;
+	
 fprintf(stderr,"Set tie offsets:       %d:%d  %2.2d:%4.4d:%4.4d:%2.2d   %2.2d:%4.4d:%4.4d:%2.2d  %.3f %.3f %.3f\n",
 current_crossing, itie,
 file1->block, crossing->file_id_1, crossing->section_1, tie->snav_1,
 file2->block, crossing->file_id_2, crossing->section_2, tie->snav_2,
 tie->offset_x_m,tie->offset_y_m,tie->offset_z_m);
+						}
 					}
 				}
 			}
@@ -2858,7 +3055,7 @@ tie->offset_x_m,tie->offset_y_m,tie->offset_z_m);
 			file1 = &(project_output.files[crossing->file_id_1]);
 			file2 = &(project_output.files[crossing->file_id_2]);
 			section1 = &(file1->sections[crossing->section_1]);
-			section2 = &(file2->sections[crossing->section_1]);
+			section2 = &(file2->sections[crossing->section_2]);
 			for (itie=0;itie<crossing->num_ties;itie++)
 				{
 				tie = &(crossing->ties[itie]);

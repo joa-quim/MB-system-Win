@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_callbacks.c	2/22/2000
- *    $Id: mbnavadjust_callbacks.c 2272 2016-05-05 01:14:09Z caress $
+ *    $Id: mbnavadjust_callbacks.c 2282 2016-08-26 01:10:17Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -104,7 +104,7 @@ WidgetList	BxWidgetIdsFromNames PROTOTYPE((Widget, char*, char*));
 /*--------------------------------------------------------------------*/
 
 /* id variables */
-static char svn_id[] = "$Id: mbnavadjust_callbacks.c 2272 2016-05-05 01:14:09Z caress $";
+static char svn_id[] = "$Id: mbnavadjust_callbacks.c 2282 2016-08-26 01:10:17Z caress $";
 static char program_name[] = "MBnavadjust";
 
 /* XG variable declarations */
@@ -5053,8 +5053,7 @@ do_fileselection_ok( Widget w, XtPointer client_data, XtPointer call_data)
 	
         /* update datalist files and topography grids */
         mbna_status = MBNA_STATUS_NAVSOLVE;
-        mbnavadjust_updaterawgrid();
-        mbnavadjust_updateadjustedgrid();
+        mbnavadjust_updategrid();
         mbna_status = MBNA_STATUS_GUI;
         do_update_status();
         if (project.modelplot == MB_YES)
@@ -5717,7 +5716,7 @@ do_action_updategrids( Widget w, XtPointer client_data, XtPointer call_data)
     acs = (XmAnyCallbackStruct*)call_data;
 
     mbna_status = MBNA_STATUS_NAVSOLVE;
-    mbnavadjust_updateadjustedgrid();
+    mbnavadjust_updategrid();
     mbna_status = MBNA_STATUS_GUI;
     do_update_status();
     if (project.modelplot == MB_YES)
@@ -6194,7 +6193,7 @@ do_visualize_dismiss_notify(size_t instance)
 void
 do_visualize_sensitivity(void)
 {
-    if (project.grid_status == MBNA_GRID_CURRENT && project.visualization_status == MB_NO)
+    if (project.grid_status != MBNA_GRID_NONE && project.visualization_status == MB_NO)
         XtVaSetValues(pushButton_visualize,
             XmNsensitive, True,
             NULL);

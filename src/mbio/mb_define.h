@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_define.h	4/21/96
- *    $Id: mb_define.h 2264 2016-02-02 19:59:53Z caress $
+ *    $Id: mb_define.h 2282 2016-08-26 01:10:17Z caress $
  *
  *    Copyright (c) 1996-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -73,7 +73,7 @@
 /* MB-system version id */
 #define	MB_VERSION	VERSION
 #define	MB_BUILD_DATE	VERSION_DATE
-#define	MB_SVN		"$Id: mb_define.h 2264 2016-02-02 19:59:53Z caress $"
+#define	MB_SVN		"$Id: mb_define.h 2282 2016-08-26 01:10:17Z caress $"
 
 /* type definitions of signed and unsigned char */
 typedef unsigned char	mb_u_char;
@@ -170,6 +170,17 @@ typedef char mb_longname[MB_LONGNAME_LENGTH];
 
 /* multiply this by radians to get degrees */
 #define RTD	57.2957795130823230000
+
+/* time conversions */
+#define MB_SECINYEAR        31536000.0
+#define MB_SECINDAY            86400.0
+#define MB_SECINHOUR            3600.0
+#define MB_SECINMINUTE            60.0
+#define MB_ISECINYEAR       31536000
+#define MB_ISECINDAY           86400
+#define MB_ISECINHOUR           3600
+#define MB_ISECINMINUTE           60
+#define MB_IMININHOUR             60
 
 /* min max round define */
 #ifndef MIN
@@ -885,6 +896,7 @@ int mb_mergesort(void *base, size_t nmemb,register size_t size, int (*cmp) (cons
 int mb_double_compare(const void *a, const void *b);
 int mb_int_compare(const void *a, const void *b);
 int mb_edit_compare(const void *a, const void *b);
+int mb_edit_compare_coarse(const void *a, const void *b);
 void hilbert(int n, double delta[], double kappa[]);
 void hilbert2(int n, double data[]);
 

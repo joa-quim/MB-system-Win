@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_grdplot.perl	8/6/95
-#    $Id: mbm_grdplot 2264 2016-02-02 19:59:53Z caress $
+#    $Id: mbm_grdplot 2277 2016-06-25 01:54:05Z caress $
 #
 #    Copyright (c) 1993-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -67,7 +67,7 @@
 #   October 19, 1994
 #
 # Version:
-#   $Id: mbm_grdplot 2264 2016-02-02 19:59:53Z caress $
+#   $Id: mbm_grdplot 2277 2016-06-25 01:54:05Z caress $
 #
 #
 $program_name = "mbm_grdplot";
@@ -273,7 +273,7 @@ $zbounds = 		($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_grdplot 2264 2016-02-02 19:59:53Z caress $\n";
+	print "\nVersion: $Id: mbm_grdplot 2277 2016-06-25 01:54:05Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which, \n";
 	print "when executed, will generate a Postscript plot of gridded \n";
 	print "data.  Several styles of plots can be generated, including \n";
@@ -1235,46 +1235,61 @@ else
 	$use_scale = 1;
 	}
 
-# now find out the apparent size of the plot
-`echo $xmin $ymin > tmp$$.dat`;
-`echo $xmax $ymin >> tmp$$.dat`;
-`echo $xmax $ymax >> tmp$$.dat`;
-`echo $xmin $ymax >> tmp$$.dat`;
-@projected = `gmt mapproject tmp$$.dat -J$projection$projection_pars -R$bounds_plot 2>&1`;
-#
-if ($verbose > 0)
-	{
-	print "\nCalling GMT program mapproject...\n\tgmt mapproject tmp$$.dat -J$projection$projection_pars -R$bounds_plot \n";
-	}
-`/bin/rm -f tmp$$.dat`;
-$cnt = 0;
-while (@projected)
-	{
-	$line = shift @projected;
-	$cnt++;
 
-	if ($verbose > 0)
-		{
-		print "gmt mapproject output: $line";
-		}
+# now find out the apparent size of the plot using the specified linear scaling
+if (!$geographic && $projection eq "x" && $map_scale)
+    {
+    if ($map_scale =~ /(\S+)\/(\S+)/)
+        {
+        ($xscale,$yscale) = $map_scale =~ /(\S+)\/(\S+)/;
+        }
+    else
+        {
+        ($xscale) = $map_scale =~ /(\S+)/;
+        $yscale = $xscale;
+        }
+    $xxmin = $xmin * $xscale;
+    $xxmax = $xmax * $xscale;
+    $yymin = $ymin * $yscale;
+    $yymax = $ymax * $yscale;
 
-	if ($cnt == 1)
-		{
-		($xxmin,$yymin) = $line =~ /(\S+)\s+(\S+)/;
-		$xxmax = $xxmin;
-		$yymax = $yymin;
-		}
-	else
-		{
-		($xx,$yy) = $line =~ /(\S+)\s+(\S+)/;
-		$xxmin = ($xx < $xxmin ? $xx : $xxmin);
-		$xxmax = ($xx > $xxmax ? $xx : $xxmax);
-		$yymin = ($yy < $yymin ? $yy : $yymin);
-		$yymax = ($yy > $yymax ? $yy : $yymax);
-		}
-	}
-$dxx = $xxmax - $xxmin;
-$dyy = $yymax - $yymin;
+    $dxx = $xxmax - $xxmin;
+    $dyy = $yymax - $yymin;
+    }
+
+# or find out the apparent size of the plot using gmt mapproject
+else
+    {
+    `echo $xmin $ymin > tmp$$.dat`;
+    `echo $xmax $ymin >> tmp$$.dat`;
+    `echo $xmax $ymax >> tmp$$.dat`;
+    `echo $xmin $ymax >> tmp$$.dat`;
+    @projected = `gmt mapproject tmp$$.dat -J$projection$projection_pars -R$bounds_plot 2>&1 `;
+    `/bin/rm -f tmp$$.dat`;
+    print "gmt mapproject tmp$$.dat -J$projection$projection_pars -R$bounds_plot\n";
+    
+    while (@projected)
+        {
+            $line = shift @projected;
+        print $line;
+            if(!$xxmin)
+                {
+                ($xxmin,$yymin) = $line =~ /(\S+)\s+(\S+)/;
+                $xxmax = $xxmin;
+                $yymax = $yymin;
+                }
+            else
+                {
+                ($xx,$yy) = $line =~ /(\S+)\s+(\S+)/;
+                $xxmin = ($xx < $xxmin ? $xx : $xxmin);
+                $xxmax = ($xx > $xxmax ? $xx : $xxmax);
+                $yymin = ($yy < $yymin ? $yy : $yymin);
+                $yymax = ($yy > $yymax ? $yy : $yymax);
+                }
+        }
+    $dxx = $xxmax - $xxmin;
+    $dyy = $yymax - $yymin;
+    }
 
 # check for valid scaling
 if ($dxx == 0.0 && $dyy == 0.0)

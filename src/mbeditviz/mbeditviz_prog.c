@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbeditviz_prog.c		5/1/2007
- *    $Id: mbeditviz_prog.c 2276 2016-06-11 05:17:46Z caress $
+ *    $Id: mbeditviz_prog.c 2279 2016-07-08 07:49:17Z caress $
  *
  *    Copyright (c) 2007-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -52,7 +52,7 @@
 #include "mbeditviz.h"
 
 /* id variables */
-static char rcs_id[] = "$Id: mbeditviz_prog.c 2276 2016-06-11 05:17:46Z caress $";
+static char rcs_id[] = "$Id: mbeditviz_prog.c 2279 2016-07-08 07:49:17Z caress $";
 static char program_name[] = "MBeditviz";
 static char help_message[] = "MBeditviz is a bathymetry editor and patch test tool.";
 static char usage_message[] = "mbeditviz [-H -T -V]";
@@ -1148,8 +1148,9 @@ fprintf(stderr,"     Beam bathymetry: %d %f %f %f\n",ibeam,ping->bath[ibeam],pin
 					}
 
 				/* now read and apply the global edits */
-				mbev_status = mb_esf_open(mbev_verbose, program_name, geffile, MB_YES, MBP_ESF_NOWRITE,
-							&(file->esf), &mbev_error);
+				mbev_status = mb_esf_open(mbev_verbose, program_name, geffile,
+										  MB_YES, MBP_ESF_NOWRITE,
+										&(file->esf), &mbev_error);
 				if (mbev_status == MB_SUCCESS)
 					{
 					file->esf_open = MB_YES;
@@ -1200,8 +1201,9 @@ fprintf(stderr,"loaded swathfile:%s file->processed_info_loaded:%d file->process
 swathfile,file->processed_info_loaded,file->process.mbp_edit_mode);
 
 			/* attempt to load bathymetry edits */
-			mbev_status = mb_esf_load(mbev_verbose, program_name, file->path, MB_YES, MBP_ESF_NOWRITE,
-							file->esffile, &(file->esf), &mbev_error);
+			mbev_status = mb_esf_load(mbev_verbose, program_name, file->path,
+									  MB_YES, MBP_ESF_NOWRITE,
+									file->esffile, &(file->esf), &mbev_error);
 			if (mbev_status == MB_SUCCESS)
 				{
 				file->esf_open = MB_YES;
@@ -1215,7 +1217,7 @@ swathfile,file->processed_info_loaded,file->process.mbp_edit_mode);
 			if (file->esf_open == MB_YES)
 				{
 				/* loop over pings applying edits */
-fprintf(stderr,"MBeditviz is applying %d saved edits\n",file->esf.nedit);
+fprintf(stderr,"MBeditviz is applying %d saved edits from version %d esf file %s\n",file->esf.nedit,file->esf.version,file->path);
 				do_mbeditviz_message_on("MBeditviz is applying saved edits...");
 				for (iping=0;iping<file->num_pings;iping++)
 					{
@@ -3359,8 +3361,8 @@ ifile,file->load_status,file->esf_open);
 						else
 							action = MBP_EDIT_ZERO;
 if (mbev_verbose > 0)
-fprintf(stderr,"mb_esf_save: ifile:%d iping:%d ibeam:%d %d action:%d\n",
-ifile,iping,ibeam, ibeam + ping->multiplicity * MB_ESF_MULTIPLICITY_FACTOR, action);
+fprintf(stderr,"mb_esf_save: ifile:%d time_d:%.6f iping:%d multiplicity:%d ibeam:%d %d action:%d\n",
+ifile,ping->time_d,iping,ping->multiplicity,ibeam, ibeam + ping->multiplicity * MB_ESF_MULTIPLICITY_FACTOR, action);
 						mb_esf_save(mbev_verbose, &(file->esf),
 								ping->time_d, ibeam + ping->multiplicity * MB_ESF_MULTIPLICITY_FACTOR,
 								action, &mbev_error);
@@ -4087,8 +4089,9 @@ ifile, iping, ibeam, beamflag, flush); */
 			/* open esf and ess files if not already open */
 			if (file->esf_open == MB_NO)
 				{
-				mbev_status = mb_esf_load(mbev_verbose, program_name, file->path, MB_NO, MBP_ESF_APPEND,
-								file->esffile, &(file->esf), &mbev_error);
+				mbev_status = mb_esf_load(mbev_verbose, program_name, file->path,
+										MB_NO, MBP_ESF_APPEND,
+										file->esffile, &(file->esf), &mbev_error);
 				if (mbev_status == MB_SUCCESS)
 					{
 					file->esf_open = MB_YES;

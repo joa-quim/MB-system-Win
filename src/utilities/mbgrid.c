@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgrid.c	5/2/94
- *    $Id: mbgrid.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbgrid.c 2282 2016-08-26 01:10:17Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -135,7 +135,7 @@ int mbgrid_weight(int verbose, double foot_a, double foot_b,
 FILE	*outfp;
 
 /* program identifiers */
-static char rcs_id[] = "$Id: mbgrid.c 2268 2016-03-15 02:11:26Z caress $";
+static char rcs_id[] = "$Id: mbgrid.c 2282 2016-08-26 01:10:17Z caress $";
 char program_name[] = "mbgrid";
 char help_message[] =  "mbgrid is an utility used to grid bathymetry, amplitude, or \nsidescan data contained in a set of swath sonar data files.  \nThis program uses one of four algorithms (gaussian weighted mean, \nmedian filter, minimum filter, maximum filter) to grid regions \ncovered swaths and then fills in gaps between \nthe swaths (to the degree specified by the user) using a minimum\ncurvature algorithm.";
 char usage_message[] = "mbgrid -Ifilelist -Oroot \
@@ -1690,9 +1690,9 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);*/
 		    /* check for "fast bathymetry" or "fbt" file */
 		    if (datatype == MBGRID_DATA_TOPOGRAPHY
 			    || datatype == MBGRID_DATA_BATHYMETRY)
-			{
-			mb_get_fbt(verbose, rfile, &rformat, &error);
-			}
+				{
+				mb_get_fbt(verbose, rfile, &rformat, &error);
+				}
 
 		    /* call mb_read_init() */
 		    if ((status = mb_read_init(
@@ -1700,21 +1700,21 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);*/
 			btime_i,etime_i,speedmin,timegap,
 			&mbio_ptr,&btime_d,&etime_d,
 			&beams_bath,&beams_amp,&pixels_ss,&error)) != MB_SUCCESS)
-			{
-			mb_error(verbose,error,&message);
-			fprintf(outfp,"\nMBIO Error returned from function <mb_read_init>:\n%s\n",message);
-			fprintf(outfp,"\nMultibeam File <%s> not initialized for reading\n",rfile);
-			fprintf(outfp,"\nProgram <%s> Terminated\n",
-				program_name);
-			mb_memory_clear(verbose, &error);
-			exit(error);
-			}
+				{
+				mb_error(verbose,error,&message);
+				fprintf(outfp,"\nMBIO Error returned from function <mb_read_init>:\n%s\n",message);
+				fprintf(outfp,"\nMultibeam File <%s> not initialized for reading\n",rfile);
+				fprintf(outfp,"\nProgram <%s> Terminated\n",
+					program_name);
+				mb_memory_clear(verbose, &error);
+				exit(error);
+				}
 
 		    /* get mb_io_ptr */
 		    mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
                     
-                    /* get topography type */
-                    status = mb_sonartype(verbose, mbio_ptr, mb_io_ptr->store_data, &topo_type, &error);
+            /* get topography type */
+            status = mb_sonartype(verbose, mbio_ptr, mb_io_ptr->store_data, &topo_type, &error);
 
 		    /* allocate memory for reading data arrays */
 		    if (error == MB_ERROR_NO_ERROR)
@@ -1744,15 +1744,15 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);*/
 
 		    /* if error initializing memory then quit */
 		    if (error != MB_ERROR_NO_ERROR)
-			{
-			mb_error(verbose,error,&message);
-			fprintf(outfp,"\nMBIO Error allocating data arrays:\n%s\n",
-				message);
-			fprintf(outfp,"\nProgram <%s> Terminated\n",
-				program_name);
-			mb_memory_clear(verbose, &error);
-			exit(error);
-			}
+				{
+				mb_error(verbose,error,&message);
+				fprintf(outfp,"\nMBIO Error allocating data arrays:\n%s\n",
+					message);
+				fprintf(outfp,"\nProgram <%s> Terminated\n",
+					program_name);
+				mb_memory_clear(verbose, &error);
+				exit(error);
+				}
 
 		    /* loop over reading */
 		    while (error <= MB_ERROR_NO_ERROR)

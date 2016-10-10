@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_grdtiff.perl	11/3/1999
-#    $Id: mbm_grdtiff 2264 2016-02-02 19:59:53Z caress $
+#    $Id: mbm_grdtiff 2279 2016-07-08 07:49:17Z caress $
 #
 #    Copyright (c) 1999-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -47,7 +47,7 @@
 #   October 19, 1994
 #
 # Version:
-#   $Id: mbm_grdtiff 2264 2016-02-02 19:59:53Z caress $
+#   $Id: mbm_grdtiff 2279 2016-07-08 07:49:17Z caress $
 #
 #
 #
@@ -151,7 +151,7 @@ $zbounds = 		($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_grdtiff 2264 2016-02-02 19:59:53Z caress $\n";
+	print "\nVersion: $Id: mbm_grdtiff 2279 2016-07-08 07:49:17Z caress $\n";
         print "\nMacro to generate a shellscript which, when executed, will \n";
         print "generate a geographically located TIFF image of gridded \n";
         print "data. The primary purpose of this macro is to allow the simple, \n";
@@ -1325,19 +1325,27 @@ if ($file_slope)
 
 # display image on screen if desired
 print FCMD "#\n# Run $img_viewer\n";
-if ($no_view_tiff)
+if ($img_viewer eq "feh")
 	{
-        print FCMD "#if (!(\$#argv > 0 && (\"\$1\" == \"-N\" || \"\$1\" == \"-n\"))) then\n";
-	print FCMD "#echo Running $img_viewer in background...\n";
-	print FCMD "#$img_viewer $tiffile &\n";
-        print FCMD "#endif\n";
+	$img_viewer_flag = "--scale-down";
 	}
 else
 	{
-        print FCMD "if (!(\$#argv > 0 && (\"\$1\" == \"-N\" || \"\$1\" == \"-n\"))) then\n";
+	$img_viewer_flag = " ";
+	}
+if ($no_view_tiff)
+	{
+    print FCMD "#if (!(\$#argv > 0 && (\"\$1\" == \"-N\" || \"\$1\" == \"-n\"))) then\n";
+	print FCMD "#echo Running $img_viewer in background...\n";
+	print FCMD "#$img_viewer $img_viewer_flag $tiffile &\n";
+    print FCMD "#endif\n";
+	}
+else
+	{
+    print FCMD "if (!(\$#argv > 0 && (\"\$1\" == \"-N\" || \"\$1\" == \"-n\"))) then\n";
 	print FCMD "echo Running $img_viewer in background...\n";
-	print FCMD "$img_viewer $tiffile &\n";
-        print FCMD "endif\n";
+	print FCMD "$img_viewer $img_viewer_flag $tiffile &\n";
+    print FCMD "endif\n";
 	}
 
 # claim it's all over

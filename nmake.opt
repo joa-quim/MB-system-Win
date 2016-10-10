@@ -44,7 +44,7 @@ GMTINCDIR    = c:/progs_cygw/GMTdev/gmt5/trunk/WIN$(BITS)/include/gmt
 #GMTINCDIR    = c:/progs_cygw/GMTdev/gmt5/trunk/src
 
 ### set projlib
-GDALINCDIR   = C:/programs/GDALtrunk/gdal/compileds/VC12_$(BITS)/include
+GDALINCDIR = C:/programs/compa_libs/gdal/compileds/VC12_$(BITS)/include
 PROJINCDIR = C:/programs/compa_libs/proj4/compileds/$(LIB_CC)/include/
 FFTW3LIB   = C:/programs/compa_libs/fftw-3.3.4/compileds/$(LIB_CC)/lib/libfftw-3.3.lib 
 FFTW3INC   = C:/programs/compa_libs/fftw-3.3.4/compileds/$(LIB_CC)/include

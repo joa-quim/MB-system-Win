@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust.h	6/24/95
- *    $Id: mbnavadjust.h 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbnavadjust.h 2282 2016-08-26 01:10:17Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -256,8 +256,7 @@ int	mbnavadjust_autosetsvsvertical(void);
 int	mbnavadjust_zerozoffsets(void);
 int	mbnavadjust_invertnav(void);
 int	mbnavadjust_applynav(void);
-int mbnavadjust_updaterawgrid(void);
-int mbnavadjust_updateadjustedgrid(void);
+int mbnavadjust_updategrid(void);
 int	mbnavadjust_modelplot_plot(void);
 int	mbnavadjust_set_modelplot_graphics(void *modp_xgid, int *modp_borders);
 int	mbnavadjust_modelplot_plot_timeseries(void);
