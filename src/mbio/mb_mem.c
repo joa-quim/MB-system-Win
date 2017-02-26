@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_mem.c	3/1/93
- *    $Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -47,7 +47,7 @@ static int	mb_alloc_overflow = MB_NO;
 /* Local debug define */
 /* #define MB_MEM_DEBUG 1 */
 
-static char svn_id[]="$Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $";
+static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_mem_debug_on(int verbose, int *error)
@@ -911,19 +911,31 @@ int mb_memory_list(int verbose, int *error)
 		}
 
 	/* print debug statements */
-	if ((verbose >= 4  || mb_mem_debug) && n_mb_alloc > 0)
+	if (verbose >= 4  || mb_mem_debug)
 		{
-		fprintf(stderr,"\ndbg4  Allocated memory list in MBIO function <%s>\n",
-			function_name);
-		for (i=0;i<n_mb_alloc;i++)
-			fprintf(stderr,"dbg6       i:%d  ptr:%p  size:%zu source:%s line:%d\n",
-				i,(void *)mb_alloc_ptr[i],mb_alloc_size[i],
-				mb_alloc_sourcefile[i],mb_alloc_sourceline[i]);
+		if (n_mb_alloc > 0)
+			{
+			fprintf(stderr,"\ndbg4  Allocated memory list in MBIO function <%s>\n",
+				function_name);
+			for (i=0;i<n_mb_alloc;i++)
+				fprintf(stderr,"dbg6       i:%d  ptr:%p  size:%zu source:%s line:%d\n",
+					i,(void *)mb_alloc_ptr[i],mb_alloc_size[i],
+					mb_alloc_sourcefile[i],mb_alloc_sourceline[i]);
+			}
+		else
+			{
+			fprintf(stderr,"\ndbg4  No memory currently allocated in MBIO function <%s>\n",
+				function_name);
+			}
 		}
-	else if (verbose >= 4 || mb_mem_debug)
+	else if (n_mb_alloc > 0)
 		{
-		fprintf(stderr,"\ndbg4  No memory currently allocated in MBIO function <%s>\n",
-			function_name);
+		fprintf(stderr,"\nWarning: some objects are still allocated in memory:\n");
+		for (i=0;i<n_mb_alloc;i++)
+			fprintf(stderr,"     i:%d  ptr:%p  size:%zu source:%s line:%d\n",
+					i,(void *)mb_alloc_ptr[i],mb_alloc_size[i],
+					mb_alloc_sourcefile[i],mb_alloc_sourceline[i]);
+		fprintf(stderr,"Probable failure in MB-System garbage collection...\n");
 		}
 
 	/* assume success */
@@ -948,7 +960,7 @@ int mb_memory_list(int verbose, int *error)
 int mb_register_array(int verbose, void *mbio_ptr,
 		int type, size_t size, void **handle, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_register_array";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -975,19 +987,19 @@ int mb_register_array(int verbose, void *mbio_ptr,
 	if (mb_io_ptr->n_regarray >= mb_io_ptr->n_regarray_alloc)
 		{
 		mb_io_ptr->n_regarray_alloc += MB_MEMORY_ALLOC_STEP;
-		status = mb_realloc(verbose, mb_io_ptr->n_regarray_alloc * sizeof(void *),
+		status = mb_reallocd(verbose, __FILE__, __LINE__,  mb_io_ptr->n_regarray_alloc * sizeof(void *),
 					(void **)&(mb_io_ptr->regarray_handle), error);
 		if (status == MB_SUCCESS)
-		status = mb_realloc(verbose, mb_io_ptr->n_regarray_alloc * sizeof(void *),
+		status = mb_reallocd(verbose, __FILE__, __LINE__,  mb_io_ptr->n_regarray_alloc * sizeof(void *),
 					(void **)&(mb_io_ptr->regarray_ptr), error);
 		if (status == MB_SUCCESS)
-		status = mb_realloc(verbose, mb_io_ptr->n_regarray_alloc * sizeof(void *),
+		status = mb_reallocd(verbose, __FILE__, __LINE__,  mb_io_ptr->n_regarray_alloc * sizeof(void *),
 					(void **)&(mb_io_ptr->regarray_oldptr), error);
 		if (status == MB_SUCCESS)
-		status = mb_realloc(verbose, mb_io_ptr->n_regarray_alloc * sizeof(int),
+		status = mb_reallocd(verbose, __FILE__, __LINE__,  mb_io_ptr->n_regarray_alloc * sizeof(int),
 					(void **)&(mb_io_ptr->regarray_type), error);
 		if (status == MB_SUCCESS)
-		status = mb_realloc(verbose, mb_io_ptr->n_regarray_alloc * sizeof(size_t),
+		status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->n_regarray_alloc * sizeof(size_t),
 					(void **)&(mb_io_ptr->regarray_size), error);
 		for (i=mb_io_ptr->n_regarray;i<mb_io_ptr->n_regarray_alloc;i++)
 			{
@@ -1015,7 +1027,7 @@ int mb_register_array(int verbose, void *mbio_ptr,
 		/* allocate the array - always allocate at least one dimension so the pointer is non-null */
 		if (nalloc <= 0)
 			nalloc = 1;
-		status = mb_realloc(verbose, nalloc * size,
+		status = mb_reallocd(verbose, __FILE__, __LINE__, nalloc * size,
 					handle, error);
 		if (status == MB_SUCCESS)
 			{
@@ -1053,7 +1065,7 @@ mb_io_ptr->regarray_size[mb_io_ptr->n_regarray-1]);*/
 int mb_update_arrays(int verbose, void *mbio_ptr,
 		int nbath, int namp, int nss, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_update_arrays";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1118,31 +1130,31 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 
 		/* allocate mb_io_ptr arrays */
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(char),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(char),
 					(void **)&mb_io_ptr->beamflag,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(double),
 					(void **)&mb_io_ptr->bath,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(double),
 					(void **)&mb_io_ptr->bath_acrosstrack,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(double),
 					(void **)&mb_io_ptr->bath_alongtrack,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(int),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(int),
 					(void **)&mb_io_ptr->bath_num,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(char),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(char),
 					(void **)&mb_io_ptr->new_beamflag,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_bath,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_bath_acrosstrack,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_bath_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_bath_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_bath_alongtrack,error);
 		for (i=mb_io_ptr->beams_bath_max;i<mb_io_ptr->beams_bath_alloc;i++)
 			{
@@ -1181,7 +1193,7 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 				{
 				mb_io_ptr->regarray_oldptr[i] = mb_io_ptr->regarray_ptr[i];
 				handle = (void **)(mb_io_ptr->regarray_handle[i]);
-				status = mb_realloc(verbose,
+				status = mb_reallocd(verbose, __FILE__, __LINE__, 
 						mb_io_ptr->beams_bath_alloc * mb_io_ptr->regarray_size[i],
 						handle, error);
 				mb_io_ptr->regarray_ptr[i] = *handle;
@@ -1208,13 +1220,13 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 			}
 
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_amp_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_amp_alloc*sizeof(double),
 					(void **)&mb_io_ptr->amp,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_amp_alloc*sizeof(int),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_amp_alloc*sizeof(int),
 					(void **)&mb_io_ptr->amp_num,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->beams_amp_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->beams_amp_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_amp,error);
 		for (i=mb_io_ptr->beams_amp_max;i<mb_io_ptr->beams_amp_alloc;i++)
 			{
@@ -1233,7 +1245,7 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 				{
 				mb_io_ptr->regarray_oldptr[i] = mb_io_ptr->regarray_ptr[i];
 				handle = (void **)(mb_io_ptr->regarray_handle[i]);
-				status = mb_realloc(verbose,
+				status = mb_reallocd(verbose, __FILE__, __LINE__, 
 						mb_io_ptr->beams_amp_alloc * mb_io_ptr->regarray_size[i],
 						handle, error);
 				mb_io_ptr->regarray_ptr[i] = *handle;
@@ -1260,25 +1272,25 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 			}
 
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(double),
 					(void **)&mb_io_ptr->ss,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(double),
 					(void **)&mb_io_ptr->ss_acrosstrack,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(double),
 					(void **)&mb_io_ptr->ss_alongtrack,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(int),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(int),
 					(void **)&mb_io_ptr->ss_num,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_ss,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_ss_acrosstrack,error);
 		if (status == MB_SUCCESS)
-			status = mb_realloc(verbose,mb_io_ptr->pixels_ss_alloc*sizeof(double),
+			status = mb_reallocd(verbose, __FILE__, __LINE__, mb_io_ptr->pixels_ss_alloc*sizeof(double),
 					(void **)&mb_io_ptr->new_ss_alongtrack,error);
 		for (i=mb_io_ptr->pixels_ss_max;i<mb_io_ptr->pixels_ss_alloc;i++)
 			{
@@ -1301,7 +1313,7 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 				{
 				mb_io_ptr->regarray_oldptr[i] = mb_io_ptr->regarray_ptr[i];
 				handle = (void **)(mb_io_ptr->regarray_handle[i]);
-				status = mb_realloc(verbose,
+				status = mb_reallocd(verbose, __FILE__, __LINE__, 
 						mb_io_ptr->pixels_ss_alloc * mb_io_ptr->regarray_size[i],
 						handle, error);
 				mb_io_ptr->regarray_ptr[i] = *handle;
@@ -1326,25 +1338,25 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 			}
 
 		/* free the standard arrays */
-		status = mb_free(verbose,(void **)&mb_io_ptr->beamflag,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->bath,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->amp,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->bath_acrosstrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->bath_alongtrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->bath_num,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->amp_num,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->ss,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->ss_acrosstrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->ss_alongtrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->ss_num,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->beamflag,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_bath,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_amp,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_bath_acrosstrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_bath_alongtrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_ss,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_ss_acrosstrack,error);
-		status = mb_free(verbose,(void **)&mb_io_ptr->new_ss_alongtrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->beamflag,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->amp,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath_acrosstrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath_alongtrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath_num,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->amp_num,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss_acrosstrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss_alongtrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss_num,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->beamflag,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_bath,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_amp,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_bath_acrosstrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_bath_alongtrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_ss,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_ss_acrosstrack,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_ss_alongtrack,error);
 
 		/* free the mb_io structure */
 		status = mb_free(verbose,(void **)&mb_io_ptr,error);
@@ -1387,7 +1399,7 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 int mb_update_arrayptr(int verbose, void *mbio_ptr,
 		void **handle, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_update_arrayptr";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1440,7 +1452,7 @@ fprintf(stderr,"\n");*/
 /*--------------------------------------------------------------------*/
 int mb_list_arrays(int verbose, void *mbio_ptr, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_list_arrays";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1460,7 +1472,7 @@ int mb_list_arrays(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* look for handle in registered arrays */
-	fprintf(stderr,"\nRegistered Array List:\n");
+	fprintf(stderr,"\nRegistered Array List (%d arrays):\n", mb_io_ptr->n_regarray);
 	for (i=0;i<mb_io_ptr->n_regarray;i++)
 		{
 		fprintf(stderr,"Array %d: handle:%p ptr:%p type:%d size:%zu\n",
@@ -1485,7 +1497,7 @@ int mb_list_arrays(int verbose, void *mbio_ptr, int *error)
 /*--------------------------------------------------------------------*/
 int mb_deall_ioarrays(int verbose, void *mbio_ptr, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2261 2016-01-07 01:49:22Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_deall_ioarrays";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1505,25 +1517,25 @@ int mb_deall_ioarrays(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* deallocate mb_io_ptr arrays */
-	status = mb_free(verbose, (void **)&mb_io_ptr->beamflag,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->bath,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->bath_acrosstrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->bath_alongtrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->bath_num,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_beamflag,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_bath,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_bath_acrosstrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_bath_alongtrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->amp,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->amp_num,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_amp,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->ss,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->ss_acrosstrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->ss_alongtrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->ss_num,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_ss,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_ss_acrosstrack,error);
-	status = mb_free(verbose, (void **)&mb_io_ptr->new_ss_alongtrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->beamflag,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath_acrosstrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath_alongtrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->bath_num,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_beamflag,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_bath,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_bath_acrosstrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_bath_alongtrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->amp,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->amp_num,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_amp,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss_acrosstrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss_alongtrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->ss_num,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_ss,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_ss_acrosstrack,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->new_ss_alongtrack,error);
 	mb_io_ptr->beams_bath_max = 0;
 	mb_io_ptr->beams_bath_alloc = 0;
 	mb_io_ptr->beams_amp_max = 0;
@@ -1538,23 +1550,23 @@ int mb_deall_ioarrays(int verbose, void *mbio_ptr, int *error)
 /*fprintf(stderr,"i:%d registered array: stored handle:%x ptr:%x\n",
 i,mb_io_ptr->regarray_handle[mb_io_ptr->n_regarray-1],
 mb_io_ptr->regarray_ptr[mb_io_ptr->n_regarray-1]);*/
-		if (status == MB_SUCCESS)
-			status = mb_free(verbose, (void **)(mb_io_ptr->regarray_handle[i]), error);
+		if (status == MB_SUCCESS && mb_io_ptr->regarray_handle[i] != NULL)
+			status = mb_freed(verbose, __FILE__, __LINE__, (void **)(mb_io_ptr->regarray_handle[i]), error);
 		}
 	mb_io_ptr->n_regarray = 0;
 	mb_io_ptr->n_regarray_alloc = 0;
 
 	/* deallocate registry itself */
 	if (status == MB_SUCCESS)
-		status = mb_free(verbose, (void **)&(mb_io_ptr->regarray_handle), error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&(mb_io_ptr->regarray_handle), error);
 	if (status == MB_SUCCESS)
-		status = mb_free(verbose, (void **)&(mb_io_ptr->regarray_ptr), error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&(mb_io_ptr->regarray_ptr), error);
 	if (status == MB_SUCCESS)
-		status = mb_free(verbose, (void **)&(mb_io_ptr->regarray_oldptr), error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&(mb_io_ptr->regarray_oldptr), error);
 	if (status == MB_SUCCESS)
-		status = mb_free(verbose, (void **)&(mb_io_ptr->regarray_type), error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&(mb_io_ptr->regarray_type), error);
 	if (status == MB_SUCCESS)
-		status = mb_free(verbose, (void **)&(mb_io_ptr->regarray_size), error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&(mb_io_ptr->regarray_size), error);
 
 	/* print output debug statements */
 	if (verbose >= 2 || mb_mem_debug)

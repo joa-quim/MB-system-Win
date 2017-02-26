@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_netcdf.c	4/11/2002
- *	$Id: mbsys_netcdf.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_netcdf.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2002-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -36,7 +36,7 @@
 #include "mb_define.h"
 #include "mbsys_netcdf.h"
 
-static char rcs_id[]="$Id: mbsys_netcdf.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_netcdf.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_netcdf_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -1209,7 +1209,7 @@ int mbsys_netcdf_deall(int verbose, void *mbio_ptr, void **store_ptr,
 	    status = mb_freed(verbose,__FILE__, __LINE__, (void **)&store->mbVelProfilTime, error);
 
 	/* deallocate memory for data structure */
-	status = mb_free(verbose,store_ptr,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)store_ptr,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

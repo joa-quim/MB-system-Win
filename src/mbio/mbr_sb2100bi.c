@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_sb2100bi.c	12/23/2004
- *	$Id: mbr_sb2100bi.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbr_sb2100bi.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1997-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -439,7 +439,7 @@ Record End                      03338           2       varies  unsigned short\n
 /* read & write buffer */
 char	buffer[4*MBSYS_SB2100_PIXELS];
 
-static char rcs_id[]="$Id: mbr_sb2100bi.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbr_sb2100bi.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_sb2100b1(int verbose, void *mbio_ptr, int *error)
@@ -881,7 +881,7 @@ int mbr_alm_sb2100bi(int verbose, void *mbio_ptr, int *error)
 	/* allocate memory for data structure */
 	mb_io_ptr->structure_size = sizeof(struct mbsys_sb2100_struct);
 	mb_io_ptr->data_structure_size = 0;
-	status = mb_malloc(verbose,sizeof(struct mbsys_sb2100_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_sb2100_struct),
 				&mb_io_ptr->store_data,error);
 
 	/* get store structure pointer */
@@ -927,7 +927,7 @@ int mbr_dem_sb2100bi(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* deallocate memory for data descriptor */
-	status = mb_free(verbose,&mb_io_ptr->store_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->store_data,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

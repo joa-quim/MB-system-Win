@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_atlas.c	3.00	6/25/01
- *	$Id: mbsys_atlas.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_atlas.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2001-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -45,7 +45,7 @@
 #define MBSYS_ATLAS_C
 #include "mbsys_atlas.h"
 
-static char rcs_id[]="$Id: mbsys_atlas.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_atlas.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_atlas_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -71,7 +71,7 @@ int mbsys_atlas_alloc(int verbose, void *mbio_ptr, void **store_ptr,
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* allocate memory for data structure */
-	status = mb_malloc(verbose,sizeof(struct mbsys_atlas_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_atlas_struct),
 				store_ptr,error);
 
 	/* get data structure pointer */
@@ -325,7 +325,7 @@ int mbsys_atlas_deall(int verbose, void *mbio_ptr, void **store_ptr,
 	store = (struct mbsys_atlas_struct *) *store_ptr;
 
 	/* deallocate memory for data structure */
-	status = mb_free(verbose,store_ptr,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)store_ptr,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

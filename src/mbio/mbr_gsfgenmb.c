@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_gsfgenmb.c	2/27/98
- *	$Id: mbr_gsfgenmb.c 2272 2016-05-05 01:14:09Z caress $
+ *	$Id: mbr_gsfgenmb.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1998-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -72,7 +72,7 @@ int mbr_dem_gsfgenmb(int verbose, void *mbio_ptr, int *error);
 int mbr_rt_gsfgenmb(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_gsfgenmb(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 
-static char rcs_id[]="$Id: mbr_gsfgenmb.c 2272 2016-05-05 01:14:09Z caress $";
+static char rcs_id[]="$Id: mbr_gsfgenmb.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_gsfgenmb(int verbose, void *mbio_ptr, int *error)
@@ -309,7 +309,7 @@ int mbr_alm_gsfgenmb(int verbose, void *mbio_ptr, int *error)
 
 	/* allocate memory for data structure */
 	mb_io_ptr->structure_size = sizeof(struct mbf_gsfgenmb_struct);
-	status = mb_malloc(verbose,mb_io_ptr->structure_size,
+	status = mb_mallocd(verbose, __FILE__, __LINE__, mb_io_ptr->structure_size,
 				&mb_io_ptr->raw_data,error);
 	memset(mb_io_ptr->raw_data, 0, mb_io_ptr->structure_size);
 	status = mbsys_gsf_alloc(verbose,mbio_ptr,
@@ -357,7 +357,7 @@ int mbr_dem_gsfgenmb(int verbose, void *mbio_ptr, int *error)
 
 	/* deallocate memory for data descriptor */
 	/*gsfFree(records);*/
-	status = mb_free(verbose,&mb_io_ptr->raw_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->raw_data,error);
 	status = mbsys_gsf_deall(verbose,mbio_ptr,
 		&mb_io_ptr->store_data,error);
 

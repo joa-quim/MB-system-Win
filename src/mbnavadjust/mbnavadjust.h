@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust.h	6/24/95
- *    $Id: mbnavadjust.h 2282 2016-08-26 01:10:17Z caress $
+ *    $Id: mbnavadjust.h 2292 2017-01-30 18:11:01Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -47,6 +47,7 @@ MBNAVADJUST_EXTERNAL int	mbna_status;
 MBNAVADJUST_EXTERNAL int	mbna_view_list;
 MBNAVADJUST_EXTERNAL int	mbna_view_mode;
 MBNAVADJUST_EXTERNAL int	mbna_invert_mode;
+MBNAVADJUST_EXTERNAL int	mbna_save_frequency;
 MBNAVADJUST_EXTERNAL int	mbna_color_foreground;
 MBNAVADJUST_EXTERNAL int	mbna_color_background;
 MBNAVADJUST_EXTERNAL int	mbna_survey_select;
@@ -135,6 +136,7 @@ MBNAVADJUST_EXTERNAL int	mbna_zoom_y2;
 MBNAVADJUST_EXTERNAL double mbna_smoothweight;
 MBNAVADJUST_EXTERNAL double mbna_offsetweight;
 MBNAVADJUST_EXTERNAL double mbna_zweightfactor;
+MBNAVADJUST_EXTERNAL double mbna_global_tie_influence;
 MBNAVADJUST_EXTERNAL int	mbna_bias_mode;
 MBNAVADJUST_EXTERNAL int	mbna_allow_set_tie;
 

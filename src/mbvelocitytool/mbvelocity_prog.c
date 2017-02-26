@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:    mbvelocitytool.c        6/6/93
- *    $Id: mbvelocity_prog.c 2272 2016-05-05 01:14:09Z caress $
+ *    $Id: mbvelocity_prog.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -51,7 +51,7 @@
 #include "mbvelocity.h"
 
 /* id variables */
-static char rcs_id[] = "$Id: mbvelocity_prog.c 2272 2016-05-05 01:14:09Z caress $";
+static char rcs_id[] = "$Id: mbvelocity_prog.c 2291 2017-01-12 09:20:59Z caress $";
 static char program_name[] = "MBVELOCITYTOOL";
 static char help_message[] = "MBVELOCITYTOOL is an interactive water velocity profile editor  \nused to examine multiple water velocity profiles and to create  \nnew water velocity profiles which can be used for the processing  \nof multibeam sonar data.  In general, this tool is used to  \nexamine water velocity profiles obtained from XBTs, CTDs, or  \ndatabases, and to construct new profiles consistent with these  \nvarious sources of information.";
 static char usage_message[] = "mbvelocitytool [-Byr/mo/da/hr/mn/sc -Eyr/mo/da/hr/mn/sc \n\t-Fformat -Ifile -Ssvpfile -Wsvpfile -V -H]";
@@ -377,7 +377,7 @@ wfile, sfile, ifile, format);
 /* Called by:                                                         */
 /*                  mbvelocity_callbacks.c                            */
 /* Functions called:                                                  */
-/*                  mb_free                                           */
+/*                  mb_freed                                          */
 /*                  mb_memory_list                                    */
 /* Function returns:                                                  */
 /*                  int status                                        */
@@ -591,8 +591,8 @@ int mbvt_set_values(int s_edit, int s_ndisplay,
 /*		     by selecting the "OK" button in the file         */
 /*		     selection widget for an editable file.           */
 /* Functions called:                                                  */
-/*                  mb_free                                           */
-/*                  mb_malloc                                         */
+/*                  mb_freed                                          */
+/*                  mb_mallocd                                        */
 /* Function returns:                                                  */
 /*                  status                                            */
 /*--------------------------------------------------------------------*/
@@ -719,13 +719,13 @@ int mbvt_open_edit_profile(char *file)
 /* This function displays a new editable profile.                     */
 /* Called by:                                                         */
 /*                  action_new_profile in mbvelocity_callbacks.c      */
-/*		      which is called by selecting the "NEW EDITABLE  */
+/*		      		which is called by selecting the "NEW EDITABLE    */
 /*                    PROFILE" from the "FILE" pulldown menu.         */
-/*		    - also called from mbvt_process_multibeam()	      */
-/*		      if no editable profile already exists.	      */
+/*		    -       also called from mbvt_process_multibeam()	      */
+/*		      		if no editable profile already exists.	          */
 /* Functions called:                                                  */
-/*                  mb_free                                           */
-/*		    mb_malloc                                         */
+/*                  mb_freed                                          */
+/*		            mb_mallocd                                        */
 /* Function returns:                                                  */
 /*                  status                                            */
 /*--------------------------------------------------------------------*/
@@ -1169,7 +1169,7 @@ int mbvt_save_residuals(char *file)
 /* Called by:                                                         */
 /*                  open_file_ok in mbvelocity_callbacks.c                */
 /* Functions called:                                                  */
-/*                  mb_malloc                                         */
+/*                  mb_mallocd                                        */
 /* Function returns:                                                  */
 /*                  status                                            */
 /*--------------------------------------------------------------------*/
@@ -1344,7 +1344,7 @@ int mbvt_get_display_names(int *nlist, char *list[MAX_PROFILES])
 /* Called by:                                                         */
 /*                  none - not in use                                 */
 /* Functions called:                                                  */
-/*                  mb_free                                           */
+/*                  mb_freed                                          */
 /* Function returns:                                                  */
 /*                  status                                            */
 /*--------------------------------------------------------------------*/
@@ -2341,11 +2341,11 @@ int mbvt_get_format(char *file, int *form)
 /*                  action_process_mb                                 */
 /*                  open_file_ok                                      */
 /* Functions called:                                                  */
-/*                  mb_malloc                                         */
+/*                  mb_mallocd                                        */
 /*                  mb_format                                         */
 /*                  mb_buffer_close                                   */
 /*                  mb_close                                          */
-/*                  mb_free                                           */
+/*                  mb_freed                                          */
 /*                  mb_read_init                                      */
 /*                  mb_error                                          */
 /*                  mb_buffer_init                                    */
@@ -2846,7 +2846,7 @@ int mbvt_open_swath_file(char *file, int form, int *numload)
 /*                  mbvt_open_swath_file                              */
 /*                  mbvt_quit                                         */
 /* Functions called:                                                  */
-/*                  mb_free                                           */
+/*                  mb_freed                                          */
 /*                  free                                              */
 /* Function returns:                                                  */
 /*                  status                                            */

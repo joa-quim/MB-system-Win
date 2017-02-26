@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_site.c	9/25/2003
- *    $Id: mbview_site.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbview_site.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2003-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -83,7 +83,7 @@ extern char	*mbsystem_library_name;
 /* local variables */
 static char	value_string[MB_PATH_MAXLINE];
 
-static char rcs_id[]="$Id: mbview_site.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbview_site.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_getsitecount(int verbose, size_t instance,
@@ -166,7 +166,7 @@ int mbview_allocsitearrays(int verbose,
 		fprintf(stderr,"dbg2       sitename:                  %p\n", *sitename);
 		}
 
-	/* allocate the arrays using mb_realloc */
+	/* allocate the arrays using mb_reallocd */
 	status = mb_reallocd(verbose,__FILE__,__LINE__,nsite*sizeof(double),(void **)sitelon,error);
 	if (status == MB_SUCCESS)
 		status = mb_reallocd(verbose,__FILE__,__LINE__,nsite*sizeof(double),(void **)sitelat,error);
@@ -233,7 +233,7 @@ int mbview_freesitearrays(int verbose,
 		fprintf(stderr,"dbg2       sitename:                  %p\n", *sitename);
 		}
 
-	/* free the arrays using mb_free */
+	/* free the arrays using mb_freed */
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)sitelon,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)sitelat,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)sitetopo,error);
@@ -1362,8 +1362,8 @@ int mbview_updatesitelist()
 	int	status = MB_SUCCESS;
    	XmString *xstr;
 	int	isite;
-	char	lonstr0[24];
-	char	latstr0[24];
+	char	londstr0[24], lonmstr0[24];
+	char	latdstr0[24], latmstr0[24];
 
 
 	/* print starting debug statements */
@@ -1391,17 +1391,24 @@ int mbview_updatesitelist()
 			for (isite=0;isite<shared.shareddata.nsite;isite++)
 				{
 				/* add list item for each site */
-				mbview_setlonlatstrings(shared.lonlatstyle,
-							shared.shareddata.sites[isite].point.xlon,
+				mbview_setlonlatstrings(shared.shareddata.sites[isite].point.xlon,
 							shared.shareddata.sites[isite].point.ylat,
-							lonstr0, latstr0);
-				sprintf(value_string,"%3d | %s | %s | %.3f | %s | %d | %s",
-					isite, lonstr0, latstr0,
-					shared.shareddata.sites[isite].point.zdata,
-					mbview_colorname[shared.shareddata.sites[isite].color],
-					shared.shareddata.sites[isite].size,
-					shared.shareddata.sites[isite].name);
-    				xstr[isite] = XmStringCreateLocalized(value_string);
+							londstr0, latdstr0,lonmstr0, latmstr0);
+				if (shared.lonlatstyle == MBV_LONLAT_DEGREESDECIMAL)
+					sprintf(value_string,"%3d | %s | %s | %.3f | %s | %d | %s",
+						isite, londstr0, latdstr0,
+						shared.shareddata.sites[isite].point.zdata,
+						mbview_colorname[shared.shareddata.sites[isite].color],
+						shared.shareddata.sites[isite].size,
+						shared.shareddata.sites[isite].name);
+				else
+					sprintf(value_string,"%3d | %s | %s | %.3f | %s | %d | %s",
+						isite, lonmstr0, latmstr0,
+						shared.shareddata.sites[isite].point.zdata,
+						mbview_colorname[shared.shareddata.sites[isite].color],
+						shared.shareddata.sites[isite].size,
+						shared.shareddata.sites[isite].name);
+				xstr[isite] = XmStringCreateLocalized(value_string);
 				}
 
 			/* add list items */

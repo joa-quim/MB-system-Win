@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_profile.c	3/8/2006
- *    $Id: mbview_profile.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbview_profile.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2006-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -82,7 +82,7 @@ static Cardinal 	ac = 0;
 static Arg      	args[256];
 static char		value_text[MB_PATH_MAXLINE];
 
-static char rcs_id[]="$Id: mbview_profile.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbview_profile.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_getprofilecount(int verbose, size_t instance,
@@ -155,7 +155,7 @@ int mbview_allocprofilepoints(int verbose,
 		fprintf(stderr,"dbg2       points:                    %p\n", *points);
 		}
 
-	/* allocate the arrays using mb_realloc */
+	/* allocate the arrays using mb_reallocd */
 	status = mb_reallocd(verbose, __FILE__, __LINE__,
 				npoints * sizeof(struct mbview_profilepoint_struct),
 				(void **)points,error);
@@ -199,7 +199,7 @@ int mbview_freeprofilepoints(int verbose,
 		fprintf(stderr,"dbg2       points:                    %p\n", *points);
 		}
 
-	/* free the arrays using mb_free */
+	/* free the arrays using mb_freed */
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)points,error);
 
 	/* print output debug statements */
@@ -257,7 +257,7 @@ int mbview_allocprofilearrays(int verbose,
 		fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
 		}
 
-	/* allocate the arrays using mb_realloc */
+	/* allocate the arrays using mb_reallocd */
 	status = mb_reallocd(verbose, __FILE__, __LINE__, npoints * sizeof(double), (void **)distance,error);
 	status = mb_reallocd(verbose, __FILE__, __LINE__, npoints * sizeof(double), (void **)zdata,error);
 	status = mb_reallocd(verbose, __FILE__, __LINE__, npoints * sizeof(double), (void **)boundary,error);
@@ -327,7 +327,7 @@ int mbview_freeprofilearrays(int verbose,
 		fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
 		}
 
-	/* free the arrays using mb_free */
+	/* free the arrays using mb_freed */
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)distance,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)zdata,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)boundary,error);

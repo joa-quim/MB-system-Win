@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_format.c	2/18/94
- *    $Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $
+ *    $Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -62,7 +62,7 @@ int mb_datalist_readorg(int verbose,
 		int *error);
 int cvt_to_nix_path(char *path);
 
-static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_format_register(int verbose,
@@ -1603,7 +1603,7 @@ int mb_format(int verbose, int *format, int *error)
 /*--------------------------------------------------------------------*/
 int mb_format_system(int verbose, int *format, int *system, int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_format_system";
 	int	status;
 
@@ -1674,7 +1674,7 @@ int mb_format_dimensions(int verbose, int *format,
 		int *beams_bath_max, int *beams_amp_max, int *pixels_ss_max,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_format_dimensions";
 	int	status;
 
@@ -1744,7 +1744,7 @@ int mb_format_dimensions(int verbose, int *format,
 /*--------------------------------------------------------------------*/
 int mb_format_description(int verbose, int *format, char *description, int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_format_description";
 	int	status;
 
@@ -1811,7 +1811,7 @@ int mb_format_flags(int verbose, int *format,
 		int *variable_beams, int *traveltime, int *beam_flagging,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_format_flags";
 	int	status;
 
@@ -1885,7 +1885,7 @@ int mb_format_source(int verbose, int *format,
 		int *vru_source, int *svp_source,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_format_source";
 	int	status;
 
@@ -1958,7 +1958,7 @@ int mb_format_beamwidth(int verbose, int *format,
 		double *beamwidth_xtrack, double *beamwidth_ltrack,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2271 2016-04-01 19:54:30Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
 	char	*function_name = "mb_format_beamwidth";
 	int	status;
 
@@ -3673,7 +3673,7 @@ int mb_datalist_open(int verbose,
 
 		if ((datalist_ptr->fp = fopen(path,"r")) == NULL)
 			{
-			mb_free(verbose,datalist,error);
+			mb_freed(verbose, __FILE__, __LINE__, (void **)datalist,error);
 			status = MB_FAILURE;
 			*error = MB_ERROR_OPEN_FAIL;
 			}
@@ -3750,7 +3750,7 @@ int mb_datalist_close(int verbose,
 	/* deallocate structure */
 	if (*datalist != NULL)
 		{
-		status = mb_free(verbose,datalist,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)datalist,error);
 		}
 
 	/* print output debug statements */

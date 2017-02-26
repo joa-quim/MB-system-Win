@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_hsldeoih.c	2/11/93
- *	$Id: mbr_hsldeoih.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbr_hsldeoih.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -108,7 +108,7 @@ int mbr_hsldeoih_wr_calibrate(int verbose, FILE *mbfp,
 int mbr_hsldeoih_wr_comment(int verbose, FILE *mbfp,
 		struct mbf_hsldeoih_struct *data, int *error);
 
-static char rcs_id[]="$Id: mbr_hsldeoih.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbr_hsldeoih.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_hsldeoih(int verbose, void *mbio_ptr, int *error)
@@ -344,9 +344,9 @@ int mbr_alm_hsldeoih(int verbose, void *mbio_ptr, int *error)
 	/* allocate memory for data structure */
 	mb_io_ptr->structure_size = sizeof(struct mbf_hsldeoih_struct);
 	mb_io_ptr->data_structure_size = 0;
-	status = mb_malloc(verbose,mb_io_ptr->structure_size,
+	status = mb_mallocd(verbose, __FILE__, __LINE__, mb_io_ptr->structure_size,
 				&mb_io_ptr->raw_data,error);
-	status = mb_malloc(verbose,sizeof(struct mbsys_hsds_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_hsds_struct),
 				&mb_io_ptr->store_data,error);
 
 	/* get pointer to mbio descriptor */
@@ -391,8 +391,8 @@ int mbr_dem_hsldeoih(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* deallocate memory for data descriptor */
-	status = mb_free(verbose,&mb_io_ptr->raw_data,error);
-	status = mb_free(verbose,&mb_io_ptr->store_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->raw_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->store_data,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

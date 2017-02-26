@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_segysegy.c	10/27/2006
- *	$Id: mbr_segysegy.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbr_segysegy.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2006-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -69,7 +69,7 @@ int mbr_dem_segysegy(int verbose, void *mbio_ptr, int *error);
 int mbr_rt_segysegy(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_segysegy(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 
-static char rcs_id[]="$Id: mbr_segysegy.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbr_segysegy.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_segysegy(int verbose, void *mbio_ptr, int *error)
@@ -305,7 +305,7 @@ int mbr_alm_segysegy(int verbose, void *mbio_ptr, int *error)
 	/* allocate memory for data structure */
 	mb_io_ptr->structure_size = 0;
 	mb_io_ptr->data_structure_size = 0;
-	status = mb_malloc(verbose,sizeof(struct mbsys_singlebeam_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_singlebeam_struct),
 				&mb_io_ptr->store_data,error);
 
 	/* get pointer to mbio descriptor */
@@ -345,10 +345,10 @@ int mbr_dem_segysegy(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* deallocate memory for data descriptor */
-	status = mb_free(verbose,&mb_io_ptr->store_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->store_data,error);
 	if (mb_io_ptr->data_structure_size > 0)
 		{
-		status = mb_free(verbose,&mb_io_ptr->raw_data,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->raw_data,error);
 		mb_io_ptr->data_structure_size = 0;
 		}
 

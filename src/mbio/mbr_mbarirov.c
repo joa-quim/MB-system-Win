@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_mbarirov.c	5/20/99
- *	$Id: mbr_mbarirov.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbr_mbarirov.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1999-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -74,7 +74,7 @@ int mbr_mbarirov_wr_data(int verbose, void *mbio_ptr, void *data_ptr, int *error
 
 static char header[] = "Year,Day,Time,Usec,Lat,Lon,East,North,Pres,Head,Alti,Pitch,Roll,PosFlag,PresFlag,HeadFlag,AltiFlag,AttitFlag\n";
 
-static char rcs_id[]="$Id: mbr_mbarirov.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbr_mbarirov.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_mbarirov(int verbose, void *mbio_ptr, int *error)
@@ -310,9 +310,9 @@ int mbr_alm_mbarirov(int verbose, void *mbio_ptr, int *error)
 	/* allocate memory for data structure */
 	mb_io_ptr->structure_size = sizeof(struct mbf_mbarirov_struct);
 	mb_io_ptr->data_structure_size = 0;
-	status = mb_malloc(verbose,mb_io_ptr->structure_size,
+	status = mb_mallocd(verbose, __FILE__, __LINE__, mb_io_ptr->structure_size,
 				&mb_io_ptr->raw_data,error);
-	status = mb_malloc(verbose,sizeof(struct mbsys_singlebeam_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_singlebeam_struct),
 				&mb_io_ptr->store_data,error);
 
 	/* get pointer to mbio descriptor */
@@ -360,8 +360,8 @@ int mbr_dem_mbarirov(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* deallocate memory for data descriptor */
-	status = mb_free(verbose,&mb_io_ptr->raw_data,error);
-	status = mb_free(verbose,&mb_io_ptr->store_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, &mb_io_ptr->raw_data, error);
+	status = mb_freed(verbose, __FILE__, __LINE__, &mb_io_ptr->store_data, error);
 
 	/* print output debug statements */
 	if (verbose >= 2)
@@ -496,7 +496,7 @@ int mbr_rt_mbarirov(int verbose, void *mbio_ptr, void *store_ptr, int *error)
 		store->heading_flag = data->heading_flag;
 		store->altitude_flag = data->altitude_flag;
 		store->attitude_flag = data->attitude_flag;
-		for (i=0;i<MB_COMMENT_MAXLINE;i++)
+		for (i=0;i<MBF_MBARIROV_MAXLINE;i++)
 		    store->comment[i] = data->comment[i];
 		}
 
@@ -563,8 +563,9 @@ int mbr_wt_mbarirov(int verbose, void *mbio_ptr, void *store_ptr, int *error)
 		data->heading_flag = store->heading_flag;
 		data->altitude_flag = store->altitude_flag;
 		data->attitude_flag = store->attitude_flag;
-		for (i=0;i<MB_COMMENT_MAXLINE;i++)
+		for (i=0;i<MBF_MBARIROV_MAXLINE;i++)
 		    data->comment[i] = store->comment[i];
+		data->comment[MBF_MBARIROV_MAXLINE-1] = '\0';
 		}
 
 	/* write next data to file */

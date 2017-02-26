@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbview.h	10/9/2002
- *    $Id: mbview.h 2276 2016-06-11 05:17:46Z caress $
+ *    $Id: mbview.h 2286 2016-11-09 01:33:41Z caress $
  *
  *    Copyright (c); 2002-2016 by
  *    David W. Caress (caress@mbari.org);
@@ -166,6 +166,8 @@
 #define MBV_ROUTE_WAYPOINT_ENDLINE3	8
 #define MBV_ROUTE_WAYPOINT_STARTLINE4	9
 #define MBV_ROUTE_WAYPOINT_ENDLINE4	10
+#define MBV_ROUTE_WAYPOINT_STARTLINE5	11
+#define MBV_ROUTE_WAYPOINT_ENDLINE5	12
 
 /* nav defines */
 #define MBV_NAV_OFF				0

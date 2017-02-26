@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_io.h	4/18/2014
- *    $Id: mbnavadjust_io.h 2275 2016-05-18 01:58:45Z caress $
+ *    $Id: mbnavadjust_io.h 2292 2017-01-30 18:11:01Z caress $
  
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -117,10 +117,14 @@
 #define	MBNA_INTERP_CONSTANT		1
 #define	MBNA_INTERP_INTERP		2
 
-#define MBNA_SMOOTHING_DEFAULT		2
+#define MBNA_SMOOTHING_DEFAULT		3.0
 
-#define MBNA_INTERATION_MAX		10000
-#define MBNA_CONVERGENCE		0.000001
+#define MBNA_Z_OFFSET_RESET_THRESHOLD 0.10
+
+//#define MBNA_INTERATION_MAX		10000
+//#define MBNA_CONVERGENCE		0.000001
+#define MBNA_INTERATION_MAX		10000000
+#define MBNA_CONVERGENCE		0.000000001
 #define MBNA_SMALL			0.1
 #define MBNA_ZSMALL			0.001
 
@@ -146,6 +150,16 @@
 #define	ROUTE_COLOR_PURPLE		7
 
 /* mbnavadjust project and file structures */
+struct mbna_block {
+	int nsnav_start;
+	int nsnav_end;
+	int num_global_ties;
+	double	global_tie_offset_x;
+	double	global_tie_offset_y;
+	double	global_tie_offset_x_m;
+	double	global_tie_offset_y_m;
+	double	global_tie_offset_z_m;
+};
 struct mbna_section {
 	int	num_pings;
 	int	num_beams;
@@ -174,9 +188,6 @@ struct mbna_section {
 	double	snav_lon_offset[MBNA_SNAV_NUM];
 	double	snav_lat_offset[MBNA_SNAV_NUM];
 	double	snav_z_offset[MBNA_SNAV_NUM];
-	double	snav_lon_offset_int[MBNA_SNAV_NUM];
-	double	snav_lat_offset_int[MBNA_SNAV_NUM];
-	double	snav_z_offset_int[MBNA_SNAV_NUM];
 	int	show_in_modelplot;
 	int	modelplot_start_count;
 	int	contoursuptodate;
@@ -299,7 +310,8 @@ struct mbna_project {
 	int		num_ties;
 	double	section_length;
 	int		section_soundings;
-	
+	int		save_count;
+
 	double	lon_min;
 	double	lon_max;
 	double	lat_min;
@@ -337,6 +349,15 @@ struct mbna_contour_vector
     int	    nvector_alloc;
     struct mbna_plot_vector *vector;
     };
+struct mbna_matrix
+	{
+	int m; //rows
+	int n; //columns
+	int ia_dim; // column dimension of ia and a matrices
+	int *nia; // array of number of nonzero elements in each row, cannot be larger than ia_dim
+	int *ia;
+	double *a;
+	};
     
 int mbnavadjust_new_project(int verbose, char *projectpath,
                             double section_length,
@@ -362,8 +383,6 @@ int mbnavadjust_crossing_overlapbounds(int verbose,
                                 double offset_x, double offset_y,
                                 double *lonmin, double *lonmax,
                                 double *latmin, double *latmax,
-                                int *error);
-int mbnavadjust_interpolatesolution(int verbose, struct mbna_project *project,
                                 int *error);
 
 /*--------------------------------------------------------------------*/

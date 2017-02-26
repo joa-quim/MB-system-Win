@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_histplot.perl	3/20/2006
-#    $Id: mbm_histplot 2264 2016-02-02 19:59:53Z caress $
+#    $Id: mbm_histplot 2286 2016-11-09 01:33:41Z caress $
 #
 #    Copyright (c) 2006-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -46,7 +46,7 @@
 #   March 20, 2006
 #
 # Version:
-#   $Id: mbm_histplot 2264 2016-02-02 19:59:53Z caress $
+#   $Id: mbm_histplot 2286 2016-11-09 01:33:41Z caress $
 #
 #
 #
@@ -142,10 +142,10 @@ while (@grdinfo)
 	{
 	$line = shift @grdinfo;
 	if ($line =~
-		/^grdinfo\s+(\S+)\s+\S+/)
+		/^grdinfo\(core\)\s+(\S+)\s+\S+/)
 		{
 		($gmt_version) = $line =~
-			/^grdinfo\s+(\S+)\s+\S+/;
+			/^grdinfo\(core\)\s+(\S+)\s+\S+/;
 		}
 	}
 
@@ -175,7 +175,7 @@ $execute = 		($opt_X || $opt_x);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_histplot 2264 2016-02-02 19:59:53Z caress $\n";
+	print "\nVersion: $Id: mbm_histplot 2286 2016-11-09 01:33:41Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which, \n";
 	print "when executed, will generate a Postscript histogram plot\n";
 	print "of a set of data values.\n";
@@ -869,6 +869,7 @@ if ($fill && $fill ne "N")
 	{
 	printf FCMD "-G$fill \\\n\t";
 	}
+printf FCMD " -N0+pblack -N1+pred -N2+pgreen \\\n\t";
 if ($unix_stamp_on && $unix_stamp)
 	{
 	printf FCMD "-U$unix_stamp \\\n\t";

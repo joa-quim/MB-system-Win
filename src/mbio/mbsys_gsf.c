@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_gsf.c	3.00	8/20/94
- *	$Id: mbsys_gsf.c 2268 2016-03-15 02:11:26Z caress $
+ *	$Id: mbsys_gsf.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1994-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -39,7 +39,7 @@
 #include "mb_define.h"
 #include "mbsys_gsf.h"
 
-static char rcs_id[]="$Id: mbsys_gsf.c 2268 2016-03-15 02:11:26Z caress $";
+static char rcs_id[]="$Id: mbsys_gsf.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_gsf_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -63,7 +63,7 @@ int mbsys_gsf_alloc(int verbose, void *mbio_ptr, void **store_ptr,
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* allocate memory for data structure */
-	status = mb_malloc(verbose,sizeof(struct mbsys_gsf_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_gsf_struct),
 				store_ptr,error);
 	memset(*store_ptr, 0, sizeof(struct mbsys_gsf_struct));
 
@@ -105,7 +105,7 @@ int mbsys_gsf_deall(int verbose, void *mbio_ptr, void **store_ptr,
 	store =  (struct mbsys_gsf_struct *) *store_ptr;
 	records = &(store->records);
 	gsfFree(records);
-	status = mb_free(verbose,store_ptr,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)store_ptr,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

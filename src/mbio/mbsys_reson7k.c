@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson7k.c	3.00	3/23/2004
- *	$Id: mbsys_reson7k.c 2272 2016-05-05 01:14:09Z caress $
+ *	$Id: mbsys_reson7k.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -44,7 +44,7 @@
 /* turn on debug statements here */
 /* #define MSYS_RESON7KR_DEBUG 1 */
 
-static char svn_id[]="$Id: mbsys_reson7k.c 2272 2016-05-05 01:14:09Z caress $";
+static char svn_id[]="$Id: mbsys_reson7k.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_reson7k_zero7kheader(int verbose, s7k_header	*header,
@@ -1434,7 +1434,7 @@ int mbsys_reson7k_deall(int verbose, void *mbio_ptr, void **store_ptr,
 		v2snippettimeseries->detect_sample = 0;
 		v2snippettimeseries->end_sample = 0;
 		v2snippettimeseries->nalloc = 0;
-		if (amplitudephase->amplitude != NULL)
+		if (v2snippettimeseries->amplitude != NULL)
 			status = mb_freed(verbose,__FILE__,__LINE__,(void **)&(v2snippettimeseries->amplitude),error);
 		}
 
@@ -1457,7 +1457,7 @@ int mbsys_reson7k_deall(int verbose, void *mbio_ptr, void **store_ptr,
 		calibratedsnippettimeseries->detect_sample = 0;
 		calibratedsnippettimeseries->end_sample = 0;
 		calibratedsnippettimeseries->nalloc = 0;
-		if (amplitudephase->amplitude != NULL)
+		if (v2snippettimeseries->amplitude != NULL)
 			status = mb_freed(verbose,__FILE__,__LINE__,(void **)&(calibratedsnippettimeseries->amplitude),error);
 		}
 

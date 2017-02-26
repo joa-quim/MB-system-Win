@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_dsl.c	3.00	8/5/96
- *	$Id: mbsys_dsl.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_dsl.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1996-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -40,7 +40,7 @@
 #include "mb_define.h"
 #include "mbsys_dsl.h"
 
-static char rcs_id[]="$Id: mbsys_dsl.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbsys_dsl.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_dsl_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -66,7 +66,7 @@ int mbsys_dsl_alloc(int verbose, void *mbio_ptr, void **store_ptr,
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* allocate memory for data structure */
-	status = mb_malloc(verbose,sizeof(struct mbsys_dsl_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_dsl_struct),
 				store_ptr,error);
 
 	/* get data structure pointer */
@@ -168,7 +168,7 @@ int mbsys_dsl_deall(int verbose, void *mbio_ptr, void **store_ptr,
 		}
 
 	/* deallocate memory for data structure */
-	status = mb_free(verbose,store_ptr,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)store_ptr,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

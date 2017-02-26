@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_prog.c	3/23/00
- *    $Id: mbnavadjust_prog.c 2282 2016-08-26 01:10:17Z caress $
+ *    $Id: mbnavadjust_prog.c 2292 2017-01-30 18:11:01Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -81,7 +81,7 @@ struct swathraw
 	};
 
 /* id variables */
-static char rcs_id[] = "$Id: mbnavadjust_prog.c 2282 2016-08-26 01:10:17Z caress $";
+static char rcs_id[] = "$Id: mbnavadjust_prog.c 2292 2017-01-30 18:11:01Z caress $";
 static char program_name[] = "mbnavadjust";
 static char help_message[] =  "mbnavadjust is an interactive navigation adjustment package for swath sonar data.\n";
 static char usage_message[] = "mbnavadjust [-Iproject -V -H]";
@@ -236,6 +236,7 @@ int mbnavadjust_init_globals()
  	mbna_view_list = MBNA_VIEW_LIST_FILES;
  	mbna_view_mode = MBNA_VIEW_MODE_ALL;
 	mbna_invert_mode = MBNA_INVERT_ZISOLATED;
+	mbna_save_frequency = 10;
 	mbna_color_foreground = BLACK;
 	mbna_color_background = WHITE;
  	project.section_length = 0.14;
@@ -670,6 +671,7 @@ int mbnavadjust_file_new(char *projectname)
 				project.precision = SIGMA_MINIMUM;
 				project.smoothing = MBNA_SMOOTHING_DEFAULT;
 				project.zoffsetwidth = 5.0;
+				project.save_count = 0;
 
 				/* create data directory */
 #ifdef WIN32
@@ -848,6 +850,7 @@ project.name,project.path,project.home,project.datadir);
 				project.num_crossings_alloc = 0;
 				project.crossings = NULL;
 				project.num_ties = 0;
+				project.save_count = 0;
 
 				/* read home file and other files */
 				if ((status = mbnavadjust_read_project(mbna_verbose, projectname, &project, &error)) == MB_FAILURE)
@@ -886,10 +889,7 @@ project.name,project.path,project.home,project.datadir);
                                 section->snav_lon_offset[section->num_snav] = 0.0;
                                 section->snav_lat_offset[section->num_snav] = 0.0;
                                 section->snav_z_offset[section->num_snav] = 0.0;
-                                section->snav_lon_offset_int[section->num_snav] = 0.0;
-                                section->snav_lat_offset_int[section->num_snav] = 0.0;
-                                section->snav_z_offset_int[section->num_snav] = 0.0;
-                                }
+                                 }
                             }
                         }
                     }
@@ -1061,6 +1061,7 @@ int mbnavadjust_import_data(char *path, int iformat)
 
 	/* write updated project */
 	mbnavadjust_write_project(mbna_verbose, &project, &error);
+	project.save_count = 0;
 
  	/* print output debug statements */
 	if (mbna_verbose >= 2)
@@ -1582,60 +1583,30 @@ section->distance, distance, project.section_length);*/
 					(section->num_snav - 0.5)
 					    * project.section_length / (MBNA_SNAV_NUM - 1)))
 					{
-					section->snav_id[section->num_snav]
-						= section->num_pings - 1;
-					section->snav_num_ties[section->num_snav]
-						= 0;
-					section->snav_distance[section->num_snav]
-						= section->distance;
-					section->snav_time_d[section->num_snav]
-						= section->etime_d;
-					section->snav_lon[section->num_snav]
-						= navlon_old;
-					section->snav_lat[section->num_snav]
-						= navlat_old;
-					section->snav_lon_offset[section->num_snav]
-						= 0.0;
-					section->snav_lat_offset[section->num_snav]
-						= 0.0;
-					section->snav_z_offset[section->num_snav]
-						= 0.0;
-					section->snav_lon_offset_int[section->num_snav]
-						= 0.0;
-					section->snav_lat_offset_int[section->num_snav]
-						= 0.0;
-					section->snav_z_offset_int[section->num_snav]
-						= 0.0;
+					section->snav_id[section->num_snav] = section->num_pings - 1;
+					section->snav_num_ties[section->num_snav] = 0;
+					section->snav_distance[section->num_snav] = section->distance;
+					section->snav_time_d[section->num_snav] = section->etime_d;
+					section->snav_lon[section->num_snav] = navlon_old;
+					section->snav_lat[section->num_snav] = navlat_old;
+					section->snav_lon_offset[section->num_snav] = 0.0;
+					section->snav_lat_offset[section->num_snav] = 0.0;
+					section->snav_z_offset[section->num_snav] = 0.0;
 					section->num_snav++;
 					file->num_snavs++;
 					project.num_snavs++;
 					}
 				else if (section->num_snav > 1)
 					{
-					section->snav_id[section->num_snav-1]
-						= section->num_pings - 1;
-					section->snav_num_ties[section->num_snav]
-						= 0;
-					section->snav_distance[section->num_snav-1]
-						= section->distance;
-					section->snav_time_d[section->num_snav-1]
-						= section->etime_d;
-					section->snav_lon[section->num_snav-1]
-						= navlon_old;
-					section->snav_lat[section->num_snav-1]
-						= navlat_old;
-					section->snav_lon_offset[section->num_snav-1]
-						= 0.0;
-					section->snav_lat_offset[section->num_snav-1]
-						= 0.0;
-					section->snav_z_offset[section->num_snav-1]
-						= 0.0;
-					section->snav_lon_offset_int[section->num_snav-1]
-						= 0.0;
-					section->snav_lat_offset_int[section->num_snav-1]
-						= 0.0;
-					section->snav_z_offset_int[section->num_snav-1]
-						= 0.0;
+					section->snav_id[section->num_snav-1] = section->num_pings - 1;
+					section->snav_num_ties[section->num_snav] = 0;
+					section->snav_distance[section->num_snav-1] = section->distance;
+					section->snav_time_d[section->num_snav-1] = section->etime_d;
+					section->snav_lon[section->num_snav-1] = navlon_old;
+					section->snav_lat[section->num_snav-1] = navlat_old;
+					section->snav_lon_offset[section->num_snav-1] = 0.0;
+					section->snav_lat_offset[section->num_snav-1] = 0.0;
+					section->snav_z_offset[section->num_snav-1] = 0.0;
 					}
 				}
 
@@ -1793,30 +1764,15 @@ section->distance, distance, project.section_length);*/
 				if (section->distance >=
 				    section->num_snav * project.section_length / (MBNA_SNAV_NUM - 1))
 					{
-					section->snav_id[section->num_snav]
-						= section->num_pings - 1;
-					section->snav_num_ties[section->num_snav]
-						= 0;
-					section->snav_distance[section->num_snav]
-						= section->distance;
-					section->snav_time_d[section->num_snav]
-						= time_d;
-					section->snav_lon[section->num_snav]
-						= navlon;
-					section->snav_lat[section->num_snav]
-						= navlat;
-					section->snav_lon_offset[section->num_snav]
-						= 0.0;
-					section->snav_lat_offset[section->num_snav]
-						= 0.0;
-					section->snav_z_offset[section->num_snav]
-						= 0.0;
-					section->snav_lon_offset_int[section->num_snav]
-						= 0.0;
-					section->snav_lat_offset_int[section->num_snav]
-						= 0.0;
-					section->snav_z_offset_int[section->num_snav]
-						= 0.0;
+					section->snav_id[section->num_snav] = section->num_pings - 1;
+					section->snav_num_ties[section->num_snav] = 0;
+					section->snav_distance[section->num_snav] = section->distance;
+					section->snav_time_d[section->num_snav] = time_d;
+					section->snav_lon[section->num_snav] = navlon;
+					section->snav_lat[section->num_snav] = navlat;
+					section->snav_lon_offset[section->num_snav] = 0.0;
+					section->snav_lat_offset[section->num_snav] = 0.0;
+					section->snav_z_offset[section->num_snav] = 0.0;
 					section->num_snav++;
 					file->num_snavs++;
 					project.num_snavs++;
@@ -2047,11 +2003,11 @@ beams_bath,beams_amp,pixels_ss);*/
 
 				    /* if error initializing memory then don't read the file */
 				    if (error != MB_ERROR_NO_ERROR)
-					{
-					mb_error(mbna_verbose,error,&error_message);
-					fprintf(stderr,"\nMBIO Error allocating data arrays:\n%s\n",
-						error_message);
-					}
+						{
+						mb_error(mbna_verbose,error,&error_message);
+						fprintf(stderr,"\nMBIO Error allocating data arrays:\n%s\n",
+							error_message);
+						}
 				    }
 
 				/* loop over reading data */
@@ -2074,42 +2030,42 @@ beams_bath,beams_amp,pixels_ss);*/
 						    || error == MB_ERROR_OUT_BOUNDS
 						    || error == MB_ERROR_OUT_TIME
 						    || error == MB_ERROR_SPEED_TOO_SMALL))
-					{
-					status = MB_SUCCESS;
-					error = MB_ERROR_NO_ERROR;
-					}
+						{
+						status = MB_SUCCESS;
+						error = MB_ERROR_NO_ERROR;
+						}
 
 				    /* check for good bathymetry */
 				    if (kind == MB_DATA_DATA
 					    && error == MB_ERROR_NO_ERROR)
-					{
-					mb_coor_scale(mbna_verbose,navlat,&mtodeglon,&mtodeglat);
-					headingx = sin(DTR*heading);
-					headingy = cos(DTR*heading);
-					for (i=0;i<beams_bath;i++)
-					    {
-					    if (mb_beam_ok(beamflag[i]) && bath[i] != 0.0)
 						{
-						lon = navlon
-							+ headingy*mtodeglon
-								* bathacrosstrack[i]
-							+ headingx*mtodeglon
-								* bathalongtrack[i];
-						lat = navlat
-							- headingx*mtodeglat
-								* bathacrosstrack[i]
-							+ headingy*mtodeglat
-								* bathalongtrack[i];
-						ii1 = (lon - section->lonmin) / dx1;
-						jj1 = (lat - section->latmin) / dy1;
-						if (ii1 >= 0 && ii1 < MBNA_MASK_DIM
-						    && jj1 >= 0 && jj1 < MBNA_MASK_DIM)
-						    {
-						    section->coverage[ii1 + jj1 * MBNA_MASK_DIM] = 1;
-						    }
+						mb_coor_scale(mbna_verbose,navlat,&mtodeglon,&mtodeglat);
+						headingx = sin(DTR*heading);
+						headingy = cos(DTR*heading);
+						for (i=0;i<beams_bath;i++)
+							{
+							if (mb_beam_ok(beamflag[i]) && bath[i] != 0.0)
+								{
+								lon = navlon
+									+ headingy*mtodeglon
+										* bathacrosstrack[i]
+									+ headingx*mtodeglon
+										* bathalongtrack[i];
+								lat = navlat
+									- headingx*mtodeglat
+										* bathacrosstrack[i]
+									+ headingy*mtodeglat
+										* bathalongtrack[i];
+								ii1 = (lon - section->lonmin) / dx1;
+								jj1 = (lat - section->latmin) / dy1;
+								if (ii1 >= 0 && ii1 < MBNA_MASK_DIM
+									&& jj1 >= 0 && jj1 < MBNA_MASK_DIM)
+									{
+									section->coverage[ii1 + jj1 * MBNA_MASK_DIM] = 1;
+									}
+								}
+							}
 						}
-					    }
-					}
 				    }
 /*fprintf(stderr,"%s/nvs_%4.4d_%4.4d.mb71\n",
 project.datadir,file->id,k);
@@ -2687,6 +2643,7 @@ int mbnavadjust_poornav_file()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set file %d to have poor nav: %s\n",
@@ -2752,6 +2709,7 @@ int mbnavadjust_goodnav_file()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set file %d to have good nav: %s\n",
@@ -2819,6 +2777,7 @@ int mbnavadjust_fixednav_file()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set file %d to have fixed nav: %s\n",
@@ -2886,6 +2845,7 @@ int mbnavadjust_fixedxynav_file()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set file %d to have fixed xy nav: %s\n",
@@ -2953,6 +2913,7 @@ int mbnavadjust_fixedznav_file()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set file %d to have fixed z nav: %s\n",
@@ -3006,6 +2967,7 @@ int mbnavadjust_set_tie_xyz()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set crossing %d tie %d to fix XYZ\n",
@@ -3059,6 +3021,7 @@ int mbnavadjust_set_tie_xy()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set crossing %d tie %d to fix XY\n",
@@ -3112,6 +3075,7 @@ int mbnavadjust_set_tie_z()
 
 		/* write out updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* add info text */
 		sprintf(message, "Set crossing %d tie %d to fix Z\n",
@@ -3236,7 +3200,12 @@ int mbnavadjust_naverr_save()
 		    section->snav_num_ties[tie->snav_2]++;
 
 		    /* write updated project */
-		    mbnavadjust_write_project(mbna_verbose, &project, &error);
+			project.save_count++;
+			if (project.save_count < 0 || project.save_count >= mbna_save_frequency)
+				{
+				mbnavadjust_write_project(mbna_verbose, &project, &error);
+				project.save_count = 0;
+				}
 
 		    /* add info text */
 		    sprintf(message,"Save Tie Point %d of Crossing %d\n > Nav points: %d:%d:%d %d:%d:%d\n > Offsets: %f %f %f m\n",
@@ -3883,16 +3852,16 @@ int mbnavadjust_naverr_addtie()
 			function_name);
 		}
 
-     	/* get current crossing */
-    	if (project.open == MB_YES
-    		&& project.num_crossings > 0)
-    		{
-     		/* retrieve crossing parameters */
-    		if (mbna_current_crossing >= 0
+    /* get current crossing */
+    if (project.open == MB_YES
+    	&& project.num_crossings > 0)
+    	{
+     	/* retrieve crossing parameters */
+    	if (mbna_current_crossing >= 0
 		    && project.crossings[mbna_current_crossing].num_ties < MBNA_SNAV_NUM)
-    			{
+    		{
 			/* add tie and set number */
-    			crossing = &project.crossings[mbna_current_crossing];
+    		crossing = &project.crossings[mbna_current_crossing];
 			file1 = (struct mbna_file *) &project.files[mbna_file_id_1];
 			file2 = (struct mbna_file *) &project.files[mbna_file_id_2];
 			section1 = (struct mbna_section *) &file1->sections[mbna_section_1];
@@ -3900,7 +3869,7 @@ int mbnavadjust_naverr_addtie()
 			mbna_current_tie = crossing->num_ties;
 			crossing->num_ties++;
 			project.num_ties++;
-    			tie = &crossing->ties[mbna_current_tie];
+    		tie = &crossing->ties[mbna_current_tie];
 
 			if (crossing->status == MBNA_CROSSING_STATUS_NONE)
 				{
@@ -3908,47 +3877,47 @@ int mbnavadjust_naverr_addtie()
 				if (crossing->truecrossing == MB_YES)
  					project.num_truecrossings_analyzed++;
 				}
-    			crossing->status = MBNA_CROSSING_STATUS_SET;
+    		crossing->status = MBNA_CROSSING_STATUS_SET;
 
 			/* look for unused pair of nav points */
-     			tie->snav_1 = -1;
+     		tie->snav_1 = -1;
 			found = MB_NO;
 			while (found == MB_NO)
 			    {
 			    found = MB_YES;
 			    tie->snav_1++;
 			    for (i=0;i<crossing->num_ties-1;i++)
-				{
-				if (crossing->ties[i].snav_1 == tie->snav_1)
-				    found = MB_NO;
-				}
+					{
+					if (crossing->ties[i].snav_1 == tie->snav_1)
+						found = MB_NO;
+					}
 			    }
-     			tie->snav_2 = -1;
+     		tie->snav_2 = -1;
 			found = MB_NO;
 			while (found == MB_NO)
 			    {
 			    found = MB_YES;
 			    tie->snav_2++;
 			    for (i=0;i<crossing->num_ties-1;i++)
-				{
-				if (crossing->ties[i].snav_2 == tie->snav_2)
-				    found = MB_NO;
-				}
+					{
+					if (crossing->ties[i].snav_2 == tie->snav_2)
+						found = MB_NO;
+					}
 			    }
 
 			/* get rest of tie parameters */
 			tie->status = MBNA_TIE_XYZ;
 			tie->snav_1_time_d = section1->snav_time_d[tie->snav_1];
 			tie->snav_2_time_d = section2->snav_time_d[tie->snav_2];
-     			mbna_snav_1 = tie->snav_1;
-     			mbna_snav_2 = tie->snav_2;
-     			mbna_snav_1_time_d = tie->snav_1_time_d;
-     			mbna_snav_2_time_d = tie->snav_2_time_d;
-    			tie->offset_x = mbna_offset_x;
-    			tie->offset_y = mbna_offset_y;
-    			tie->offset_x_m = mbna_offset_x / mbna_mtodeglon;
-    			tie->offset_y_m = mbna_offset_y / mbna_mtodeglat;
-    			tie->offset_z_m = mbna_offset_z;
+			mbna_snav_1 = tie->snav_1;
+			mbna_snav_2 = tie->snav_2;
+			mbna_snav_1_time_d = tie->snav_1_time_d;
+			mbna_snav_2_time_d = tie->snav_2_time_d;
+			tie->offset_x = mbna_offset_x;
+			tie->offset_y = mbna_offset_y;
+			tie->offset_x_m = mbna_offset_x / mbna_mtodeglon;
+			tie->offset_y_m = mbna_offset_y / mbna_mtodeglat;
+			tie->offset_z_m = mbna_offset_z;
 			tie->sigmar1 = mbna_minmisfit_sr1;
 			tie->sigmar2 = mbna_minmisfit_sr2;
 			tie->sigmar3 = mbna_minmisfit_sr3;
@@ -4016,7 +3985,12 @@ int mbnavadjust_naverr_addtie()
 			section2->snav_num_ties[tie->snav_2]++;
 
 			/* write updated project */
-			mbnavadjust_write_project(mbna_verbose, &project, &error);
+			project.save_count++;
+			if (project.save_count < 0 || project.save_count >= mbna_save_frequency)
+				{
+				mbnavadjust_write_project(mbna_verbose, &project, &error);
+				project.save_count = 0;
+				}
 
 			/* add info text */
 			sprintf(message,"Add Tie Point %d of Crossing %d\n > Nav points: %d:%d:%d %d:%d:%d\n > Offsets: %f %f %f m\n",
@@ -4061,20 +4035,20 @@ int mbnavadjust_naverr_addtie()
    		}
 
    	/* set mbna_crossing_select */
-    	if (project.open == MB_YES
+    if (project.open == MB_YES
     		&& project.num_crossings > 0
     		&& mbna_current_crossing >= 0)
 		{
-    		mbna_crossing_select = mbna_current_crossing;
-    		if (mbna_current_tie >= 0)
+    	mbna_crossing_select = mbna_current_crossing;
+    	if (mbna_current_tie >= 0)
 		    mbna_tie_select = mbna_current_tie;
 		else
     		    mbna_tie_select = MBNA_SELECT_NONE;
 		}
-    	else
+    else
 		{
-    		mbna_crossing_select = MBNA_SELECT_NONE;
-    		mbna_tie_select = MBNA_SELECT_NONE;
+    	mbna_crossing_select = MBNA_SELECT_NONE;
+    	mbna_tie_select = MBNA_SELECT_NONE;
 		}
 
  	/* print output debug statements */
@@ -4117,7 +4091,12 @@ int mbnavadjust_naverr_deletetie()
 			mbnavadjust_deletetie(mbna_current_crossing, mbna_current_tie, MBNA_CROSSING_STATUS_SKIP);
 
 			/* write updated project */
-			mbnavadjust_write_project(mbna_verbose, &project, &error);
+			project.save_count++;
+			if (project.save_count < 0 || project.save_count >= mbna_save_frequency)
+				{
+				mbnavadjust_write_project(mbna_verbose, &project, &error);
+				project.save_count = 0;
+				}
   			}
    		}
 
@@ -4212,6 +4191,7 @@ int mbnavadjust_deletetie(int icrossing, int jtie, int delete_status)
 			/* delete tie and set number */
 			for (i=mbna_current_tie;i<crossing->num_ties-1;i++)
 			    {
+			    crossing->ties[i].status = crossing->ties[i+1].status;
 			    crossing->ties[i].snav_1 = crossing->ties[i+1].snav_1;
 			    crossing->ties[i].snav_1_time_d = crossing->ties[i+1].snav_1_time_d;
 			    crossing->ties[i].snav_2 = crossing->ties[i+1].snav_2;
@@ -4458,7 +4438,12 @@ int mbnavadjust_naverr_skip()
 			mbna_current_tie = MBNA_SELECT_NONE;
 	
 			/* write updated project */
-			mbnavadjust_write_project(mbna_verbose, &project, &error);
+			project.save_count++;
+			if (project.save_count < 0 || project.save_count >= mbna_save_frequency)
+				{
+				mbnavadjust_write_project(mbna_verbose, &project, &error);
+				project.save_count = 0;
+				}
 	
 			/* add info text */
 			sprintf(message,"Set crossing %d to be ignored\n",
@@ -4541,7 +4526,12 @@ int mbnavadjust_naverr_unset()
 			crossing->status = MBNA_CROSSING_STATUS_NONE;
 
 			/* write updated project */
-			mbnavadjust_write_project(mbna_verbose, &project, &error);
+			project.save_count++;
+			if (project.save_count < 0 || project.save_count >= mbna_save_frequency)
+				{
+				mbnavadjust_write_project(mbna_verbose, &project, &error);
+				project.save_count = 0;
+				}
 
 			/* add info text */
 			sprintf(message,"Unset crossing %d\n",
@@ -7480,6 +7470,7 @@ mbna_file_select,mbna_survey_select,mbna_section_select);
 
 		/* write updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* turn off message dialog */
 		do_message_off();
@@ -7523,329 +7514,809 @@ mbnavadjust_autosetsvsvertical()
 	char	*function_name = "mbnavadjust_autosetsvsvertical";
 	int	status = MB_SUCCESS;
 	struct mbna_file *file;
-	struct 	mbna_crossing *crossing;
-	struct 	mbna_file *file1, *file2;
-	struct 	mbna_tie *tie;
-	double	overlap_scale;
-	int	nprocess;
-	int	ntie, nfixed, ncols;
-	double	misfit_initial, perturbationsize, perturbationsizeold;
-	double	perturbationchange, convergencecriterea;
-	double	offset_z_m, block_offset_avg_z;
-	double	*x, *xx;
-	int	done, iter, nc1, nc2, navg, use, reset_tie;
+	struct mbna_file *file1;
+	struct mbna_file *file2;
+	struct mbna_section *section;
+	struct mbna_crossing *crossing;
+	struct mbna_tie *tie;
+	struct mbna_matrix matrix;
+	int		*x_continuity = NULL;
+	double	*x_time_d = NULL;
+	double	*u = NULL;
+	double	*v = NULL;
+	double	*w = NULL;
+	double	*x = NULL;
+	double	*se = NULL;
+	double	*b = NULL;
+	int		*nbxy = NULL;
+	int		*nbz = NULL;
+	double	*bxavg = NULL;
+	double	*byavg = NULL;
+	double	*bzavg = NULL;
+	int		*bpoornav = NULL;
+	int		*bxfixstatus = NULL;
+	int		*byfixstatus = NULL;
+	int		*bzfixstatus = NULL;
+	double	*bxfix = NULL;
+	double	*byfix = NULL;
+	double	*bzfix = NULL;
+	
+	int	ifile, isection, isnav, icrossing, itie;
+	
+	int	nnav = 0;
+	int nblock = 0;
+	int ndiscontinuity = 0;
+	int nsmooth = 0;
+	int ntie = 0;
+	int nglobal = 0;
+	int nfixed = 0;
+	int	nrows, ncols;
+	int nblockties = 0;
+	int nblockglobalties = 0;
+	int nrows_ba = 0;
+	int ncols_ba = 0;
+	int nrows_alloc = 0;
+	int ncols_alloc= 0;
+	int	irow, inav;
+	int	index_m, index_n;
+	int	jbvb, jbvb1, jbvb2;
+	int iblock, jblock;
 	int	i, j;
+
+	int	ok_to_invert;
+	double damp;
+	double atol;
+	double btol;
+	double relpr;
+	double conlim;
+	int    itnlim;
+	int    istop_out;
+	int    itn_out;
+	double anorm_out;
+	double acond_out;
+	double rnorm_out;
+	double arnorm_out;
+	double xnorm_out;
+	
+	int nprocess;
+	double offset_z_m;
+	int	reset_tie;
+	double overlap_scale;
 
  	/* print input debug statements */
 	if (mbna_verbose >= 2)
 		{
-		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",
-			function_name);
+		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n", function_name);
 		}
 
-	/* set up and solve overdetermined least squares problem for a z-offset model with
-	 * constant z-offsets within each survey using
-	 * the current z-offset ties. Then, loop over all ties to auto-repick the crossings using
-	 * the z-offset in the new model (that is, pick the best lateral offset that can be found
-	 * using the z-offset in the new model). This should replace the initial ties with ties that
-	 * have self-consistent z-offsets between surveys. Using this option only makes sense if the
-	 * bathymetry was correctly tide-corrected before import into mbnavadjust.
+	/* set up and solve overdetermined least squares problem for a navigation offset model 
+	 * with constant offsets within each block (survey) using the current 
+	 * navigation ties. Then, loop over all ties between different blocks to 
+	 * auto-repick the crossings using the z-offset in the new model (that is,
+	 * pick the best lateral offset that can be found using the z-offset in the 
+	 * new model). This should replace the initial ties with ties that have
+	 * self-consistent z-offsets between surveys. Using this option only makes
+	 * sense if the bathymetry was correctly tide-corrected before import into
+	 * mbnavadjust.
 	 */
-   	if (project.open == MB_YES
-    		&& project.inversion_status != MBNA_INVERSION_NONE
-		&& project.modelplot == MB_YES)
-    		{
-		/* calculate the initial misfit */
-		ntie = 0;
-		misfit_initial = 0.0;
-		for (i=0;i<project.num_crossings;i++)
-		    {
-		    crossing = &project.crossings[i];
-		    if (crossing->status == MBNA_CROSSING_STATUS_SET)
-		    	{
-			ntie += crossing->num_ties;
-			for (j=0;j<crossing->num_ties;j++)
-				{
-				tie = (struct mbna_tie *) &crossing->ties[j];
-				misfit_initial += tie->offset_z_m * tie->offset_z_m;
-				}
-			}
-		    }
-		misfit_initial = sqrt(misfit_initial) / ntie;
-		perturbationsizeold = misfit_initial;
 
-		/* count the number of blocks */
-		project.num_blocks = 0;
-		for (i=0;i<project.num_files;i++)
-		    {
-		    file = &project.files[i];
-		    if (i==0 || file->sections[0].continuity == MB_NO)
-		    	{
-			project.num_blocks++;
-			}
-		    file->block = project.num_blocks - 1;
-		    }
+	/* check if it is ok to invert
+		- if there is a project
+		- enough crossings have been analyzed
+		- no problems with offsets and offset uncertainties */
+    if (project.open == MB_YES
+		&& project.num_crossings > 0
+		&& (project.num_crossings_analyzed >= 10
+		|| project.num_truecrossings_analyzed == project.num_truecrossings))
 
-		/* count the number of fixed files */
-		nfixed = 0;
-		for (i=0;i<project.num_files;i++)
-		    {
-		    file = &project.files[i];
-		    if (file->status == MBNA_FILE_FIXEDNAV)
-		    	nfixed++;
-		    }
-
-		/* if only one block just set average offsets to zero */
-		if (project.num_blocks <= 1)
-		    {
-		    block_offset_avg_z = 0.0;
-		    for (i=0;i<project.num_files;i++)
+		{
+		/* check that all uncertainty magnitudes are nonzero */
+		ok_to_invert = MB_YES;
+		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
 			{
-			file = &project.files[i];
+			crossing = &project.crossings[icrossing];
+			if (crossing->status == MBNA_CROSSING_STATUS_SET)
+				{
+				for (j=0;j<crossing->num_ties;j++)
+					{
+					tie = (struct mbna_tie *) &crossing->ties[j];
+					if (tie->sigmar1 <= 0.0
+						|| tie->sigmar2 <= 0.0
+						|| tie->sigmar3 <= 0.0)
+						{
+						ok_to_invert = MB_NO;
+						fprintf(stderr,"PROBLEM WITH TIE: %4d %2d %2.2d:%3.3d:%3.3d:%2.2d %2.2d:%3.3d:%3.3d:%2.2d %8.2f %8.2f %8.2f | %8.2f %8.2f %8.2f\n",
+								icrossing, j,
+								project.files[crossing->file_id_1].block,
+								crossing->file_id_1,
+								crossing->section_1,
+								tie->snav_1,
+								project.files[crossing->file_id_2].block,
+								crossing->file_id_2,
+								crossing->section_2,
+								tie->snav_2,
+								tie->offset_x_m,
+								tie->offset_y_m,
+								tie->offset_z_m,
+								tie->sigmar1,
+								tie->sigmar2,
+								tie->sigmar3);
+						}
+					}
+				}
+		    }
+
+		/* print out warning */
+		if (ok_to_invert == MB_NO)
+			{
+			fprintf(stderr,"\nThe inversion was not performed because there are one or more zero offset uncertainty values.\n");
+			fprintf(stderr,"Please fix the ties with problems noted above before trying again.\n\n");
+			}
+		}
+
+
+	/* invert if there is a project and enough crossings have been analyzed */
+	if (project.open == MB_YES
+		&& project.num_crossings > 0
+		&& (project.num_crossings_analyzed >= 10
+			|| project.num_truecrossings_analyzed == project.num_truecrossings)
+		&& ok_to_invert == MB_YES)
+
+		{
+		fprintf(stderr,"\nInverting for navigation adjustment model...\n");
+
+		/* set message dialog on */
+		sprintf(message,"Setting up navigation inversion...");
+		do_message_on(message);
+
+		/*----------------------------------------------------------------*/
+		/* Initialize arrays, solution, perturbation                      */
+		/*----------------------------------------------------------------*/
+
+		/* count number of nav points, discontinuities, and blocks */
+		nnav = 0;
+		nblock = 0;
+		ndiscontinuity = 0;
+		nsmooth = 0;
+		for (ifile=0;ifile<project.num_files;ifile++)
+			{
+			file = &project.files[ifile];
+		    if (file->sections[0].continuity == MB_NO)
+				nblock++;
+			for (isection=0;isection<file->num_sections;isection++)
+				{
+				section = &file->sections[isection];
+				nnav += section->num_snav - section->continuity;
+				if (!section->continuity)
+					ndiscontinuity++;
+				}
+			file->block = nblock - 1;
+			file->block_offset_x = 0.0;
+			file->block_offset_y = 0.0;
 			file->block_offset_z = 0.0;
 			}
-		    }
 
-		/* else if more than one block first invert for block offsets  */
-		else if (project.num_blocks > 1)
-		    {
-		    /* allocate space for the inverse problem */
-		    ncols = project.num_blocks;
-		    status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&x,&error);
-		    status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&xx,&error);
+		/* allocate nav time and continuity arrays */
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nnav * sizeof(int), (void **)&x_continuity,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nnav * sizeof(double), (void **)&x_time_d,&error);
+		memset(x_continuity, 0, nnav * sizeof(int));
+		memset(x_time_d, 0, nnav * sizeof(double));
 
-		    /* initialize x array */
-		    for (i=0;i<project.num_blocks;i++)
+		/* loop over all files getting tables of time and continuity */
+		inav = 0;
+		for (ifile=0;ifile<project.num_files;ifile++)
 			{
-			x[i] = 0.0;
-			}
-
-		    /* construct the inverse problem */
-		    sprintf(message,"Solving for survey z offsets...");
-		    do_message_update(message);
-
-		    done = MB_NO;
-		    iter = 0;
-		    while (done == MB_NO)
-		    	{
-			/* initialize xx array */
-			for (i=0;i<project.num_blocks;i++)
-			    {
-			    xx[i] = 0.0;
-			    }
-
-			/* loop over crossings getting set ties */
-			ntie = 0;
-			for (i=0;i<project.num_crossings;i++)
-			    {
-			    crossing = &project.crossings[i];
-
-			     /* get block id for first snav point */
-			     file1 = &project.files[crossing->file_id_1];
-			     nc1 = file1->block;
-
-			     /* get block id for second snav point */
-			     file2 = &project.files[crossing->file_id_2];
-			     nc2 = file2->block;
-
-			    /* use only set crossings */
-			    if (crossing->status == MBNA_CROSSING_STATUS_SET)
-			    for (j=0;j<crossing->num_ties;j++)
+			file = &project.files[ifile];
+			for (isection=0;isection<file->num_sections;isection++)
 				{
-				/* get tie */
-				tie = (struct mbna_tie *) &crossing->ties[j];
-				ntie++;
-
-				/* get current offset vector including reduction of block solution */
-				if (tie->status != MBNA_TIE_XY)
-				    {
-				    offset_z_m = tie->offset_z_m - (x[nc2] + xx[nc2] - x[nc1] - xx[nc1]);
-				    }
-				else
-				    {
-				    offset_z_m = 0.0;
-				    }
-/* fprintf(stderr,"icrossing:%d jtie:%d blocks:%d %d offsets: %f %f %f\n",
-i,j,nc1,nc2,offsetx,offsety,offset_z_m); */
-
-				/* deal with fixed or unfixed status of sections */
-				if ((file1->status == MBNA_FILE_GOODNAV && file2->status == MBNA_FILE_GOODNAV)
-					|| (file1->status == MBNA_FILE_POORNAV && file2->status == MBNA_FILE_POORNAV))
-				    {
-				    xx[nc1] += -mbna_offsetweight * 0.5 * offset_z_m;
-				    xx[nc2] +=  mbna_offsetweight * 0.5 * offset_z_m;
-				    }
-				else if (file1->status == MBNA_FILE_GOODNAV && file2->status == MBNA_FILE_POORNAV)
-				    {
-				    xx[nc1] += -mbna_offsetweight * 0.005 * offset_z_m;
-				    xx[nc2] +=  mbna_offsetweight * 0.995 * offset_z_m;
-				    }
-				else if (file1->status == MBNA_FILE_POORNAV && file2->status == MBNA_FILE_GOODNAV)
-				    {
-				    xx[nc1] += -mbna_offsetweight * 0.995 * offset_z_m;
-				    xx[nc2] +=  mbna_offsetweight * 0.005 * offset_z_m;
-				    }
-				else if (file1->status == MBNA_FILE_FIXEDNAV && file2->status == MBNA_FILE_FIXEDNAV)
-				    {
-				    /*
-				    xx[nc1] +=  0.0;
-				    xx[nc2] +=  0.0;
-				    */
-				    }
-				else if (file1->status == MBNA_FILE_FIXEDNAV)
-				    {
-				    if (file2->status == MBNA_FILE_FIXEDXYNAV)
-				    	{
-				    	/*
-					xx[nc1] +=  0.0;
-					xx[nc2] +=  0.0;
-				    	*/
-					xx[3*nc2+2] +=  offset_z_m;
+				section = &file->sections[isection];
+				for (isnav=0;isnav<section->num_snav;isnav++)
+					{
+					if (isnav == 0 && section->continuity)
+						{
+						section->snav_invert_id[isnav] = inav - 1;
+						nsmooth++;
+						}
+					else
+						{
+						section->snav_invert_id[isnav] = inav;
+						if (isnav == 0)
+							{
+							x_continuity[inav] = MB_NO;
+							}
+						else
+							{
+							x_continuity[inav] = MB_YES;
+							nsmooth++;
+							}
+						x_time_d[inav] = section->snav_time_d[isnav];
+						inav++;
+						}
 					}
-				    else if (file2->status == MBNA_FILE_FIXEDZNAV)
-				    	{
-				    	/*
-					xx[nc1] +=  0.0;
-					xx[nc2] +=  0.0;
-					*/
-					}
-				    else
-				    	{
-				    	/*
-					xx[nc1] +=  0.0;
-				    	*/
-					xx[nc2] +=  mbna_offsetweight * offset_z_m;
-					}
-				    }
-				else if (file2->status == MBNA_FILE_FIXEDNAV)
-				    {
-				    if (file1->status == MBNA_FILE_FIXEDXYNAV)
-				    	{
-					xx[nc1] +=  -mbna_offsetweight * offset_z_m;
-				    	/*
-					xx[nc2] +=  0.0;
-				    	*/
-					}
-				    else if (file1->status == MBNA_FILE_FIXEDZNAV)
-				    	{
-				    	/*
-					xx[nc1] +=  0.0;
-					xx[nc2] +=  0.0;
-				    	*/
-					}
-				    else
-				    	{
-					xx[nc1] +=  -mbna_offsetweight * offset_z_m;
-				    	/*
-					xx[nc2] +=  0.0;
-				    	*/
-					}
-				    }
 				}
-			    }
-
-			/* calculate 2-norm of perturbation */
-			perturbationsize = 0.0;
-			for (i=0;i<ncols;i++)
-			    {
-			    perturbationsize += xx[i] * xx[i];
-			    }
-			perturbationsize = sqrt(perturbationsize) / ncols;
-
-			/* apply perturbation */
-			for (i=0;i<ncols;i++)
-			    {
-			    x[i] += xx[i];
-			    }
-
-			 /* check for convergence */
-			 perturbationchange = perturbationsize - perturbationsizeold;
-			 convergencecriterea = fabs(perturbationchange) / misfit_initial;
-			 if (convergencecriterea < MBNA_CONVERGENCE || iter > MBNA_INTERATION_MAX)
-		    	     done = MB_YES;
-fprintf(stderr,"BLOCK INVERT: iter:%d ntie:%d misfit_initial:%f perturbationsize:%g perturbationchange:%g convergencecriterea:%g done:%d\n",
-iter,ntie,misfit_initial,perturbationsize,perturbationchange,convergencecriterea,done);
-
-			 if (done == MB_NO)
-		             {
-			     perturbationsizeold = perturbationsize;
-			     iter++;
-			     }
-			 }
-
-		    /* if there are no fixed blocks contributing to ties,
-		    	then get average z-offsets of blocks not flagged as bad
-			to provide a static offset to move final model to be more consistent
-			with the good blocks than the poorly navigated blocks */
-		    block_offset_avg_z = 0.0;
-		    navg = 0;
-		    if (nfixed == 0)
-		    	{
-			for (i=0;i<project.num_blocks;i++)
-			    {
-			    use = MB_YES;
-			    for (j=0;j<project.num_files;j++)
-				    {
-				    file = &project.files[j];
-				    if (file->block == i && file->status == MBNA_FILE_POORNAV)
-					    use = MB_NO;
-				    }
-			    if (use == MB_YES)
-				    {
-				    block_offset_avg_z += x[i];
-				    navg++;
-				    }
-			    }
-			if (navg > 0)
-		    	    {
-			    block_offset_avg_z /= navg;
-			    }
 			}
-
-		    /* output solution */
-		    fprintf(stderr,"\nAverage z-offsets: %f\n",block_offset_avg_z);
-		    for (i=0;i<project.num_blocks;i++)
+		nsmooth = 3 * (nsmooth - 1);
+						
+		/* count ties for full inversion */
+		ntie = 0;
+		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
 			{
-			fprintf(stderr, "Survey block:%d  z-offset: %f  block z-offset:%f\n", i, x[i], x[i] - block_offset_avg_z);
-			}
+			crossing = &project.crossings[icrossing];
 
-		    /* set block offsets for each file */
-		    for (i=0;i<project.num_files;i++)
+			/* for block vs block averages use only set crossings between
+			 * different blocks */
+			if (crossing->status == MBNA_CROSSING_STATUS_SET)
+				{
+				for (itie=0;itie<crossing->num_ties;itie++)
+					{
+					/* get tie */
+					tie = (struct mbna_tie *) &crossing->ties[itie];
+
+					if (tie->status == MBNA_TIE_XYZ)
+						ntie += 3;
+					else if (tie->status == MBNA_TIE_XY)
+						ntie += 2;
+					else if (tie->status == MBNA_TIE_Z)
+						ntie += 1;
+					}
+				}
+			}
+					
+		/* count dimensions of full inversion problem */
+		nglobal = 0;
+		nfixed = 0;
+		mbna_global_tie_influence = 600;
+		for (ifile=0;ifile<project.num_files;ifile++)
 			{
-			file = &project.files[i];
-			file->block_offset_z = x[file->block] - block_offset_avg_z;
-/* fprintf(stderr,"file:%d block: %d block offsets: %f %f %f\n",
-i,file->block,file->block_offset_x,file->block_offset_y,file->block_offset_z);*/
+			/* get file */
+			file = &project.files[ifile];
+			
+			/* count fixed and global ties for full inversion */
+			for (isection=0;isection<file->num_sections;isection++)
+				{
+				/* get section */
+				section = &file->sections[isection];
+					
+				/* count global ties for full inversion */
+				if (section->global_tie_status != MBNA_TIE_NONE)
+					{
+					if (section->global_tie_status == MBNA_TIE_XYZ)
+						nglobal += 3;
+					else if (section->global_tie_status == MBNA_TIE_XY)
+						nglobal += 2;
+					else if (section->global_tie_status == MBNA_TIE_Z)
+						nglobal += 1;
+					}
+				
+				/* count fixed sections for full inversion */
+				if (file->status == MBNA_FILE_FIXEDNAV)
+					nfixed += 3;
+				else if (file->status == MBNA_FILE_FIXEDXYNAV)
+					nfixed += 2;
+				else if (file->status == MBNA_FILE_FIXEDZNAV)
+					nfixed += 1;
+				}
 			}
+		
+		/* only do block average solution if there is more than one block */
+		if (nblock > 1)
+			{
 
-		    /* deallocate arrays */
-		    status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x,&error);
-		    status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&xx,&error);
-		    }
+			/* allocate block average offset arrays */
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(int), (void **)&nbxy,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(int), (void **)&nbz,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(double), (void **)&bxavg,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(double), (void **)&byavg,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(double), (void **)&bzavg,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&bpoornav,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&bxfixstatus,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&byfixstatus,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&bzfixstatus,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(double), (void **)&bxfix,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(double), (void **)&byfix,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(double), (void **)&bzfix,&error);
+			memset(nbxy, 0, nblock * (nblock + 1) / 2 * sizeof(int));
+			memset(nbz, 0, nblock * (nblock + 1) / 2 * sizeof(int));
+			memset(bxavg, 0, nblock * (nblock + 1) / 2 * sizeof(double));
+			memset(byavg, 0, nblock * (nblock + 1) / 2 * sizeof(double));
+			memset(bzavg, 0, nblock * (nblock + 1) / 2 * sizeof(double));
+			memset(bpoornav, 0, nblock * sizeof(int));
+			memset(bxfixstatus, 0, nblock * sizeof(int));
+			memset(byfixstatus, 0, nblock * sizeof(int));
+			memset(bzfixstatus, 0, nblock * sizeof(int));
+			memset(bxfix, 0, nblock * sizeof(double));
+			memset(byfix, 0, nblock * sizeof(double));
+			memset(bzfix, 0, nblock * sizeof(double));
+		
+			/* count ties for all block vs block pairs and calculate average offsets
+			 * and count dimensions of full inversion problem */
+			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+				{
+				crossing = &project.crossings[icrossing];
+	
+				/* for block vs block averages use only set crossings between
+				 * different blocks */
+				if (crossing->status == MBNA_CROSSING_STATUS_SET)
+					{
+					for (itie=0;itie<crossing->num_ties;itie++)
+						{
+						/* get tie */
+						tie = (struct mbna_tie *) &crossing->ties[itie];
+	
+						/* if blocks differ get id for block vs block */
+						if (project.files[crossing->file_id_1].block
+							!= project.files[crossing->file_id_2].block)
+							{
+							if (project.files[crossing->file_id_2].block  >  project.files[crossing->file_id_1].block)
+								{
+								jbvb1 = project.files[crossing->file_id_1].block;
+								jbvb2 = project.files[crossing->file_id_2].block;
+								}
+							else
+								{
+								jbvb1 = project.files[crossing->file_id_2].block;
+								jbvb2 = project.files[crossing->file_id_1].block;
+								}
+							jbvb = (jbvb2) * (jbvb2 + 1) / 2 + jbvb1;
+								
+							if (tie->status != MBNA_TIE_Z)
+								{
+								bxavg[jbvb] += tie->offset_x_m;
+								byavg[jbvb] += tie->offset_y_m;
+								nbxy[jbvb]++;
+								}
+							if (tie->status != MBNA_TIE_XY)
+								{
+								bzavg[jbvb] += tie->offset_z_m;
+								nbz[jbvb]++;
+								}
+							}
+						}
+					}
+				}
+			
+			/* calculate block vs block tie averages */
+			fprintf(stderr,"Survey vs Survey tie counts and average offsets:\n");
+			nblockties = 0;
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				for (jblock=0;jblock<=iblock;jblock++)
+					{
+					jbvb = (iblock) * (iblock + 1) / 2 + jblock;
+					if (nbxy[jbvb] > 0)
+						{
+						bxavg[jbvb] /= nbxy[jbvb];
+						byavg[jbvb] /= nbxy[jbvb];
+						nblockties += 2;
+						}
+					if (nbz[jbvb] > 0)
+						{
+						bzavg[jbvb] /= nbz[jbvb];
+						nblockties++;
+						}
+					fprintf(stderr,"%2d vs %2d: %5d xy ties  %5d z ties  Avg offsets: %8.3f %8.3f %8.3f\n",
+							jblock,iblock,nbxy[jbvb],nbz[jbvb],
+							bxavg[jbvb],byavg[jbvb],bzavg[jbvb]);
+					}
+				}
+			
+			/* get fixed blocks and average global ties for blocks */
+			mbna_global_tie_influence = 600;
+			for (ifile=0;ifile<project.num_files;ifile++)
+				{
+				/* get file */
+				file = &project.files[ifile];
+				
+				/* count fixed and global ties for full inversion */
+				for (isection=0;isection<file->num_sections;isection++)
+					{
+					/* get section */
+					section = &file->sections[isection];
+					
+					/* count global ties for block offset inversion */
+					if (section->global_tie_status != MBNA_TIE_NONE)
+						{
+						if (section->global_tie_status == MBNA_TIE_XYZ
+							|| section->global_tie_status == MBNA_TIE_XY)
+							{
+							bxfixstatus[file->block]++;
+							bxfix[file->block] += section->global_tie_offset_x_m;
+							byfixstatus[file->block]++;
+							byfix[file->block] += section->global_tie_offset_y_m;
+							}
+						if (section->global_tie_status == MBNA_TIE_XYZ
+							|| section->global_tie_status == MBNA_TIE_Z)
+							{
+							bzfixstatus[file->block]++;
+							bzfix[file->block] += section->global_tie_offset_z_m;
+							}
+						}
+					}
+				}
+			
+			/* count fixed sections for block average inversion,
+				* overwriting global ties if they conflict */
+			for (ifile=0;ifile<project.num_files;ifile++)
+				{
+				/* get file */
+				file = &project.files[ifile];
+				
+				/* count fixed sections for block average inversion,
+				* overwriting global ties if they conflict */
+				if (file->status == MBNA_FILE_FIXEDNAV
+					|| file->status == MBNA_FILE_FIXEDXYNAV)
+					{
+					bxfixstatus[file->block] = 1;
+					bxfix[file->block] = 0.0;
+					byfixstatus[file->block] = 1;
+					byfix[file->block] = 0.0;
+					}
+				if (file->status == MBNA_FILE_FIXEDNAV
+					|| file->status == MBNA_FILE_FIXEDZNAV)
+					{
+					bzfixstatus[file->block] = 1;
+					bzfix[file->block] = 0.0;
+					}
+				if (file->status == MBNA_FILE_POORNAV)
+					{
+					bpoornav[file->block] = MB_YES;
+					}
+				}
+			nblockglobalties = 0;
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				if (bxfixstatus[iblock] > 0)
+					{
+					bxfix[iblock] /= (double)bxfixstatus[iblock];
+					nblockglobalties++;
+					}
+				if (byfixstatus[iblock] > 0)
+					{
+					byfix[iblock] /= (double)byfixstatus[iblock];
+					nblockglobalties++;
+					}
+				if (bzfixstatus[iblock] > 0)
+					{
+					bzfix[iblock] /= (double)bzfixstatus[iblock];
+					nblockglobalties++;
+					}
+				}
+			}
+		
+		/* We do a two stage inversion first for block averages, then for full 
+		 * adjustement vector on top of the averages. Make sure arrays are
+		 * allocated large enough for both stages. */
+		nrows = nfixed + ntie + nglobal + nsmooth;
+		ncols = 3 * nnav;
+		nrows_ba = nblockties + nblockglobalties + 3;
+		ncols_ba = 3 * nblock;
+		nrows_alloc = nrows_ba; //MAX(nrows, nrows_ba);
+		ncols_alloc = ncols_ba; //MAX(ncols, ncols_ba);
+fprintf(stderr,"\nMBnavadjust block average inversion preparation:\n");
+fprintf(stderr,"     nblock:            %d\n",nblock);
+fprintf(stderr,"     nblockties:        %d\n",nblockties);
+fprintf(stderr,"     nblockglobalties:  %d\n",nblockglobalties);
+fprintf(stderr,"     nrows_ba:          %d\n",nrows_ba);
+fprintf(stderr,"     ncols_ba:          %d\n",ncols_ba);
+fprintf(stderr,"\nMBnavadjust full inversion preparation:\n");
+fprintf(stderr,"     nnav:              %d\n",nnav);
+fprintf(stderr,"     ntie:              %d\n",ntie);
+fprintf(stderr,"     nglobal:           %d\n",nglobal);
+fprintf(stderr,"     nfixed:            %d\n",nfixed);
+fprintf(stderr,"     nsmooth:           %d\n",nsmooth);
+fprintf(stderr,"     nrows:             %d\n",nrows);
+fprintf(stderr,"     ncols:             %d\n",ncols);
+fprintf(stderr,"\nMBnavadjust inversion array allocation dimensions:\n");
+fprintf(stderr,"     nrows_alloc:       %d\n",nrows_alloc);
+fprintf(stderr,"     ncols_alloc:       %d\n",ncols_alloc);
 
+		/* allocate solution vector x, perturbation vector xx, and average solution vector xa */
+		matrix.nia = NULL;
+		matrix.ia = NULL;
+		matrix.a = NULL;
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nrows_alloc * sizeof(double), (void **)&u,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&v,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&w,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&x,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&se,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nrows_alloc * sizeof(double), (void **)&b,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nrows_alloc * sizeof(int), (void **)&matrix.nia,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, 6 * nrows_alloc * sizeof(int), (void **)&matrix.ia,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, 6 * nrows_alloc * sizeof(double), (void **)&matrix.a,&error);
+		memset(u, 0, nrows_alloc * sizeof(double));
+		memset(v, 0, ncols_alloc * sizeof(double));
+		memset(w, 0, ncols_alloc * sizeof(double));
+		memset(x, 0, ncols_alloc * sizeof(double));
+		memset(se, 0, ncols_alloc * sizeof(double));
+		memset(b, 0, nrows_alloc * sizeof(double));
+		memset(matrix.nia, 0, nrows_alloc * sizeof(int));
+		memset(matrix.ia, 0, 6 * nrows_alloc * sizeof(int));
+		memset(matrix.a, 0, 6 * nrows_alloc * sizeof(double));
+		
+		/*----------------------------------------------------------------*/
+		/* Create block offset inversion matrix problem                   */
+		/*----------------------------------------------------------------*/
+		if (nblock > 1)
+			{
+			matrix.m = nrows_ba;
+			matrix.n = ncols_ba;
+			matrix.ia_dim = ncols_ba;
+			
+			/* loop over each crossing, applying offsets evenly to both points
+				for all ties that involve different blocks
+				- weight inversely by number of ties for each block vs block pair
+				so that each has same importance whether connected by one tie
+				or many */
+					
+			/* set up inversion for block offsets
+			 * - start with average offsets between all block vs block pairs for
+			 *   x y and z wherever defined by one or more ties
+			 * - next apply average global ties for each block if they exist
+			 * - finally add a constraint for x y and z that the sum of all
+			 *   block offsets must be zero (ignoring blocks tagged as having
+			 *   poor navigation) */
+			irow = 0;
+			
+			/* start with average block vs block offsets */
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				for (jblock=0;jblock<=iblock;jblock++)
+					{
+					jbvb = (iblock) * (iblock + 1) / 2 + jblock;
+					if (nbxy[jbvb] > 0)
+						{
+						index_m = irow * ncols_ba;
+						index_n = jblock * 3;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = -1.0;
+					
+						index_m = irow * ncols_ba + 1;
+						index_n = iblock * 3;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = 1.0;
+					
+						b[irow] = bxavg[jbvb];
+						matrix.nia[irow] = 2;
+						irow++;
+	
+						index_m = irow * ncols_ba;
+						index_n = jblock * 3 + 1;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = -1.0;
+					
+						index_m = irow * ncols_ba + 1;
+						index_n = iblock * 3 + 1;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = 1.0;
+					
+						b[irow] = byavg[jbvb];
+						matrix.nia[irow] = 2;
+						irow++;
+						}
+					if (nbz[jbvb] > 0)
+						{
+						index_m = irow * ncols_ba;
+						index_n = jblock * 3 + 2;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = -1.0;
+					
+						index_m = irow * ncols_ba + 1;
+						index_n = iblock * 3 + 2;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = 1.0;
+					
+						b[irow] = bzavg[jbvb];
+						matrix.nia[irow] = 2;
+						irow++;
+						}
+					}
+				}
+				
+			/* next apply average global offsets for each block */
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				if (bxfixstatus[iblock] > 0)
+					{
+					index_m = irow * ncols_ba;
+					index_n = iblock * 3;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = 1.0;
+				
+					b[irow] = bxfix[jbvb];
+					matrix.nia[irow] = 1;
+					irow++;
+					}
+				if (byfixstatus[iblock] > 0)
+					{
+					index_m = irow * ncols_ba;
+					index_n = iblock * 3 + 1;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = 1.0;
+				
+					b[irow] = byfix[jbvb];
+					matrix.nia[irow] = 1;
+					irow++;
+					}
+				if (bzfixstatus[iblock] > 0)
+					{
+					index_m = irow * ncols_ba;
+					index_n = iblock * 3 + 2;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = 1.0;
+				
+					b[irow] = bzfix[jbvb];
+					matrix.nia[irow] = 1;
+					irow++;
+					}
+				}
+				
+			/* add constraint that overall average offset must be zero, ignoring
+			 * blocks with poor navigation */
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				index_m = irow * ncols_ba + iblock;
+				index_n = iblock * 3;
+				matrix.ia[index_m] = index_n;
+				if (bpoornav[iblock] == MB_YES)
+					{
+					matrix.a[index_m] = 0.0;
+					}
+				else
+					{
+					matrix.a[index_m] = 1.0;
+					}
+				}
+			b[irow] = 0.0;
+			matrix.nia[irow] = nblock;
+			irow++;
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				index_m = irow * ncols_ba + iblock;
+				index_n = iblock * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (bpoornav[iblock] == MB_YES)
+					{
+					matrix.a[index_m] = 0.0;
+					}
+				else
+					{
+					matrix.a[index_m] = 1.0;
+					}
+				}
+			b[irow] = 0.0;
+			matrix.nia[irow] = nblock;
+			irow++;
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				index_m = irow * ncols_ba + iblock;
+				index_n = iblock * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (bpoornav[iblock] == MB_YES)
+					{
+					matrix.a[index_m] = 0.0;
+					}
+				else
+					{
+					matrix.a[index_m] = 1.0;
+					}
+				}
+			b[irow] = 0.0;
+			matrix.nia[irow] = nblock;
+			irow++;
+				
+//fprintf(stderr,"\nAbout to call LSQR for preliminary block solution   rows: %d cols: %d  (expected rows:%d cols:%d)\n",
+//			irow, nblock * 3, nrows_ba, ncols_ba);
+				
+			/* F: call lsqr to solve the matrix problem */
+			for (irow=0;irow<nrows_ba;irow++)
+				u[irow] = b[irow];
+			damp = 0.0;
+			atol = 1.0e-6;		// releative precision of A matrix
+			btol = 1.0e-6;		// relative precision of data array
+			relpr = 1.0e-16; 	// relative precision of double precision arithmetic
+			conlim = 1 / (10*sqrt(relpr));
+			itnlim = 4 * matrix.n;
+			
+//fprintf(stderr,"damp:%f\natol:%f\nbtol:%f\nconlim:%f\nitnlim:%d\n",
+//		damp,atol,btol,conlim,itnlim);
+//for (i=0;i<matrix.m;i++)
+//	{
+//	fprintf(stderr,"A row:%6d nia:%d ",i,matrix.nia[i]);
+//	for (j=0;j<matrix.nia[i];j++)
+//		{
+//		k = i * ncols_ba + j;
+//		fprintf(stderr,"| %d ia[%5d]:%5d a[%5d]:%10.6f ", j,k,matrix.ia[k],k,matrix.a[k]);
+//		}
+//	fprintf(stderr," | b:%10.6f\n",u[i]);
+//	}
+			
+			mblsqr_lsqr(nrows_ba, ncols_ba, &mb_aprod, damp, &matrix, u, v, w, x, se, 
+						atol, btol, conlim, itnlim, stderr,
+						&istop_out, &itn_out, &anorm_out, &acond_out,
+						&rnorm_out, &arnorm_out, &xnorm_out);
+				
+			/* save solution */
+			for (ifile=0;ifile<project.num_files;ifile++)
+				{
+				file = &project.files[ifile];
+				file->block_offset_x = x[3*file->block];
+				file->block_offset_y = x[3*file->block+1];
+				file->block_offset_z = x[3*file->block+2];
+				}
+	
+			fprintf(stderr, "\nInversion by LSQR completed\n");
+			fprintf(stderr, "\tReason for termination:       %d\n", istop_out);
+			fprintf(stderr, "\tNumber of iterations:         %d\n", itn_out);
+			fprintf(stderr, "\tFrobenius norm:               %f\n (expected to be about %f)\n", anorm_out, sqrt((double)matrix.n));
+			fprintf(stderr, "\tCondition number of A:        %f\n", acond_out);
+			fprintf(stderr, "\tRbar norm:                    %f\n", rnorm_out);
+			fprintf(stderr, "\tResidual norm:                %f\n", arnorm_out);
+			fprintf(stderr, "\tSolution norm:                %f\n", xnorm_out);
+			for (i=0;i<nblock;i++)
+				{
+				fprintf(stderr,"block[%d]:  block_offset_x:%f block_offset_y:%f block_offset_z:%f\n",
+						i,x[3*i],x[3*i+1],x[3*i+2]);
+				}
+			//for (ifile=0;ifile<project.num_files;ifile++)
+			//	{
+			//	file = &project.files[ifile];
+			//	fprintf(stderr,"file[%d]:  block_offset_x:%f block_offset_y:%f block_offset_z:%f\n",
+			//			ifile,file->block_offset_x,file->block_offset_y,file->block_offset_z);
+			//	}
+				
+			/* deallocate arrays used only for block inversion */
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&nbxy,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&nbz,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bxavg,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&byavg,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bzavg,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bpoornav,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bxfixstatus,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&byfixstatus,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bzfixstatus,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bxfix,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&byfix,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bzfix,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x_continuity,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x_time_d,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&u,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&v,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&w,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&se,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&b,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&matrix.nia,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&matrix.ia,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&matrix.a,&error);
+			}
+	 
 		/* loop over over all crossings - reset existing ties using block z-offsets */
 		nprocess = 0;
-		for (i=0;i<project.num_crossings;i++)
+		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
 			{
 			/* set the crossing */
-			crossing = &project.crossings[i];
+			crossing = &project.crossings[icrossing];
 			file1 = &project.files[crossing->file_id_1];
 			file2 = &project.files[crossing->file_id_2];
 			offset_z_m = file2->block_offset_z - file1->block_offset_z;
 
-			/* check if any ties exist and are inconsistent with the new survey z-offset model */
+			/* check if any ties exist and are inconsistent with the new survey z-offset model
+			 * - if the zoffset is close enough, then just reset it without repicking the x and y offsets
+			 * - otherwise repick the tie using the desired z offset */
 			reset_tie = MB_NO;
-			for (j=0;j<crossing->num_ties;j++)
+			for (itie=0;itie<crossing->num_ties;itie++)
 				{
-				tie = &(crossing->ties[j]);
-				if (tie->offset_z_m != offset_z_m)
+				tie = &(crossing->ties[itie]);
+				if (fabs(tie->offset_z_m - offset_z_m) < MBNA_Z_OFFSET_RESET_THRESHOLD)
+					tie->offset_z_m = offset_z_m;
+				else
 					reset_tie = MB_YES;
 				}
 
 			/* if one or more ties exist and at , load crossing and reset the ties using the new z-offset */
 			if (reset_tie == MB_YES)
 				{
-				mbna_current_crossing = i;
+				mbna_current_crossing = icrossing;
 				mbna_file_id_1 = crossing->file_id_1;
 				mbna_section_1 = crossing->section_1;
 				mbna_file_id_2 = crossing->file_id_2;
@@ -7872,9 +8343,9 @@ i,file->block,file->block_offset_x,file->block_offset_y,file->block_offset_z);*/
 					}
 
 				/* delete each tie */
-				for (j=0;j<crossing->num_ties;j++)
+				for (itie=0;itie<crossing->num_ties;itie++)
 					{
-					mbnavadjust_deletetie(mbna_current_crossing, j, MBNA_CROSSING_STATUS_NONE);
+					mbnavadjust_deletetie(mbna_current_crossing, itie, MBNA_CROSSING_STATUS_NONE);
 					}
 
 				/* update status and model plot */
@@ -8054,6 +8525,7 @@ mbnavadjust_zerozoffsets()
 			}
 		/* write updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* turn off message dialog */
 		do_message_off();
@@ -8073,6 +8545,43 @@ mbnavadjust_zerozoffsets()
 	return(status);
 }
 /*--------------------------------------------------------------------*/
+void
+mb_aprod(int mode, int m, int n, double x[], double y[], void *UsrWrk)
+{
+	// mode == 1 : compute y = y + A*x
+	// mode == 2 : compute x = x + A(transpose)*y
+	struct mbna_matrix *matrix;
+	int i, j, k;
+	
+	matrix = (struct mbna_matrix *) UsrWrk;
+	
+	if (mode == 1)
+		{
+		for (i=0;i<m;i++)
+			{
+			for (j=0;j<matrix->nia[i];j++)
+				{
+				k = matrix->ia[matrix->ia_dim*i+j];
+				y[i] += matrix->a[matrix->ia_dim*i+j] * x[k];
+				}
+			}
+		}
+	
+	else if (mode == 2)
+		{
+		for (i=0;i<m;i++)
+			{
+			for (j=0;j<matrix->nia[i];j++)
+				{
+				k = matrix->ia[matrix->ia_dim*i+j];
+				x[k] += matrix->a[matrix->ia_dim*i+j] * y[i];
+				}
+			}
+		}
+	
+	return;
+}
+/*--------------------------------------------------------------------*/
 
 int
 mbnavadjust_invertnav()
@@ -8088,48 +8597,67 @@ mbnavadjust_invertnav()
 	struct mbna_section *section2;
 	struct mbna_crossing *crossing;
 	struct mbna_tie *tie;
-	int	nnav;
-	int	nsnav;
-	int	ndf = 3;
-	int	ncols = 0;
-	int	ntie = 0;
-	int	nfixed = 0;
-	int	nglobal = 0;
-	int	nmisfit = 0;
+	struct mbna_matrix matrix;
+	int		*x_continuity = NULL;
+	double	*x_time_d = NULL;
+	double	*u = NULL;
+	double	*v = NULL;
+	double	*w = NULL;
 	double	*x = NULL;
-	double	*xx = NULL;
-	double	*xa = NULL;
-	int	*nxs = NULL;
-	double	*xs = NULL;
-	double	*xw = NULL;
-	double	misfit, misfit_initial, misfit_ties_initial, misfit_norm_initial, misfit_ties, misfit_norm;
-	double	offsetx, offsety, offsetz, offsetr;
-	double	projected_offset;
-	double	xyweight, zweight;
-	double	dtime_d;
-	int	done, iter;
-	int	nseq, nseqlast;
-	int	nchange;
-	int	ndx, ndx2;
-	int	icrossing, jtie;
-	int	ifile, isection, isnav, inav;
-	int	nc1, nc2, nc3;
+	double	*se = NULL;
+	double	*b = NULL;
+	int		*nbxy = NULL;
+	int		*nbz = NULL;
+	double	*bxavg = NULL;
+	double	*byavg = NULL;
+	double	*bzavg = NULL;
+	int		*bpoornav = NULL;
+	int		*bxfixstatus = NULL;
+	int		*byfixstatus = NULL;
+	int		*bzfixstatus = NULL;
+	double	*bxfix = NULL;
+	double	*byfix = NULL;
+	double	*bzfix = NULL;
+	double	rms_misfit_initial, rms_misfit_final;
+	
+	int	ifile, isection, isnav, icrossing, itie;
+	
+	int	nnav = 0;
+	int nblock = 0;
+	int ndiscontinuity = 0;
+	int nsmooth = 0;
+	int ntie = 0;
+	int nglobal = 0;
+	int nfixed = 0;
+	int	nrows, ncols;
+	int nblockties = 0;
+	int nblockglobalties = 0;
+	int nrows_ba = 0;
+	int ncols_ba = 0;
+	int nrows_alloc = 0;
+	int ncols_alloc= 0;
+	int	irow, inav, nc1, nc2;
+	int	index_m, index_n;
+	int	jbvb, jbvb1, jbvb2;
+	int iblock, jblock;
 	int	i, j, k;
 
-	double	perturbationsize;
-	double	perturbationsizeold;
-	double	perturbationchange;
-	double	convergencecriterea;
-	double	offset_x;
-	double	offset_y;
-	double	offset_z;
-	double	time_d1, time_d2, time_d3;
-	double	block_offset_avg_x;
-	double	block_offset_avg_y;
-	double	block_offset_avg_z;
-	int	navg;
-	int	use;
+	double	offset_x, offset_y, offset_z, projected_offset;
+	double	weight;
 	int	ok_to_invert;
+	double damp;
+	double atol;
+	double btol;
+	double relpr;
+	double conlim;
+	int    itnlim;
+	int    istop_out;
+	int    itn_out;
+	double anorm_out;
+	double acond_out;
+	double rnorm_out;
+	double arnorm_out;
+	double xnorm_out;
 
  	/* print input debug statements */
 	if (mbna_verbose >= 2)
@@ -8142,19 +8670,19 @@ mbnavadjust_invertnav()
 		- if there is a project
 		- enough crossings have been analyzed
 		- no problems with offsets and offset uncertainties */
-    	if (project.open == MB_YES
-    		&& project.num_crossings > 0
+    if (project.open == MB_YES
+		&& project.num_crossings > 0
 		&& (project.num_crossings_analyzed >= 10
-			|| project.num_truecrossings_analyzed == project.num_truecrossings))
+		|| project.num_truecrossings_analyzed == project.num_truecrossings))
 
-    		{
-			/* check that all uncertainty magnitudes are nonzero */
-			ok_to_invert = MB_YES;
-			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+		{
+		/* check that all uncertainty magnitudes are nonzero */
+		ok_to_invert = MB_YES;
+		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+			{
+			crossing = &project.crossings[icrossing];
+			if (crossing->status == MBNA_CROSSING_STATUS_SET)
 				{
-				crossing = &project.crossings[icrossing];
-				if (crossing->status == MBNA_CROSSING_STATUS_SET)
-					{
 				for (j=0;j<crossing->num_ties;j++)
 					{
 					tie = (struct mbna_tie *) &crossing->ties[j];
@@ -8208,2753 +8736,1194 @@ mbnavadjust_invertnav()
 		do_message_on(message);
 
 		/*----------------------------------------------------------------*/
-		/* Step 1 - get block (survey) average offsets                    */
+		/* Initialize arrays, solution, perturbation                      */
 		/*----------------------------------------------------------------*/
 
-		/* figure out the average offsets between connected sets of files
-			- invert for x y z offsets for the blocks */
-
-		/* calculate the initial misfit, count number of crossing ties and global ties */
-		ntie = 0;
-		nglobal = 0;
-		misfit_initial = 0.0;
-		nmisfit = 0;
-		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+		/* count number of nav points, discontinuities, and blocks */
+		nnav = 0;
+		nblock = 0;
+		ndiscontinuity = 0;
+		nsmooth = 0;
+		for (ifile=0;ifile<project.num_files;ifile++)
 			{
-			crossing = &project.crossings[icrossing];
-			if (crossing->status == MBNA_CROSSING_STATUS_SET)
-				{
-				ntie += crossing->num_ties;
-				for (j=0;j<crossing->num_ties;j++)
-					{
-					tie = (struct mbna_tie *) &crossing->ties[j];
-					if (tie->status != MBNA_TIE_Z)
-						{
-						misfit_initial += tie->offset_x_m * tie->offset_x_m;
-						misfit_initial += tie->offset_y_m * tie->offset_y_m;
-						nmisfit += 2;
-						}
-					if (tie->status != MBNA_TIE_XY)
-						{
-						misfit_initial += tie->offset_z_m * tie->offset_z_m;
-						nmisfit++;
-						}
-					}
-				}
-			}
-		for (i=0;i<project.num_files;i++)
-			{
-			file = &project.files[i];
+			file = &project.files[ifile];
+		    if (file->sections[0].continuity == MB_NO)
+				nblock++;
 			for (isection=0;isection<file->num_sections;isection++)
 				{
 				section = &file->sections[isection];
-				if (section->global_tie_status != MBNA_TIE_NONE)
-					{
-					nglobal++;
-					if (section->global_tie_status != MBNA_TIE_Z)
-						{
-						misfit_initial += section->global_tie_offset_x_m * section->global_tie_offset_x_m;
-						misfit_initial += section->global_tie_offset_y_m * section->global_tie_offset_y_m;
-						nmisfit += 2;
-						}
-					if (section->global_tie_status != MBNA_TIE_XY)
-						{
-						misfit_initial += section->global_tie_offset_z_m * section->global_tie_offset_z_m;
-						nmisfit++;
-						}
-					}
+				nnav += section->num_snav - section->continuity;
+				if (!section->continuity)
+					ndiscontinuity++;
 				}
-			}
-		misfit_initial = sqrt(misfit_initial) / nmisfit;
-		perturbationsizeold = misfit_initial;
-
-		/* count the number of fixed files */
-		nfixed = 0;
-		for (i=0;i<project.num_files;i++)
-			{
-			file = &project.files[i];
-			if (file->status == MBNA_FILE_FIXEDNAV)
-				nfixed++;
-			}
-
-		/* if only one block just set average offsets to zero */
-		if (project.num_blocks <= 1)
-			{
-			block_offset_avg_x = 0.0;
-			block_offset_avg_y = 0.0;
-			block_offset_avg_z = 0.0;
-			for (i=0;i<project.num_files;i++)
-			{
-			file = &project.files[i];
+			file->block = nblock - 1;
 			file->block_offset_x = 0.0;
 			file->block_offset_y = 0.0;
 			file->block_offset_z = 0.0;
 			}
-			}
 
-		/* else if more than one block first invert for block offsets  */
-		else if (project.num_blocks > 1)
+		/* allocate nav time and continuity arrays */
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nnav * sizeof(int), (void **)&x_continuity,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nnav * sizeof(double), (void **)&x_time_d,&error);
+		memset(x_continuity, 0, nnav * sizeof(int));
+		memset(x_time_d, 0, nnav * sizeof(double));
+
+		/* loop over all files getting tables of time and continuity */
+		inav = 0;
+		for (ifile=0;ifile<project.num_files;ifile++)
 			{
-			/* allocate space for the inverse problem */
-			ncols = ndf * project.num_blocks;
-			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&x,&error);
-			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&xx,&error);
-
-			/* initialize x array */
-			for (i=0;i<ndf*project.num_blocks;i++)
+			file = &project.files[ifile];
+			for (isection=0;isection<file->num_sections;isection++)
 				{
-				x[i] = 0.0;
-				}
-
-			/* construct the inverse problem */
-			sprintf(message,"Solving for block offsets...");
-			do_message_update(message);
-
-			done = MB_NO;
-			iter = 0;
-			while (done == MB_NO)
-				{
-				/* initialize xx array */
-				for (i=0;i<ndf*project.num_blocks;i++)
+				section = &file->sections[isection];
+				for (isnav=0;isnav<section->num_snav;isnav++)
 					{
-					xx[i] = 0.0;
+					if (isnav == 0 && section->continuity)
+						{
+						section->snav_invert_id[isnav] = inav - 1;
+						nsmooth++;
+						}
+					else
+						{
+						section->snav_invert_id[isnav] = inav;
+						if (isnav == 0)
+							{
+							x_continuity[inav] = MB_NO;
+							}
+						else
+							{
+							x_continuity[inav] = MB_YES;
+							nsmooth++;
+							}
+						x_time_d[inav] = section->snav_time_d[isnav];
+						inav++;
+						}
 					}
+				}
+			}
+		nsmooth = 3 * (nsmooth - 1);
+						
+		/* count ties for full inversion */
+		ntie = 0;
+		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+			{
+			crossing = &project.crossings[icrossing];
 
-				/* loop over crossings getting set ties */
-				for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+			/* for block vs block averages use only set crossings between
+			 * different blocks */
+			if (crossing->status == MBNA_CROSSING_STATUS_SET)
+				{
+				for (itie=0;itie<crossing->num_ties;itie++)
 					{
-					crossing = &project.crossings[icrossing];
+					/* get tie */
+					tie = (struct mbna_tie *) &crossing->ties[itie];
+
+					if (tie->status == MBNA_TIE_XYZ)
+						ntie += 3;
+					else if (tie->status == MBNA_TIE_XY)
+						ntie += 2;
+					else if (tie->status == MBNA_TIE_Z)
+						ntie += 1;
+					}
+				}
+			}
+					
+		/* count dimensions of full inversion problem */
+		nglobal = 0;
+		nfixed = 0;
+		mbna_global_tie_influence = 600;
+		for (ifile=0;ifile<project.num_files;ifile++)
+			{
+			/* get file */
+			file = &project.files[ifile];
+			
+			/* count fixed and global ties for full inversion */
+			for (isection=0;isection<file->num_sections;isection++)
+				{
+				/* get section */
+				section = &file->sections[isection];
+					
+				/* count global ties for full inversion */
+				if (section->global_tie_status != MBNA_TIE_NONE)
+					{
+					if (section->global_tie_status == MBNA_TIE_XYZ)
+						nglobal += 3;
+					else if (section->global_tie_status == MBNA_TIE_XY)
+						nglobal += 2;
+					else if (section->global_tie_status == MBNA_TIE_Z)
+						nglobal += 1;
+					}
+				
+				/* count fixed sections for full inversion */
+				if (file->status == MBNA_FILE_FIXEDNAV)
+					nfixed += 3;
+				else if (file->status == MBNA_FILE_FIXEDXYNAV)
+					nfixed += 2;
+				else if (file->status == MBNA_FILE_FIXEDZNAV)
+					nfixed += 1;
+				}
+			}
+		
+		/* only do block average solution if there is more than one block */
+		if (nblock > 1)
+			{
+
+			/* allocate block average offset arrays */
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(int), (void **)&nbxy,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(int), (void **)&nbz,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(double), (void **)&bxavg,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(double), (void **)&byavg,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * (nblock + 1) / 2 * sizeof(double), (void **)&bzavg,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&bpoornav,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&bxfixstatus,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&byfixstatus,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(int), (void **)&bzfixstatus,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(double), (void **)&bxfix,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(double), (void **)&byfix,&error);
+			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nblock * sizeof(double), (void **)&bzfix,&error);
+			memset(nbxy, 0, nblock * (nblock + 1) / 2 * sizeof(int));
+			memset(nbz, 0, nblock * (nblock + 1) / 2 * sizeof(int));
+			memset(bxavg, 0, nblock * (nblock + 1) / 2 * sizeof(double));
+			memset(byavg, 0, nblock * (nblock + 1) / 2 * sizeof(double));
+			memset(bzavg, 0, nblock * (nblock + 1) / 2 * sizeof(double));
+			memset(bpoornav, 0, nblock * sizeof(int));
+			memset(bxfixstatus, 0, nblock * sizeof(int));
+			memset(byfixstatus, 0, nblock * sizeof(int));
+			memset(bzfixstatus, 0, nblock * sizeof(int));
+			memset(bxfix, 0, nblock * sizeof(double));
+			memset(byfix, 0, nblock * sizeof(double));
+			memset(bzfix, 0, nblock * sizeof(double));
+		
+			/* count ties for all block vs block pairs and calculate average offsets
+			 * and count dimensions of full inversion problem */
+			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+				{
+				crossing = &project.crossings[icrossing];
 	
-					 /* get block id for first snav point */
-					 file1 = &project.files[crossing->file_id_1];
-					 nc1 = file1->block;
-	
-					 /* get block id for second snav point */
-					 file2 = &project.files[crossing->file_id_2];
-					 nc2 = file2->block;
-	
-					/* use only set crossings */
-					if (crossing->status == MBNA_CROSSING_STATUS_SET)
-					for (j=0;j<crossing->num_ties;j++)
+				/* for block vs block averages use only set crossings between
+				 * different blocks */
+				if (crossing->status == MBNA_CROSSING_STATUS_SET)
+					{
+					for (itie=0;itie<crossing->num_ties;itie++)
 						{
 						/* get tie */
-						tie = (struct mbna_tie *) &crossing->ties[j];
-		
-						/* get current offset vector including reduction of block solution */
-						if (tie->status != MBNA_TIE_Z)
+						tie = (struct mbna_tie *) &crossing->ties[itie];
+	
+						/* if blocks differ get id for block vs block */
+						if (project.files[crossing->file_id_1].block
+							!= project.files[crossing->file_id_2].block)
 							{
-							offsetx = tie->offset_x_m - (x[3*nc2]   + xx[3*nc2]   - x[3*nc1]   - xx[3*nc1]);
-							offsety = tie->offset_y_m - (x[3*nc2+1] + xx[3*nc2+1] - x[3*nc1+1] - xx[3*nc1+1]);
-							}
-						else
-							{
-							offsetx = 0.0;
-							offsety = 0.0;
-							}
-						if (tie->status != MBNA_TIE_XY)
-							{
-							offsetz = tie->offset_z_m - (x[3*nc2+2] + xx[3*nc2+2] - x[3*nc1+2] - xx[3*nc1+2]);
-							}
-						else
-							{
-							offsetz = 0.0;
-							}
-		/* fprintf(stderr,"icrossing:%d jtie:%d blocks:%d %d offsets: %f %f %f\n",
-		icrossing,j,nc1,nc2,offsetx,offsety,offsetz); */
-		
-						/* deal with fixed or unfixed status of sections */
-						if ((file1->status == MBNA_FILE_GOODNAV && file2->status == MBNA_FILE_GOODNAV)
-							|| (file1->status == MBNA_FILE_POORNAV && file2->status == MBNA_FILE_POORNAV))
-							{
-							xx[3*nc1]   += -0.5 * offsetx;
-							xx[3*nc1+1] += -0.5 * offsety;
-							xx[3*nc1+2] += -0.5 * offsetz;
-							xx[3*nc2]   +=  0.5 * offsetx;
-							xx[3*nc2+1] +=  0.5 * offsety;
-							xx[3*nc2+2] +=  0.5 * offsetz;
-							}
-						else if (file1->status == MBNA_FILE_GOODNAV && file2->status == MBNA_FILE_POORNAV)
-							{
-							xx[3*nc1]   += -0.005 * offsetx;
-							xx[3*nc1+1] += -0.005 * offsety;
-							xx[3*nc1+2] += -0.005 * offsetz;
-							xx[3*nc2]   +=  0.995 * offsetx;
-							xx[3*nc2+1] +=  0.995 * offsety;
-							xx[3*nc2+2] +=  0.995 * offsetz;
-							}
-						else if (file1->status == MBNA_FILE_POORNAV && file2->status == MBNA_FILE_GOODNAV)
-							{
-							xx[3*nc1]   += -0.995 * offsetx;
-							xx[3*nc1+1] += -0.995 * offsety;
-							xx[3*nc1+2] += -0.995 * offsetz;
-							xx[3*nc2]   +=  0.005 * offsetx;
-							xx[3*nc2+1] +=  0.005 * offsety;
-							xx[3*nc2+2] +=  0.005 * offsetz;
-							}
-						else if (file1->status == MBNA_FILE_FIXEDNAV && file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							/*
-							xx[3*nc1]   +=  0.0;
-							xx[3*nc1+1] +=  0.0;
-							xx[3*nc1+2] +=  0.0;
-							xx[3*nc2]   +=  0.0;
-							xx[3*nc2+1] +=  0.0;
-							xx[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file1->status == MBNA_FILE_FIXEDNAV)
-							{
-							if (file2->status == MBNA_FILE_FIXEDXYNAV)
+							if (project.files[crossing->file_id_2].block  >  project.files[crossing->file_id_1].block)
 								{
-								/*
-								xx[3*nc1]   +=  0.0;
-								xx[3*nc1+1] +=  0.0;
-								xx[3*nc1+2] +=  0.0;
-								xx[3*nc2]   +=  0.0;
-								xx[3*nc2+1] +=  0.0;
-								*/
-								xx[3*nc2+2] +=  offsetz;
-								}
-							else if (file2->status == MBNA_FILE_FIXEDZNAV)
-								{
-								/*
-								xx[3*nc1]   +=  0.0;
-								xx[3*nc1+1] +=  0.0;
-								xx[3*nc1+2] +=  0.0;
-									*/
-								xx[3*nc2]   +=  offsetx;
-								xx[3*nc2+1] +=  offsety;
-									/*
-								xx[3*nc2+2] +=  0.0;
-								*/
+								jbvb1 = project.files[crossing->file_id_1].block;
+								jbvb2 = project.files[crossing->file_id_2].block;
 								}
 							else
 								{
-								/*
-								xx[3*nc1]   +=  0.0;
-								xx[3*nc1+1] +=  0.0;
-								xx[3*nc1+2] +=  0.0;
-									*/
-								xx[3*nc2]   +=  offsetx;
-								xx[3*nc2+1] +=  offsety;
-								xx[3*nc2+2] +=  offsetz;
+								jbvb1 = project.files[crossing->file_id_2].block;
+								jbvb2 = project.files[crossing->file_id_1].block;
 								}
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							if (file1->status == MBNA_FILE_FIXEDXYNAV)
-								{
-								/*
-								xx[3*nc1]   +=  0.0;
-								xx[3*nc1+1] +=  0.0;
-								*/
-								xx[3*nc1+2] +=  -offsetz;
-								/*
-								xx[3*nc2]   +=  0.0;
-								xx[3*nc2+1] +=  0.0;
-								xx[3*nc2+2] +=  0.0;
-								*/
-								}
-							else if (file1->status == MBNA_FILE_FIXEDZNAV)
-								{
-								xx[3*nc1]   +=  -offsetx;
-								xx[3*nc1+1] +=  -offsety;
-									/*
-								xx[3*nc1+2] +=  0.0;
-								xx[3*nc2]   +=  0.0;
-								xx[3*nc2+1] +=  0.0;
-								xx[3*nc2+2] +=  0.0;
-									*/
-								}
-							else
-								{
-								xx[3*nc1]   +=  -offsetx;
-								xx[3*nc1+1] +=  -offsety;
-								xx[3*nc1+2] +=  -offsetz;
-									/*
-								xx[3*nc2]   +=  0.0;
-								xx[3*nc2+1] +=  0.0;
-								xx[3*nc2+2] +=  0.0;
-									*/
-								}
-							}
-						}
-					}
-					
-				/* loop over all global ties */
-				for (ifile=0;ifile<project.num_files;ifile++)
-					{
-					file = &project.files[ifile];
-					for (isection=0;isection<file->num_sections;isection++)
-						{
-						section = &file->sections[isection];
-						if (section->global_tie_status != MBNA_TIE_NONE)
-							{
-							/* get block id for snav point */
-							nc1 = file->block;
-			
-							/* get current offset vector including reduction of block solution */
-							if (section->global_tie_status != MBNA_TIE_Z)
-								{
-								offsetx = section->global_tie_offset_x_m - (x[3*nc1]   + xx[3*nc1]);
-								offsety = section->global_tie_offset_y_m - (x[3*nc1+1] + xx[3*nc1+1]);
+							jbvb = (jbvb2) * (jbvb2 + 1) / 2 + jbvb1;
 								
-								xx[3*nc1]   += 0.5 * offsetx;
-								xx[3*nc1+1] += 0.5 * offsety;
-								}
-							if (section->global_tie_status != MBNA_TIE_XY)
+							if (tie->status != MBNA_TIE_Z)
 								{
-								offsetz = section->global_tie_offset_z_m - (x[3*nc1+2] + xx[3*nc1+2]);
-								xx[3*nc1+2] += 0.5 * offsetz;
+								bxavg[jbvb] += tie->offset_x_m;
+								byavg[jbvb] += tie->offset_y_m;
+								nbxy[jbvb]++;
 								}
-		
-//fprintf(stderr,"STAGE 1 - GLOBAL TIE: %1d %2.2d:%2.2d:%2.2d  x: %f %f %f     xx: %f %f %f     offset: %f %f %f\n",
-//section->global_tie_status,ifile,isection,section->global_tie_snav,
-//x[3*nc1],x[3*nc1+1],x[3*nc1+2],xx[3*nc1],xx[3*nc1+1],xx[3*nc1+2],
-//offsetx,offsety,offsetz);
+							if (tie->status != MBNA_TIE_XY)
+								{
+								bzavg[jbvb] += tie->offset_z_m;
+								nbz[jbvb]++;
+								}
 							}
 						}
 					}
-	
-				/* calculate 2-norm of perturbation */
-				perturbationsize = 0.0;
-				for (i=0;i<ncols;i++)
-					{
-					perturbationsize += xx[i] * xx[i];
-					}
-				perturbationsize = sqrt(perturbationsize) / ncols;
-	
-				/* apply perturbation */
-				for (i=0;i<ncols;i++)
-					{
-					x[i] += xx[i];
-					}
-	
-				/* check for convergence */
-				perturbationchange = perturbationsize - perturbationsizeold;
-				convergencecriterea = fabs(perturbationchange) / misfit_initial;
-				if (convergencecriterea < MBNA_CONVERGENCE || iter > MBNA_INTERATION_MAX)
-					done = MB_YES;
-	/* fprintf(stderr,"BLOCK INVERT: iter:%d ntie:%d misfit_initial:%f misfit_ties:%f perturbationsize:%g perturbationchange:%g convergencecriterea:%g done:%d\n",
-	iter,ntie,misfit_initial,misfit_ties,perturbationsize,perturbationchange,convergencecriterea,done);*/
-	
-				if (done == MB_NO)
-					{
-					perturbationsizeold = perturbationsize;
-					iter++;
-					}
 				}
-
-			/* if there are no fixed blocks contributing to ties or global ties,
-				then get average offsets of blocks not flagged as bad
-			to provide a static offset to move final model to be more consistent
-			with the good blocks than the poorly navigated blocks */
-			block_offset_avg_x = 0.0;
-			block_offset_avg_y = 0.0;
-			block_offset_avg_z = 0.0;
-			navg = 0;
-			if (nfixed == 0 && nglobal == 0)
+			
+			/* calculate block vs block tie averages */
+			fprintf(stderr,"Survey vs Survey tie counts and average offsets:\n");
+			nblockties = 0;
+			for (iblock=0;iblock<nblock;iblock++)
 				{
-				for (i=0;i<project.num_blocks;i++)
+				for (jblock=0;jblock<=iblock;jblock++)
 					{
-					use = MB_YES;
-					for (j=0;j<project.num_files;j++)
+					jbvb = (iblock) * (iblock + 1) / 2 + jblock;
+					if (nbxy[jbvb] > 0)
 						{
-						file = &project.files[j];
-						if (file->block == i && file->status == MBNA_FILE_POORNAV)
-							use = MB_NO;
+						bxavg[jbvb] /= nbxy[jbvb];
+						byavg[jbvb] /= nbxy[jbvb];
+						nblockties += 2;
 						}
-					if (use == MB_YES)
+					if (nbz[jbvb] > 0)
 						{
-						block_offset_avg_x += x[3 * i];
-						block_offset_avg_y += x[3 * i + 1];
-						block_offset_avg_z += x[3 * i + 2];
-						navg++;
+						bzavg[jbvb] /= nbz[jbvb];
+						nblockties++;
+						}
+					fprintf(stderr,"%2d vs %2d: %5d xy ties  %5d z ties  Avg offsets: %8.3f %8.3f %8.3f\n",
+							jblock,iblock,nbxy[jbvb],nbz[jbvb],
+							bxavg[jbvb],byavg[jbvb],bzavg[jbvb]);
+					}
+				}
+			
+			/* get fixed blocks and average global ties for blocks */
+			mbna_global_tie_influence = 600;
+			for (ifile=0;ifile<project.num_files;ifile++)
+				{
+				/* get file */
+				file = &project.files[ifile];
+				
+				/* count fixed and global ties for full inversion */
+				for (isection=0;isection<file->num_sections;isection++)
+					{
+					/* get section */
+					section = &file->sections[isection];
+					
+					/* count global ties for block offset inversion */
+					if (section->global_tie_status != MBNA_TIE_NONE)
+						{
+						if (section->global_tie_status == MBNA_TIE_XYZ
+							|| section->global_tie_status == MBNA_TIE_XY)
+							{
+							bxfixstatus[file->block]++;
+							bxfix[file->block] += section->global_tie_offset_x_m;
+							byfixstatus[file->block]++;
+							byfix[file->block] += section->global_tie_offset_y_m;
+							}
+						if (section->global_tie_status == MBNA_TIE_XYZ
+							|| section->global_tie_status == MBNA_TIE_Z)
+							{
+							bzfixstatus[file->block]++;
+							bzfix[file->block] += section->global_tie_offset_z_m;
+							}
 						}
 					}
-				if (navg > 0)
+				}
+			
+			/* count fixed sections for block average inversion,
+				* overwriting global ties if they conflict */
+			for (ifile=0;ifile<project.num_files;ifile++)
+				{
+				/* get file */
+				file = &project.files[ifile];
+				
+				/* count fixed sections for block average inversion,
+				* overwriting global ties if they conflict */
+				if (file->status == MBNA_FILE_FIXEDNAV
+					|| file->status == MBNA_FILE_FIXEDXYNAV)
 					{
-					block_offset_avg_x /= navg;
-					block_offset_avg_y /= navg;
-					block_offset_avg_z /= navg;
+					bxfixstatus[file->block] = 1;
+					bxfix[file->block] = 0.0;
+					byfixstatus[file->block] = 1;
+					byfix[file->block] = 0.0;
+					}
+				if (file->status == MBNA_FILE_FIXEDNAV
+					|| file->status == MBNA_FILE_FIXEDZNAV)
+					{
+					bzfixstatus[file->block] = 1;
+					bzfix[file->block] = 0.0;
+					}
+				if (file->status == MBNA_FILE_POORNAV)
+					{
+					bpoornav[file->block] = MB_YES;
 					}
 				}
-/* fprintf(stderr,"Average block offsets: x:%f y:%f z:%f  Used %d of %d blocks\n",
-block_offset_avg_x,block_offset_avg_y,block_offset_avg_z,navg,project.num_blocks); */
-
-/* output solution */
-//fprintf(stderr,"\nAverage offsets: %f %f %f\n",block_offset_avg_x,block_offset_avg_y,block_offset_avg_z);
-//for (i=0;i<ncols/3;i++)
-//{
-//fprintf(stderr, "Survey block:%d  offsets: %f %f %f\n",
-//	    i, x[3*i], x[3*i+1], x[3*i+2]);
-//}
-
-			/* extract results */
-			for (i=0;i<project.num_files;i++)
+			nblockglobalties = 0;
+			for (iblock=0;iblock<nblock;iblock++)
 				{
-				file = &project.files[i];
-				file->block_offset_x = x[3 * file->block] - block_offset_avg_x;
-				file->block_offset_y = x[3 * file->block + 1] - block_offset_avg_y;
-				file->block_offset_z = x[3 * file->block + 2] - block_offset_avg_z;
-//fprintf(stderr,"file:%d block: %d block offsets: %f %f %f\n",
-//	i,file->block,file->block_offset_x,file->block_offset_y,file->block_offset_z);
-				}
-	
-			/* deallocate arrays */
-			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x,&error);
-			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&xx,&error);
-			}
-
-		/*----------------------------------------------------------------*/
-		/* Initialize arrays, solution, perturbation                      */
-		/*----------------------------------------------------------------*/
-
-		/* count dimension of solution guess vector */
-		nnav = 0;
-		nsnav = 0;
-		for (i=0;i<project.num_files;i++)
-			{
-			file = &project.files[i];
-			for (j=0;j<file->num_sections;j++)
-				{
-				section = &file->sections[j];
-				nsnav += section->num_snav - section->continuity;
-				for (isnav=0;isnav<section->num_snav;isnav++)
+				if (bxfixstatus[iblock] > 0)
 					{
-					if (section->snav_num_ties[isnav] > 0
-					|| section->global_tie_snav == isnav)
-					{
-					section->snav_invert_id[isnav] = nnav;
-					nnav++;
+					bxfix[iblock] /= (double)bxfixstatus[iblock];
+					nblockglobalties++;
 					}
+				if (byfixstatus[iblock] > 0)
+					{
+					byfix[iblock] /= (double)byfixstatus[iblock];
+					nblockglobalties++;
+					}
+				if (bzfixstatus[iblock] > 0)
+					{
+					bzfix[iblock] /= (double)bzfixstatus[iblock];
+					nblockglobalties++;
 					}
 				}
 			}
+		
+		/* We do a two stage inversion first for block averages, then for full 
+		 * adjustement vector on top of the averages. Make sure arrays are
+		 * allocated large enough for both stages. */
+		nrows = nfixed + ntie + nglobal + nsmooth;
+		ncols = 3 * nnav;
+		nrows_ba = nblockties + nblockglobalties + 3;
+		ncols_ba = 3 * nblock;
+		nrows_alloc = MAX(nrows, nrows_ba);
+		ncols_alloc = MAX(ncols, ncols_ba);
+fprintf(stderr,"\nMBnavadjust block average inversion preparation:\n");
+fprintf(stderr,"     nblock:            %d\n",nblock);
+fprintf(stderr,"     nblockties:        %d\n",nblockties);
+fprintf(stderr,"     nblockglobalties:  %d\n",nblockglobalties);
+fprintf(stderr,"     nrows_ba:          %d\n",nrows_ba);
+fprintf(stderr,"     ncols_ba:          %d\n",ncols_ba);
+fprintf(stderr,"\nMBnavadjust full inversion preparation:\n");
+fprintf(stderr,"     nnav:              %d\n",nnav);
+fprintf(stderr,"     ntie:              %d\n",ntie);
+fprintf(stderr,"     nglobal:           %d\n",nglobal);
+fprintf(stderr,"     nfixed:            %d\n",nfixed);
+fprintf(stderr,"     nsmooth:           %d\n",nsmooth);
+fprintf(stderr,"     nrows:             %d\n",nrows);
+fprintf(stderr,"     ncols:             %d\n",ncols);
+fprintf(stderr,"\nMBnavadjust inversion array allocation dimensions:\n");
+fprintf(stderr,"     nrows_alloc:       %d\n",nrows_alloc);
+fprintf(stderr,"     ncols_alloc:       %d\n",ncols_alloc);
 
 		/* allocate solution vector x, perturbation vector xx, and average solution vector xa */
-		ncols = ndf * nnav;
-		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&x,&error);
-		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&xx,&error);
-		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&xa,&error);
-		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&xs,&error);
-		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols * sizeof(double), (void **)&xw,&error);
-		inav = 0;
-		for (i=0;i<project.num_files;i++)
+		matrix.nia = NULL;
+		matrix.ia = NULL;
+		matrix.a = NULL;
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nrows_alloc * sizeof(double), (void **)&u,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&v,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&w,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&x,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, ncols_alloc * sizeof(double), (void **)&se,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nrows_alloc * sizeof(double), (void **)&b,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nrows_alloc * sizeof(int), (void **)&matrix.nia,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, 6 * nrows_alloc * sizeof(int), (void **)&matrix.ia,&error);
+		status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, 6 * nrows_alloc * sizeof(double), (void **)&matrix.a,&error);
+		memset(u, 0, nrows_alloc * sizeof(double));
+		memset(v, 0, ncols_alloc * sizeof(double));
+		memset(w, 0, ncols_alloc * sizeof(double));
+		memset(x, 0, ncols_alloc * sizeof(double));
+		memset(se, 0, ncols_alloc * sizeof(double));
+		memset(b, 0, nrows_alloc * sizeof(double));
+		memset(matrix.nia, 0, nrows_alloc * sizeof(int));
+		memset(matrix.ia, 0, 6 * nrows_alloc * sizeof(int));
+		memset(matrix.a, 0, 6 * nrows_alloc * sizeof(double));
+		
+		/*----------------------------------------------------------------*/
+		/* Create block offset inversion matrix problem                   */
+		/*----------------------------------------------------------------*/
+		if (nblock > 1)
 			{
-			file = &project.files[i];
-			for (j=0;j<file->num_sections;j++)
+			matrix.m = nrows_ba;
+			matrix.n = ncols_ba;
+			matrix.ia_dim = ncols_ba;
+			
+			/* loop over each crossing, applying offsets evenly to both points
+				for all ties that involve different blocks
+				- weight inversely by number of ties for each block vs block pair
+				so that each has same importance whether connected by one tie
+				or many */
+					
+			/* set up inversion for block offsets
+			 * - start with average offsets between all block vs block pairs for
+			 *   x y and z wherever defined by one or more ties
+			 * - next apply average global ties for each block if they exist
+			 * - finally add a constraint for x y and z that the sum of all
+			 *   block offsets must be zero (ignoring blocks tagged as having
+			 *   poor navigation) */
+			irow = 0;
+			
+			/* start with average block vs block offsets */
+			for (iblock=0;iblock<nblock;iblock++)
 				{
-				section = &file->sections[j];
-				for (isnav=0;isnav<section->num_snav;isnav++)
+				for (jblock=0;jblock<=iblock;jblock++)
 					{
-					if (section->snav_num_ties[isnav] > 0
-					|| section->global_tie_snav == isnav)
-					{
-					x[ndf * inav] = 0.0;
-					x[ndf * inav + 1] = 0.0;
-					x[ndf * inav + 2] = 0.0;
-					xx[ndf * inav] = 0.0;
-					xx[ndf * inav + 1] = 0.0;
-					xx[ndf * inav + 2] = 0.0;
-					xa[ndf * inav] = file->block_offset_x - block_offset_avg_x;
-					xa[ndf * inav + 1] = file->block_offset_y - block_offset_avg_y;
-					xa[ndf * inav + 2] = file->block_offset_z - block_offset_avg_z;
-					inav++;
-					}
+					jbvb = (iblock) * (iblock + 1) / 2 + jblock;
+					if (nbxy[jbvb] > 0)
+						{
+						index_m = irow * ncols_ba;
+						index_n = jblock * 3;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = -1.0;
+					
+						index_m = irow * ncols_ba + 1;
+						index_n = iblock * 3;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = 1.0;
+					
+						b[irow] = bxavg[jbvb];
+						matrix.nia[irow] = 2;
+						irow++;
+	
+						index_m = irow * ncols_ba;
+						index_n = jblock * 3 + 1;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = -1.0;
+					
+						index_m = irow * ncols_ba + 1;
+						index_n = iblock * 3 + 1;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = 1.0;
+					
+						b[irow] = byavg[jbvb];
+						matrix.nia[irow] = 2;
+						irow++;
+						}
+					if (nbz[jbvb] > 0)
+						{
+						index_m = irow * ncols_ba;
+						index_n = jblock * 3 + 2;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = -1.0;
+					
+						index_m = irow * ncols_ba + 1;
+						index_n = iblock * 3 + 2;
+						matrix.ia[index_m] = index_n;
+						matrix.a[index_m] = 1.0;
+					
+						b[irow] = bzavg[jbvb];
+						matrix.nia[irow] = 2;
+						irow++;
+						}
 					}
 				}
+				
+			/* next apply average global offsets for each block */
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				if (bxfixstatus[iblock] > 0)
+					{
+					index_m = irow * ncols_ba;
+					index_n = iblock * 3;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = 1.0;
+				
+					b[irow] = bxfix[jbvb];
+					matrix.nia[irow] = 1;
+					irow++;
+					}
+				if (byfixstatus[iblock] > 0)
+					{
+					index_m = irow * ncols_ba;
+					index_n = iblock * 3 + 1;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = 1.0;
+				
+					b[irow] = byfix[jbvb];
+					matrix.nia[irow] = 1;
+					irow++;
+					}
+				if (bzfixstatus[iblock] > 0)
+					{
+					index_m = irow * ncols_ba;
+					index_n = iblock * 3 + 2;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = 1.0;
+				
+					b[irow] = bzfix[jbvb];
+					matrix.nia[irow] = 1;
+					irow++;
+					}
+				}
+				
+			/* add constraint that overall average offset must be zero, ignoring
+			 * blocks with poor navigation */
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				index_m = irow * ncols_ba + iblock;
+				index_n = iblock * 3;
+				matrix.ia[index_m] = index_n;
+				if (bpoornav[iblock] == MB_YES)
+					{
+					matrix.a[index_m] = 0.0;
+					}
+				else
+					{
+					matrix.a[index_m] = 1.0;
+					}
+				}
+			b[irow] = 0.0;
+			matrix.nia[irow] = nblock;
+			irow++;
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				index_m = irow * ncols_ba + iblock;
+				index_n = iblock * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (bpoornav[iblock] == MB_YES)
+					{
+					matrix.a[index_m] = 0.0;
+					}
+				else
+					{
+					matrix.a[index_m] = 1.0;
+					}
+				}
+			b[irow] = 0.0;
+			matrix.nia[irow] = nblock;
+			irow++;
+			for (iblock=0;iblock<nblock;iblock++)
+				{
+				index_m = irow * ncols_ba + iblock;
+				index_n = iblock * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (bpoornav[iblock] == MB_YES)
+					{
+					matrix.a[index_m] = 0.0;
+					}
+				else
+					{
+					matrix.a[index_m] = 1.0;
+					}
+				}
+			b[irow] = 0.0;
+			matrix.nia[irow] = nblock;
+			irow++;
+				
+fprintf(stderr,"\nAbout to call LSQR for preliminary block solution   rows: %d cols: %d  (expected rows:%d cols:%d)\n",
+			irow, nblock * 3, nrows_ba, ncols_ba);
+				
+			/* F: call lsqr to solve the matrix problem */
+			for (irow=0;irow<nrows_ba;irow++)
+				u[irow] = b[irow];
+			damp = 0.0;
+			atol = 1.0e-6;		// releative precision of A matrix
+			btol = 1.0e-6;		// relative precision of data array
+			relpr = 1.0e-16; 	// relative precision of double precision arithmetic
+			conlim = 1 / (10*sqrt(relpr));
+			itnlim = 4 * matrix.n;
+			
+//fprintf(stderr,"damp:%f\natol:%f\nbtol:%f\nconlim:%f\nitnlim:%d\n",
+//		damp,atol,btol,conlim,itnlim);
+//for (i=0;i<matrix.m;i++)
+//	{
+//	fprintf(stderr,"A row:%6d nia:%d ",i,matrix.nia[i]);
+//	for (j=0;j<matrix.nia[i];j++)
+//		{
+//		k = i * ncols_ba + j;
+//		fprintf(stderr,"| %d ia[%5d]:%5d a[%5d]:%10.6f ", j,k,matrix.ia[k],k,matrix.a[k]);
+//		}
+//	fprintf(stderr," | b:%10.6f\n",u[i]);
+//	}
+			
+			mblsqr_lsqr(nrows_ba, ncols_ba, &mb_aprod, damp, &matrix, u, v, w, x, se, 
+						atol, btol, conlim, itnlim, stderr,
+						&istop_out, &itn_out, &anorm_out, &acond_out,
+						&rnorm_out, &arnorm_out, &xnorm_out);
+				
+			/* save solution */
+			for (ifile=0;ifile<project.num_files;ifile++)
+				{
+				file = &project.files[ifile];
+				file->block_offset_x = x[3*file->block];
+				file->block_offset_y = x[3*file->block+1];
+				file->block_offset_z = x[3*file->block+2];
+				}
+	
+			fprintf(stderr, "\nInversion by LSQR completed\n");
+			fprintf(stderr, "\tReason for termination:       %d\n", istop_out);
+			fprintf(stderr, "\tNumber of iterations:         %d\n", itn_out);
+			fprintf(stderr, "\tFrobenius norm:               %f\n (expected to be about %f)\n", anorm_out, sqrt((double)matrix.n));
+			fprintf(stderr, "\tCondition number of A:        %f\n", acond_out);
+			fprintf(stderr, "\tRbar norm:                    %f\n", rnorm_out);
+			fprintf(stderr, "\tResidual norm:                %f\n", arnorm_out);
+			fprintf(stderr, "\tSolution norm:                %f\n", xnorm_out);
+			for (i=0;i<nblock;i++)
+				{
+				fprintf(stderr,"block[%d]:  block_offset_x:%f block_offset_y:%f block_offset_z:%f\n",
+						i,x[3*i],x[3*i+1],x[3*i+2]);
+				}
+			//for (ifile=0;ifile<project.num_files;ifile++)
+			//	{
+			//	file = &project.files[ifile];
+			//	fprintf(stderr,"file[%d]:  block_offset_x:%f block_offset_y:%f block_offset_z:%f\n",
+			//			ifile,file->block_offset_x,file->block_offset_y,file->block_offset_z);
+			//	}
+				
+			/* deallocate arrays used only for block inversion */
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&nbxy,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&nbz,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bxavg,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&byavg,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bzavg,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bpoornav,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bxfixstatus,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&byfixstatus,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bzfixstatus,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bxfix,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&byfix,&error);
+			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&bzfix,&error);
 			}
 
-		/* calculate initial normalized misfit */
-		misfit_ties_initial = 0.0;
-		misfit_norm_initial = 0.0;
-		nmisfit = 0;
+		/*----------------------------------------------------------------*/
+		/* Create complete inversion matrix problem                       */
+		/*----------------------------------------------------------------*/
+		
+		/* loop over each crossing, applying offsets evenly to both points */
+		irow = 0;
+		rms_misfit_initial = 0.0;
+		matrix.m = nrows;
+		matrix.n = ncols;
+		matrix.ia_dim = 6;
+		memset(u, 0, nrows_alloc * sizeof(double));
+		memset(v, 0, ncols_alloc * sizeof(double));
+		memset(w, 0, ncols_alloc * sizeof(double));
+		memset(x, 0, ncols_alloc * sizeof(double));
+		memset(se, 0, ncols_alloc * sizeof(double));
+		memset(b, 0, nrows_alloc * sizeof(double));
+		memset(matrix.nia, 0, nrows_alloc * sizeof(int));
+		memset(matrix.ia, 0, 6 * nrows_alloc * sizeof(int));
+		memset(matrix.a, 0, 6 * nrows_alloc * sizeof(double));
 		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
 			{
 			crossing = &project.crossings[icrossing];
 
 			/* use only set crossings */
 			if (crossing->status == MBNA_CROSSING_STATUS_SET)
-			for (j=0;j<crossing->num_ties;j++)
+			for (itie=0;itie<crossing->num_ties;itie++)
+				{
+				/* A: get tie */
+				tie = (struct mbna_tie *) &crossing->ties[itie];
+
+				/* A1: get absolute id for first snav point */
+				file1 = &project.files[crossing->file_id_1];
+				section1 = &file1->sections[crossing->section_1];
+				nc1 = section1->snav_invert_id[tie->snav_1];
+
+				/* A2: get absolute id for second snav point */
+				file2 = &project.files[crossing->file_id_2];
+				section2 = &file2->sections[crossing->section_2];
+				nc2 = section2->snav_invert_id[tie->snav_2];
+				
+if (file1->sections[crossing->section_1].snav_time_d[tie->snav_1] == file2->sections[crossing->section_2].snav_time_d[tie->snav_2])
+fprintf(stderr,"ZERO TIME BETWEEN TIED POINTS!!  file:section:snav - %d:%d:%d   %d:%d:%d  DIFF:%f\n",
+crossing->file_id_1,crossing->section_1,tie->snav_1,
+crossing->file_id_2,crossing->section_2,tie->snav_2,
+(file1->sections[crossing->section_1].snav_time_d[tie->snav_1]
+ - file2->sections[crossing->section_2].snav_time_d[tie->snav_2]));
+
+				/* A3: get offset vector for this tie */
+				if (tie->status != MBNA_TIE_Z)
+					{
+					offset_x = tie->offset_x_m - (file2->block_offset_x - file1->block_offset_x);
+					offset_y = tie->offset_y_m - (file2->block_offset_y - file1->block_offset_y);
+					}
+				else
+					{
+					offset_x = 0.0;
+					offset_y = 0.0;
+					}
+				if (tie->status != MBNA_TIE_XY)
+					{
+					offset_z = tie->offset_z_m - (file2->block_offset_z - file1->block_offset_z);
+					}
+				else
+					{
+					offset_z = 0.0;
+					}
+				rms_misfit_initial += offset_x * offset_x
+							+ offset_y * offset_y
+							+ offset_z * offset_z;
+
+				/* deal with each component of the error ellipse
+					- project offset vector onto each component by dot-product
+				- weight inversely by size of error for that component */
+
+				/* B1: deal with long axis */
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED)
+					projected_offset = offset_x * tie->sigmax1[0]
+							+ offset_y * tie->sigmax1[1];
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					projected_offset = offset_x * tie->sigmax1[0]
+							+ offset_y * tie->sigmax1[1]
+							+ offset_z * tie->sigmax1[2];
+				if (fabs(tie->sigmar1) > 0.0)
+					weight = 1.0 / tie->sigmar1;
+				else
+					weight = 0.0;
+
+				index_m = irow * 6;
+				index_n = nc1 * 3;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = -weight * tie->sigmax1[0];
+				
+				index_m = irow * 6 + 1;
+				index_n = nc2 * 3;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = weight * tie->sigmax1[0];
+				
+				index_m = irow * 6 + 2;
+				index_n = nc1 * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = -weight * tie->sigmax1[1];
+				
+				index_m = irow * 6 + 3;
+				index_n = nc2 * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = weight * tie->sigmax1[1];
+					
+				index_m = irow * 6 + 4;
+				index_n = nc1 * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = -weight * tie->sigmax1[2];
+
+				index_m = irow * 6 + 5;
+				index_n = nc2 * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = weight * tie->sigmax1[2];
+				
+				b[irow] = weight * projected_offset;
+				matrix.nia[irow] = 6;
+				irow++;
+
+				/* B2: deal with horizontal axis */
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED)
+					projected_offset = offset_x * tie->sigmax2[0]
+							+ offset_y * tie->sigmax2[1];
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					projected_offset = offset_x * tie->sigmax2[0]
+							+ offset_y * tie->sigmax2[1]
+							+ offset_z * tie->sigmax2[2];
+				if (fabs(tie->sigmar2) > 0.0)
+					weight = 1.0 / tie->sigmar2;
+				else
+					weight = 0.0;
+
+				index_m = irow * 6;
+				index_n = nc1 * 3;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = -weight * tie->sigmax2[0];
+				
+				index_m = irow * 6 + 1;
+				index_n = nc2 * 3;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = weight * tie->sigmax2[0];
+				
+				index_m = irow * 6 + 2;
+				index_n = nc1 * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = -weight * tie->sigmax2[1];
+				
+				index_m = irow * 6 + 3;
+				index_n = nc2 * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_Z)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = weight * tie->sigmax2[1];
+					
+				index_m = irow * 6 + 4;
+				index_n = nc1 * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = -weight * tie->sigmax2[2];
+
+				index_m = irow * 6 + 5;
+				index_n = nc2 * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = weight * tie->sigmax2[2];
+				
+				b[irow] = weight * projected_offset;
+				matrix.nia[irow] = 6;
+				irow++;
+
+				/* B3:  deal with semi-vertical axis */
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED)
+					projected_offset = offset_z * tie->sigmax3[2];
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					projected_offset = offset_x * tie->sigmax3[0]
+							+ offset_y * tie->sigmax3[1]
+							+ offset_z * tie->sigmax3[2];
+				if (fabs(tie->sigmar3) > 0.0)
+					weight = 1.0 / tie->sigmar3;
+				else
+					weight = 0.0;
+
+				index_m = irow * 6;
+				index_n = nc1 * 3;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = -weight * tie->sigmax3[0];
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = -weight * tie->sigmax3[0];
+				
+				index_m = irow * 6 + 1;
+				index_n = nc2 * 3;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = weight * tie->sigmax3[0];
+				
+				index_m = irow * 6 + 2;
+				index_n = nc1 * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = -weight * tie->sigmax3[1];
+				
+				index_m = irow * 6 + 3;
+				index_n = nc2 * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				if (mbna_invert_mode == MBNA_INVERT_ZISOLATED || tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else //if (mbna_invert_mode == MBNA_INVERT_ZFULL)
+					matrix.a[index_m] = weight * tie->sigmax3[1];
+					
+				index_m = irow * 6 + 4;
+				index_n = nc1 * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = -weight * tie->sigmax3[2];
+
+				index_m = irow * 6 + 5;
+				index_n = nc2 * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				if (tie->status == MBNA_TIE_XY)
+					matrix.a[index_m] = 0.0;
+				else
+					matrix.a[index_m] = weight * tie->sigmax3[2];
+				
+				b[irow] = weight * projected_offset;
+				matrix.nia[irow] = 6;
+				irow++;
+				}
+			}
+
+		/* C1: loop over all files applying any global ties */
+		weight = 10.0;
+		for (ifile=0;ifile<project.num_files;ifile++)
+			{
+			file = &project.files[ifile];
+			for (isection=0;isection<file->num_sections;isection++)
+				{
+				section = &file->sections[isection];
+				if (section->global_tie_status == MBNA_TIE_XYZ || section->global_tie_status == MBNA_TIE_XY)
+					{
+					index_m = irow * 6;
+					index_n = section->snav_invert_id[section->global_tie_snav] * 3;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = weight;
+					b[irow] = weight * (section->global_tie_offset_x_m - file->block_offset_x);
+					matrix.nia[irow] = 1;
+					irow++;
+
+					index_m = irow * 6;
+					index_n = section->snav_invert_id[section->global_tie_snav] * 3 + 1;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = weight;
+					b[irow] = weight * (section->global_tie_offset_y_m - file->block_offset_y);
+					matrix.nia[irow] = 1;
+					rms_misfit_initial += section->global_tie_offset_x_m * section->global_tie_offset_x_m
+								+ section->global_tie_offset_y_m * section->global_tie_offset_y_m;
+					irow++;
+					}
+
+				if (section->global_tie_status == MBNA_TIE_XYZ || section->global_tie_status == MBNA_TIE_Z)
+					{
+					index_m = irow * 6;
+					index_n = section->snav_invert_id[section->global_tie_snav] * 3 + 2;
+					matrix.ia[index_m] = index_n;
+					matrix.a[index_m] = weight;
+					b[irow] = weight * (section->global_tie_offset_z_m - file->block_offset_z);
+					matrix.nia[irow] = 1;
+					rms_misfit_initial += section->global_tie_offset_z_m * section->global_tie_offset_z_m;
+					irow++;
+					}
+				}
+			}
+		rms_misfit_initial = sqrt(rms_misfit_initial) / irow;
+		
+		/* D1: loop over all files applying ties for any fixed files */
+		for (ifile=0;ifile<project.num_files;ifile++)
+			{
+			file = &project.files[ifile];
+			if (file->status == MBNA_FILE_FIXEDNAV
+				|| file->status == MBNA_FILE_FIXEDXYNAV
+				|| file->status == MBNA_FILE_FIXEDZNAV)
+				{
+				for (isection=0;isection<file->num_sections;isection++)
+					{
+					section = &file->sections[isection];
+					for (isnav=0;isnav<section->num_snav;isnav++)
+						{
+						if (file->status == MBNA_FILE_FIXEDNAV
+							|| file->status == MBNA_FILE_FIXEDXYNAV)
+							{
+							index_m = irow * 6;
+							index_n = section->snav_invert_id[isnav] * 3;
+							matrix.ia[index_m] = index_n;
+							matrix.a[index_m] = weight;
+							b[irow] = -file->block_offset_x;
+							matrix.nia[irow] = 1;
+							irow++;
+		
+							index_m = irow * 6;
+							index_n = section->snav_invert_id[isnav] * 3 + 1;
+							matrix.ia[index_m] = index_n;
+							matrix.a[index_m] = weight;
+							b[irow] = -file->block_offset_y;
+							matrix.nia[irow] = 1;
+							irow++;
+							}
+
+						if (file->status == MBNA_FILE_FIXEDNAV
+							|| file->status == MBNA_FILE_FIXEDZNAV)
+							{		
+							index_m = irow * 6;
+							index_n = section->snav_invert_id[isnav] * 3 + 2;
+							matrix.ia[index_m] = index_n;
+							matrix.a[index_m] = weight;
+							b[irow] = -file->block_offset_z;
+							matrix.nia[irow] = 1;
+							irow++;
+							}
+						}
+					}
+				}
+			}
+
+		/* E1: loop over all navigation applying first derivative smoothing */
+		mbna_smoothweight = pow(10.0, project.smoothing) / 100.0;
+		for (inav=0;inav<nnav-1;inav++)
+			{
+			if (x_continuity[inav+1])
+				{
+				if (x_time_d[inav+1] - x_time_d[inav] > 0.0)
+					weight = mbna_smoothweight / (x_time_d[inav+1] - x_time_d[inav]);
+				else
+					weight = 0.0000001;
+								
+				index_m = irow * 6;
+				index_n = inav * 3;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = -weight;
+				index_m = irow * 6 + 1;
+				index_n = (inav + 1) * 3;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = weight;
+				b[irow] = 0.0;
+				matrix.nia[irow] = 2;
+				irow++;
+				
+				index_m = irow * 6;
+				index_n = inav * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = -weight;
+				index_m = irow * 6 + 1;
+				index_n = (inav + 1) * 3 + 1;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = weight;
+				b[irow] = 0.0;				
+				matrix.nia[irow] = 2;
+				irow++;
+				
+				index_m = irow * 6;
+				index_n = inav * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = -weight;
+				index_m = irow * 6 + 1;
+				index_n = (inav + 1) * 3 + 2;
+				matrix.ia[index_m] = index_n;
+				matrix.a[index_m] = weight;
+				b[irow] = 0.0;				
+				matrix.nia[irow] = 2;
+				irow++;
+				}
+			}
+			
+fprintf(stderr,"\nAbout to call LSQR rows: %d %d %d  cols: %d %d\n",
+		matrix.m, nrows, irow, matrix.n, ncols);
+			
+		/* F: call lsqr to solve the matrix problem */
+		for (irow=0;irow<matrix.m;irow++)
+			u[irow] = b[irow];
+		damp = 0.0;
+		atol = 1.0e-6;		// releative precision of A matrix
+		btol = 1.0e-6;		// relative precision of data array
+		relpr = 1.0e-16; 	// relative precision of double precision arithmetic
+		conlim = 1 / (10*sqrt(relpr));
+		itnlim = 4 * matrix.n;
+		
+fprintf(stderr,"damp:%f\natol:%f\nbtol:%f\nconlim:%f\nitnlim:%d\n",
+		damp,atol,btol,conlim,itnlim);
+//for (i=0;i<matrix.m;i++)
+//	{
+//	fprintf(stderr,"A row:%6d nia:%d ",i,matrix.nia[i]);
+//	for (j=0;j<matrix.nia[i];j++)
+//		{
+//		k = i * 6 + j;
+//		fprintf(stderr,"| %d ia[%5d]:%5d a[%5d]:%10.6f ", j,k,matrix.ia[k],k,matrix.a[k]);
+//		}
+//	fprintf(stderr," | b:%10.6f\n",u[i]);
+//	}
+		
+		
+		mblsqr_lsqr(matrix.m, matrix.n, &mb_aprod, damp, &matrix, u, v, w, x, se, 
+					atol, btol, conlim, itnlim, stderr,
+					&istop_out, &itn_out, &anorm_out, &acond_out,
+					&rnorm_out, &arnorm_out, &xnorm_out);
+
+		fprintf(stderr, "\nInversion by LSQR completed\n");
+		fprintf(stderr, "\tReason for termination:       %d\n", istop_out);
+		fprintf(stderr, "\tNumber of iterations:         %d\n", itn_out);
+		fprintf(stderr, "\tFrobenius norm:               %f\n (expected to be about %f)\n", anorm_out, sqrt((double)matrix.n));
+		fprintf(stderr, "\tCondition number of A:        %f\n", acond_out);
+		fprintf(stderr, "\tRbar norm:                    %f\n", rnorm_out);
+		fprintf(stderr, "\tResidual norm:                %f\n", arnorm_out);
+		fprintf(stderr, "\tSolution norm:                %f\n", xnorm_out);
+//for (i=0;i<matrix.n;i++)
+//	{
+//	j=i/3;
+//	if (i % 3 == 0)
+//		fprintf(stderr,"x[%d]:  x[%d]:%f",i,j,x[i]);
+//	else if (i % 3 == 1)
+//		fprintf(stderr,"  y[%d]:%f",j,x[i]);
+//	else
+//		fprintf(stderr,"  z[%d]:%f\n",j,x[i]);
+//	}
+			
+		/* save solution */
+		k = 0;
+		for (ifile=0;ifile<project.num_files;ifile++)
+			{
+			file = &project.files[ifile];
+			for (isection=0;isection<file->num_sections;isection++)
+				{
+				section = &file->sections[isection];
+				for (isnav=0;isnav<section->num_snav;isnav++)
+					{
+					k = section->snav_invert_id[isnav];
+					section->snav_lon_offset[isnav] = (x[3*k] + file->block_offset_x) * project.mtodeglon;
+					section->snav_lat_offset[isnav] = (x[3*k+1] + file->block_offset_y) * project.mtodeglat;
+					section->snav_z_offset[isnav] = (x[3*k+2] + file->block_offset_z);
+					}
+				}
+			}
+
+		/* calculate final misfit */
+		irow = 0;
+		rms_misfit_final = 0.0;
+		for (icrossing=0;icrossing<project.num_crossings;icrossing++)
+			{
+			crossing = &project.crossings[icrossing];
+
+			/* use only set crossings */
+			if (crossing->status == MBNA_CROSSING_STATUS_SET)
+			for (itie=0;itie<crossing->num_ties;itie++)
 				{
 				/* get tie */
-				tie = (struct mbna_tie *) &crossing->ties[j];
-	
+				tie = (struct mbna_tie *) &crossing->ties[itie];
+
 				/* get absolute id for first snav point */
 				file1 = &project.files[crossing->file_id_1];
 				section1 = &file1->sections[crossing->section_1];
 				nc1 = section1->snav_invert_id[tie->snav_1];
-	
+
 				/* get absolute id for second snav point */
 				file2 = &project.files[crossing->file_id_2];
 				section2 = &file2->sections[crossing->section_2];
 				nc2 = section2->snav_invert_id[tie->snav_2];
-if (nc1 > nsnav - 1 || nc2 > nsnav -1
-|| nc1 < 0 || nc2 < 0)
-fprintf(stderr, "BAD TIE snav ID: %d %d %d\n", nc1, nc2, nsnav);
 
-				/* get offset after removal of block solution */
-				offsetx = tie->offset_x_m - (file2->block_offset_x - file1->block_offset_x);
-				offsety = tie->offset_y_m - (file2->block_offset_y - file1->block_offset_y);
-				offsetz = tie->offset_z_m - (file2->block_offset_z - file1->block_offset_z);
-	
+				/* get offset vector for this tie */
 				if (tie->status != MBNA_TIE_Z)
 					{
-					/* get long axis misfit */
-					misfit = (offsetx * tie->sigmax1[0]
-							+ offsety * tie->sigmax1[1]
-							+ offsetz * tie->sigmax1[2]);
-					misfit_ties_initial += misfit * misfit;
-					misfit_norm_initial += misfit * misfit / tie->sigmar1 / tie->sigmar1;
-					nmisfit++;
-//fprintf(stderr,"Crossing %d Tie %d X: sigmar1: %f misfit:%f misfit_norm_initial:%f\n",
-//icrossing,j,tie->sigmar1,misfit,misfit_norm_initial);
-	
-					/* get horizontal axis misfit */
-					misfit = (offsetx * tie->sigmax2[0]
-							+ offsety * tie->sigmax2[1]
-							+ offsetz * tie->sigmax2[2]);
-					misfit_ties_initial += misfit * misfit;
-					misfit_norm_initial += misfit * misfit / tie->sigmar2 / tie->sigmar2;
-					nmisfit++;
-//fprintf(stderr,"Crossing %d Tie %d Y: sigmar2: %f misfit:%f misfit_norm_initial:%f\n",
-//icrossing,j,tie->sigmar2,misfit,misfit_norm_initial);
+					offset_x = tie->offset_x_m;
+					offset_y = tie->offset_y_m;
 					}
-	
+				else
+					{
+					offset_x = 0.0;
+					offset_y = 0.0;
+					}
 				if (tie->status != MBNA_TIE_XY)
 					{
-					/* get semi-vertical axis misfit */
-					misfit = (offsetx * tie->sigmax3[0]
-							+ offsety * tie->sigmax3[1]
-							+ offsetz * tie->sigmax3[2]);
-					misfit_ties_initial += misfit * misfit;
-					misfit_norm_initial += misfit * misfit / tie->sigmar3 / tie->sigmar3;
-					nmisfit++;
-//fprintf(stderr,"Crossing %d Tie %d Z: sigmar3: %f misfit:%f misfit_norm_initial:%f\n",
-//icrossing,j,tie->sigmar3,misfit,misfit_norm_initial);
+					offset_z = tie->offset_z_m;
 					}
+				else
+					{
+					offset_z = 0.0;
+					}
+				offset_x -= (section2->snav_lon_offset[tie->snav_2] - section1->snav_lon_offset[tie->snav_1]) / project.mtodeglon;
+				offset_y -= (section2->snav_lat_offset[tie->snav_2] - section1->snav_lat_offset[tie->snav_1]) / project.mtodeglat;
+				offset_z -= (section2->snav_z_offset[tie->snav_2] - section1->snav_z_offset[tie->snav_1]);
+				rms_misfit_final += offset_x * offset_x
+							+ offset_y * offset_y
+							+ offset_z * offset_z;
+				irow += 3;
 				}
 			}
+
 		for (ifile=0;ifile<project.num_files;ifile++)
 			{
-			/* get file */
 			file = &project.files[ifile];
 			for (isection=0;isection<file->num_sections;isection++)
 				{
-				/* get section */
 				section = &file->sections[isection];
-				if (section->global_tie_status != MBNA_TIE_NONE)
+				if (section->global_tie_status == MBNA_TIE_XYZ || section->global_tie_status == MBNA_TIE_XY)
 					{
-					/* get absolute id for snav point */
-					nc1 = section->snav_invert_id[section->global_tie_snav];
-if (nc1 > nsnav - 1 || nc1 < 0)
-fprintf(stderr, "BAD GLOBAL TIE snav ID: %d %d\n", nc1, nsnav);
-
-					/* get offset after removal of block solution */
-					offsetx = section->global_tie_offset_x_m - file->block_offset_x;
-					offsety = section->global_tie_offset_y_m - file->block_offset_y;
-					offsetz = section->global_tie_offset_z_m - file->block_offset_z;
-			
-					if (section->global_tie_status != MBNA_TIE_Z)
-						{
-						/* get x axis misfit */
-						misfit = offsetx;
-						misfit_ties_initial += misfit * misfit;
-						misfit_norm_initial += misfit * misfit / section->global_tie_xsigma / section->global_tie_xsigma;
-						nmisfit++;
-		
-						/* get y axis misfit */
-						misfit = offsety;
-						misfit_ties_initial += misfit * misfit;
-						misfit_norm_initial += misfit * misfit / section->global_tie_ysigma / section->global_tie_ysigma;
-						nmisfit++;
-						}
-	
-					if (section->global_tie_status != MBNA_TIE_XY)
-						{
-						/* get z axis misfit */
-						misfit = offsetz;
-						misfit_ties_initial += misfit * misfit;
-						misfit_norm_initial += misfit * misfit / section->global_tie_zsigma / section->global_tie_zsigma;
-						nmisfit++;
-						}
+					offset_x = section->global_tie_offset_x_m 
+								- section->snav_lon_offset[section->global_tie_snav]
+									/ project.mtodeglon;
+					offset_y = section->global_tie_offset_y_m 
+								- section->snav_lat_offset[section->global_tie_snav]
+									/ project.mtodeglat;
+					rms_misfit_final += offset_x * offset_x
+										+ offset_y * offset_y;
+					irow += 2;
+					}
+				if (section->global_tie_status == MBNA_TIE_XYZ
+						|| section->global_tie_status == MBNA_TIE_Z)
+					{
+					offset_z = section->global_tie_offset_z_m 
+								- section->snav_z_offset[section->global_tie_snav];
+					rms_misfit_final += offset_z * offset_z;
+					irow++;
 					}
 				}
 			}
-		misfit_ties_initial = sqrt(misfit_ties_initial) / nmisfit;
-		misfit_norm_initial = sqrt(misfit_norm_initial) / nmisfit;
+		rms_misfit_final = sqrt(rms_misfit_final) / irow;
 
-		/*----------------------------------------------------------------*/
-		/* Step 2 - construct "average" model satisfying ties with        */
-		/*     fixed data (if needed) - this gets pulled out of the       */
-		/*     data along with the average block offsets.                 */
-		/*----------------------------------------------------------------*/
-		if (nfixed > 0 || nglobal > 0)
-			{
-			/* set message dialog on */
-			sprintf(message,"Getting average offsets relative to fixed data...");
-			do_message_update(message);
+		/* set message dialog on */
+		sprintf(message,"Completed inversion...");
+		do_message_update(message);
 
-			/* allocate some extra arrays */
-			status = mb_mallocd(mbna_verbose, __FILE__, __LINE__, nnav * sizeof(int), (void **)&nxs,&error);
-			for (inav=0;inav<nnav;inav++)
-				{
-				nxs[inav] = 0;
-				xs[ndf * inav] = 0.0;
-				xs[ndf * inav + 1] = 0.0;
-				xs[ndf * inav + 2] = 0.0;
-				xw[ndf * inav] = 0.0;
-				xw[ndf * inav + 1] = 0.0;
-				xw[ndf * inav + 2] = 0.0;
-				}
+		/* update model plot */
+		if (project.modelplot == MB_YES)
+			mbnavadjust_modelplot_plot();
 
-			/* loop over all ties, working only with ties including fixed sections */
-			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
-				{
-				crossing = &project.crossings[icrossing];
-	
-				/* use only set crossings */
-				if (crossing->status == MBNA_CROSSING_STATUS_SET)
-				for (jtie=0;jtie<crossing->num_ties;jtie++)
-					{
-					/* get tie */
-					tie = (struct mbna_tie *) &crossing->ties[jtie];
-	
-					/* get absolute id for first snav point */
-					file1 = &project.files[crossing->file_id_1];
-					section = &file1->sections[crossing->section_1];
-					nc1 = section->snav_invert_id[tie->snav_1];
-	
-					/* get absolute id for second snav point */
-					file2 = &project.files[crossing->file_id_2];
-					section = &file2->sections[crossing->section_2];
-					nc2 = section->snav_invert_id[tie->snav_2];
-	
-					/* only work with ties in which one section is fixed */
-					if ((file1->status == MBNA_FILE_FIXEDNAV && file2->status != MBNA_FILE_FIXEDNAV)
-						|| (file1->status != MBNA_FILE_FIXEDNAV && file2->status == MBNA_FILE_FIXEDNAV))
-						{
-							/* get current offset vector including reduction of block solution */
-						if (tie->status != MBNA_TIE_Z)
-							{
-							offsetx = tie->offset_x_m - (xa[3*nc2] - xa[3*nc1]);
-							offsety = tie->offset_y_m - (xa[3*nc2+1] - xa[3*nc1+1]);
-							}
-						else
-							{
-							offsetx = 0.0;
-							offsety = 0.0;
-							}
-						if (tie->status != MBNA_TIE_XY)
-							{
-							offsetz = tie->offset_z_m - (xa[3*nc2+2] - xa[3*nc1+2]);
-							}
-						else
-							{
-							offsetz = 0.0;
-							}
-/* fprintf(stderr,"STAGE 2 START: icrossing:%d jtie:%d nc1:%d %d nc2:%d %d offsets: %f %f %f\n",
-icrossing,jtie,nc1,file1->status,nc2,file2->status,offsetx,offsety,offsetz);*/
-
-						/* figure out how far each tied nav point is from the unfixed point in the current tie */
-						for (inav=0;inav<nnav;inav++)
-							nxs[inav] = 0;
-		
-						/* first set the unfixed affect nav point */
-						if (file1->status == MBNA_FILE_FIXEDNAV)
-							{
-							nxs[nc2] = 1;
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							nxs[nc1] = 1;
-							offsetx *= -1.0;
-							offsety *= -1.0;
-							offsetz *= -1.0;
-							}
-
-						/* now loop over all nav points repeatedly */
-						done = MB_NO;
-						while (done == MB_NO)
-							{
-							nchange = 0;
-		
-							/* run forward through the data */
-							inav = 0;
-							nseq = 0;
-								nseqlast = 0;
-							for (i=0;i<project.num_files;i++)
-								{
-								file = &project.files[i];
-								for (j=0;j<file->num_sections;j++)
-									{
-									section = &file->sections[j];
-									if (section->continuity == MB_NO)
-										nseq = 0;
-									for (isnav=0;isnav<section->num_snav;isnav++)
-										{
-										if (section->snav_num_ties[isnav] > 0)
-											{
-/* fprintf(stderr,"i:%d j:%d isnav:%d inav:%d nseqqqlast:%d nseq:%d file->status:%d nxs:%d %d",
-i,j,isnav,inav,nseqlast,nseq,file->status,nxs[inav-1],nxs[inav]); */
-											if (inav > 0 && nseq > 0 && file->status != MBNA_FILE_FIXEDNAV
-													&& nxs[inav-1] > 0 && (nxs[inav-1] < nxs[inav] - 1 || nxs[inav] == 0))
-												{
-												nxs[inav] = nxs[inav-1] + 1;
-												nchange++;
-/* fprintf(stderr," CHANGE nxs:%d %d",nxs[inav-1],nxs[inav]); */
-												}
-/* fprintf(stderr,"\n"); */
-			
-											/* increment sequence counters */
-											nseqlast = nseq;
-											nseq++;
-											inav++;
-											}
-										}
-									}
-								}
-	
-/* fprintf(stderr,"\n"); */
-							/* run backward through the data */
-							nseq = 0;
-							nseqlast = 0;
-							for (i=project.num_files-1;i>=0;i--)
-								{
-								file = &project.files[i];
-								for (j=file->num_sections-1;j>=0;j--)
-									{
-									section = &file->sections[j];
-									for (isnav=section->num_snav-1;isnav>=0;isnav--)
-										{
-										if (section->snav_num_ties[isnav] > 0)
-											{
-											inav--;
-/* fprintf(stderr,"i:%d j:%d isnav:%d inav:%d nseqqqlast:%d nseq:%d file->status:%d nxs:%d %d",
-i,j,isnav,inav,nseqlast,nseq,file->status,nxs[inav],nxs[inav+1]); */
-											if (inav >= 0 && nseqlast > 0 && file->status != MBNA_FILE_FIXEDNAV
-													&& nxs[inav+1] > 0 && (nxs[inav+1] < nxs[inav] - 1 || nxs[inav] == 0))
-												{
-												nxs[inav] = nxs[inav+1] + 1;
-												nchange++;
-/* fprintf(stderr," CHANGE nxs:%d %d",nxs[inav],nxs[inav+1]); */
-												}
-/* fprintf(stderr,"\n"); */
-	
-											/* increment sequence counters */
-											nseqlast = nseq;
-											nseq++;
-											}
-										}
-									if (section->continuity == MB_NO)
-										nseq = 0;
-									}
-								}
-	
-							/* run through ties */
-							for (i=0;i<project.num_crossings;i++)
-								{
-								/* use only set crossings */
-								if (project.crossings[i].status == MBNA_CROSSING_STATUS_SET)
-									for (j=0;j<project.crossings[i].num_ties;j++)
-										{
-										/* get tie */
-										tie = (struct mbna_tie *) &project.crossings[i].ties[j];
-	
-										/* get absolute id for first snav point */
-										file1 = &project.files[project.crossings[i].file_id_1];
-										section = &file1->sections[project.crossings[i].section_1];
-										nc1 = section->snav_invert_id[tie->snav_1];
-				
-										/* get absolute id for second snav point */
-										file2 = &project.files[project.crossings[i].file_id_2];
-										section = &file2->sections[project.crossings[i].section_2];
-										nc2 = section->snav_invert_id[tie->snav_2];
-				
-										/* check for nav points needing closeness setting */
-										if (nxs[nc1] > 0 && nxs[nc2] == 0)
-											{
-											if (file2->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc2] = nxs[nc1] + 1;
-												nchange++;
-												}
-											}
-										else if (nxs[nc1] > 0 && nxs[nc2] > nxs[nc1] + 1)
-											{
-											if (file2->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc2] = nxs[nc1] + 1;
-												nchange++;
-												}
-											}
-										else if (nxs[nc2] > 0 && nxs[nc1] == 0)
-											{
-											if (file1->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc1] = nxs[nc2] + 1;
-												nchange++;
-												}
-											}
-										else if (nxs[nc2] > 0 && nxs[nc1] > nxs[nc2] + 1)
-											{
-											if (file1->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc1] = nxs[nc2] + 1;
-												nchange++;
-												}
-											}
-										}
-								}
-	
-							/* check for done */
-							if (nchange == 0)
-							done = MB_YES;
-/* fprintf(stderr,"icrossing:%d nchange:%d done:%d\n",icrossing,nchange,done); */
-							}
-/* fprintf(stderr,"\n");*/
-	
-						/* now loop over the data adding the offset with weighting inversely set by the
-							"distance" from each nav point to the offset point */
-						for (inav=0;inav<nnav;inav++)
-							{
-/* fprintf(stderr,"inav:%d nxs:%d\n",inav,nxs[inav]); */
-							if (nxs[inav] > 0)
-								{
-								xs[ndf * inav]     += offsetx / (nxs[inav] * nxs[inav]);
-								xs[ndf * inav + 1] += offsety / (nxs[inav] * nxs[inav]);
-								xs[ndf * inav + 2] += offsetz / (nxs[inav] * nxs[inav]);
-								xw[ndf * inav]     += 1.0 / (nxs[inav] * nxs[inav]);
-								xw[ndf * inav + 1] += 1.0 / (nxs[inav] * nxs[inav]);
-								xw[ndf * inav + 2] += 1.0 / (nxs[inav] * nxs[inav]);
-								}
-							}
-						}
-					}
-				}
-			
-			/* loop over all global ties */
-			for (ifile=0;ifile<project.num_files;ifile++)
-				{
-				file = &project.files[ifile];
-				for (isection=0;isection<file->num_sections;isection++)
-					{
-					section = &file->sections[isection];
-					if (section->global_tie_status != MBNA_TIE_NONE)
-						{
-						/* get absolute id for snav point */
-						nc1 = section->snav_invert_id[section->global_tie_snav];
-		
-							/* get current offset vector including reduction of block solution */
-						offsetx = section->global_tie_offset_x_m - xa[3*nc1];
-						offsety = section->global_tie_offset_y_m - xa[3*nc1+1];
-						offsetz = section->global_tie_offset_z_m - xa[3*nc1+2];
-/*fprintf(stderr,"STAGE 2 - GLOBAL TIE: %1d %2.2d:%2.2d:%2.2d  tie: %f %f %f  model offset: %f %f %f\n",
-section->global_tie_status,ifile,isection,section->global_tie_snav,
-section->global_tie_offset_x_m,section->global_tie_offset_y_m,section->global_tie_offset_z_m,
-offsetx,offsety,offsetz); */
-
-						/* figure out how far each tied nav point is from the global tie point */
-						for (inav=0;inav<nnav;inav++)
-							nxs[inav] = 0;
-		
-						/* first set the global tied nav point */
-						nxs[nc1] = 1;
-		
-						/* now loop over all nav points repeatedly */
-						done = MB_NO;
-						while (done == MB_NO)
-							{
-							nchange = 0;
-	
-							/* run forward through the data */
-							inav = 0;
-							nseq = 0;
-								nseqlast = 0;
-							for (i=0;i<project.num_files;i++)
-								{
-								file1 = &project.files[i];
-								for (j=0;j<file1->num_sections;j++)
-									{
-									section1 = &file1->sections[j];
-									if (section1->continuity == MB_NO)
-											nseq = 0;
-									for (isnav=0;isnav<section1->num_snav;isnav++)
-										{
-										if (section1->snav_num_ties[isnav] > 0)
-											{
-											if (inav > 0 && nseq > 0 && file1->status != MBNA_FILE_FIXEDNAV
-												&& nxs[inav-1] > 0 && (nxs[inav-1] < nxs[inav] - 1 || nxs[inav] == 0))
-												{
-												nxs[inav] = nxs[inav-1] + 1;
-												nchange++;
-												}
-				
-											/* increment sequence counters */
-											nseqlast = nseq;
-											nseq++;
-											inav++;
-											}
-										}
-									}
-								}
-	
-							/* run backward through the data */
-							nseq = 0;
-							nseqlast = 0;
-							for (i=project.num_files-1;i>=0;i--)
-								{
-								file1 = &project.files[i];
-								for (j=file1->num_sections-1;j>=0;j--)
-									{
-									section1 = &file1->sections[j];
-									for (isnav=section1->num_snav-1;isnav>=0;isnav--)
-										{
-										if (section1->snav_num_ties[isnav] > 0)
-											{
-											inav--;
-											if (inav >= 0 && nseqlast > 0 && file1->status != MBNA_FILE_FIXEDNAV
-												&& nxs[inav+1] > 0 && (nxs[inav+1] < nxs[inav] - 1 || nxs[inav] == 0))
-												{
-												nxs[inav] = nxs[inav+1] + 1;
-												nchange++;
-												}
-				
-											/* increment sequence counters */
-											nseqlast = nseq;
-											nseq++;
-											}
-										}
-									if (section1->continuity == MB_NO)
-											nseq = 0;
-									}
-								}
-	
-							/* run through ties */
-							for (i=0;i<project.num_crossings;i++)
-								{
-								/* use only set crossings */
-								if (project.crossings[i].status == MBNA_CROSSING_STATUS_SET)
-									for (j=0;j<project.crossings[i].num_ties;j++)
-										{
-										/* get tie */
-										tie = (struct mbna_tie *) &project.crossings[i].ties[j];
-				
-										/* get absolute id for first snav point */
-										file1 = &project.files[project.crossings[i].file_id_1];
-										section1 = &file1->sections[project.crossings[i].section_1];
-										nc1 = section1->snav_invert_id[tie->snav_1];
-				
-										/* get absolute id for second snav point */
-										file2 = &project.files[project.crossings[i].file_id_2];
-										section2 = &file2->sections[project.crossings[i].section_2];
-										nc2 = section2->snav_invert_id[tie->snav_2];
-				
-										/* check for nav points needing closeness setting */
-										if (nxs[nc1] > 0 && nxs[nc2] == 0)
-											{
-											if (file2->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc2] = nxs[nc1] + 1;
-												nchange++;
-												}
-											}
-										else if (nxs[nc1] > 0 && nxs[nc2] > nxs[nc1] + 1)
-											{
-											if (file2->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc2] = nxs[nc1] + 1;
-												nchange++;
-												}
-											}
-										else if (nxs[nc2] > 0 && nxs[nc1] == 0)
-											{
-											if (file1->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc1] = nxs[nc2] + 1;
-												nchange++;
-												}
-											}
-										else if (nxs[nc2] > 0 && nxs[nc1] > nxs[nc2] + 1)
-											{
-											if (file1->status != MBNA_FILE_FIXEDNAV)
-												{
-												nxs[nc1] = nxs[nc2] + 1;
-												nchange++;
-												}
-											}
-										}
-								}
-	
-							/* check for done */
-							if (nchange == 0)
-								done = MB_YES;
-							}
-	
-						/* now loop over the data adding the offset with weighting inversely set by the
-							"distance" from each nav point to the offset point */
-						for (inav=0;inav<nnav;inav++)
-							{
-							if (nxs[inav] > 0)
-								{
-								if (section->global_tie_status != MBNA_TIE_Z)
-									{
-									xs[ndf * inav]     += offsetx / (nxs[inav] * nxs[inav]);
-									xs[ndf * inav + 1] += offsety / (nxs[inav] * nxs[inav]);
-									xw[ndf * inav]     += 1.0 / (nxs[inav] * nxs[inav]);
-									xw[ndf * inav + 1] += 1.0 / (nxs[inav] * nxs[inav]);
-									}
-								if (section->global_tie_status != MBNA_TIE_XY)
-									{
-									xs[ndf * inav + 2] += offsetz / (nxs[inav] * nxs[inav]);
-									xw[ndf * inav + 2] += 1.0 / (nxs[inav] * nxs[inav]);
-									}
-								}
-							}
-						}
-					}
-				}
-
-			/* construct average offset model */
-			for (inav=0;inav<nnav;inav++)
-				{
-				if (xw[ndf * inav] > 0.0)
-					xa[ndf * inav] += xs[ndf * inav] / xw[ndf * inav];
-				if (xw[ndf * inav + 1] > 0.0)
-					xa[ndf * inav + 1] += xs[ndf * inav + 1] / xw[ndf * inav + 1];
-				if (xw[ndf * inav + 2] > 0.0)
-					xa[ndf * inav + 2] += xs[ndf * inav + 2] / xw[ndf * inav + 2];
-//fprintf(stderr,"XA CALC:  xs: %f %f %f  xw: %f %f %f  xa: %f %f %f\n",
-//xs[ndf*inav],xs[ndf*inav+1],xs[ndf*inav+2],xw[ndf*inav],xw[ndf*inav+1],xw[ndf*inav+2],xa[ndf*inav],xa[ndf*inav+1],xa[ndf*inav+2]);
-				}
-
-			/* save solution */
-			k = 0;
-			for (i=0;i<project.num_files;i++)
-				{
-				file = &project.files[i];
-				for (j=0;j<file->num_sections;j++)
-					{
-					section = &file->sections[j];
-					for (isnav=0;isnav<section->num_snav;isnav++)
-						{
-						if (section->snav_num_ties[isnav] > 0
-							|| section->global_tie_snav == isnav)
-							{
-							k = section->snav_invert_id[isnav];
-							section->snav_lon_offset[isnav] = (x[3*k] + xa[3*k]) * project.mtodeglon;
-/* fprintf(stderr,"i:%d j:%d isnav:%d k:%d x[3*k]:%f xa[3*k]:%f project.mtodeglon:%f section->snav_lon_offset[isnav]:%f\n",
-i,j,isnav,k,x[3*k],xa[3*k],project.mtodeglon,section->snav_lon_offset[isnav]); */
-							section->snav_lat_offset[isnav] = (x[3*k+1] + xa[3*k+1]) * project.mtodeglat;
-/* fprintf(stderr,"i:%d j:%d isnav:%d k:%d x[3*k+1]:%f xa[3*k+1]:%f project.mtodeglat:%f section->snav_lat_offset[isnav]:%f\n",
-i,j,isnav,k,x[3*k+1],xa[3*k+1],project.mtodeglat,section->snav_lat_offset[isnav]); */
-							section->snav_z_offset[isnav] = (x[3*k+2] + xa[3*k+2]);
-/* fprintf(stderr,"i:%d j:%d isnav:%d k:%d x[3*k+2]:%f xa[3*k+2]:%f section->snav_z_offset[isnav]:%f\n\n",
-i,j,isnav,k,x[3*k+2],xa[3*k+2],section->snav_z_offset[isnav]); */
-							}
-						}
-					}
-				}
-
-			/* interpolate the solution */
-			mbnavadjust_interpolatesolution(mbna_verbose, &project, &error);
-
-			/* save interpolated solution */
-			k = 0;
-			for (i=0;i<project.num_files;i++)
-				{
-				file = &project.files[i];
-				for (j=0;j<file->num_sections;j++)
-					{
-					section = &file->sections[j];
-					for (isnav=0;isnav<section->num_snav;isnav++)
-						{
-						section->snav_lon_offset[isnav] = section->snav_lon_offset_int[isnav];
-						section->snav_lat_offset[isnav] = section->snav_lat_offset_int[isnav];
-						section->snav_z_offset[isnav] = section->snav_z_offset_int[isnav];
-						}
-					}
-				}
-
-			/* update model plot */
-			if (project.modelplot == MB_YES && iter % 25 == 0)
-				mbnavadjust_modelplot_plot();
-
-			/* output goodness of fit for ties including fixed sections */
-			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
-				{
-				crossing = &project.crossings[icrossing];
-	
-				/* use only set crossings */
-				if (crossing->status == MBNA_CROSSING_STATUS_SET)
-				for (jtie=0;jtie<crossing->num_ties;jtie++)
-					{
-					/* get tie */
-					tie = (struct mbna_tie *) &crossing->ties[jtie];
-	
-					/* get absolute id for first snav point */
-					file1 = &project.files[crossing->file_id_1];
-					section = &file1->sections[crossing->section_1];
-					nc1 = section->snav_invert_id[tie->snav_1];
-	
-					/* get absolute id for second snav point */
-					file2 = &project.files[crossing->file_id_2];
-					section = &file2->sections[crossing->section_2];
-					nc2 = section->snav_invert_id[tie->snav_2];
-	
-					/* only work with ties in which one section is fixed */
-					if ((file1->status == MBNA_FILE_FIXEDNAV && file2->status != MBNA_FILE_FIXEDNAV)
-						|| (file1->status != MBNA_FILE_FIXEDNAV && file2->status == MBNA_FILE_FIXEDNAV))
-						{
-							/* get current offset vector including reduction of block solution */
-						offsetx = tie->offset_x_m - (xa[3*nc2] - xa[3*nc1]);
-						offsety = tie->offset_y_m - (xa[3*nc2+1] - xa[3*nc1+1]);
-						offsetz = tie->offset_z_m - (xa[3*nc2+2] - xa[3*nc1+2]);
-	//fprintf(stderr,"STAGE 2 RESULT - CROSSING TIE: icrossing:%d jtie:%d nc1:%d %d nc2:%d %d offsets: %f %f %f\n",
-	//icrossing,jtie,nc1,file1->status,nc2,file2->status,offsetx,offsety,offsetz);
-						}
-					}
-				}
-
-			/* output goodness of fit for global ties */
-			for (ifile=0;ifile<project.num_files;ifile++)
-				{
-				file = &project.files[ifile];
-				for (isection=0;isection<file->num_sections;isection++)
-					{
-					/* get section */
-					section = (struct mbna_section *) &file->sections[isection];
-					
-					/* only work with set global ties */
-					if (section->global_tie_status != MBNA_TIE_NONE)
-						{
-						/* get absolute id for first snav point */
-						nc1 = section->snav_invert_id[section->global_tie_snav];
-		
-//fprintf(stderr,"STAGE 2 RESULT - GLOBAL TIE: %2.2d:%2.2d:%2.2d  tie: \n",
-//ifile,isection,section->global_tie_snav);
-//if (section->global_tie_status != MBNA_TIE_Z)
-//fprintf(stderr,"x: %f y:%f ",section->global_tie_offset_x_m,section->global_tie_offset_y_m);
-//if (section->global_tie_status != MBNA_TIE_XY)
-//fprintf(stderr,"z:%f ",section->global_tie_offset_z_m);
-//fprintf(stderr,"  model offset: ");
-	
-						/* get current offset vector including reduction of block solution */
-						if (section->global_tie_status != MBNA_TIE_Z)
-							{
-							offsetx = section->global_tie_offset_x_m - xa[3*nc1];
-							offsety = section->global_tie_offset_y_m - xa[3*nc1+1];
-//fprintf(stderr,"x: %f y:%f ",offsetx,offsety);
-							}
-						if (section->global_tie_status != MBNA_TIE_XY)
-							{
-							offsetz = section->global_tie_offset_z_m - xa[3*nc1+2];
-//fprintf(stderr,"z:%f ",offsetz);	
-							}
-						}
-					}
-				}
-
-			/* deallocate arrays */
-			status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&nxs,&error);
-			}
-
-
-		/*----------------------------------------------------------------*/
-		/* Step 3 - invert for model satisfying all nav ties              */
-		/*----------------------------------------------------------------*/
-
-		/* loop until convergence */
-		done = MB_NO;
-		iter = 0;
-		perturbationsizeold = misfit_ties_initial;
-		mbna_smoothweight = pow(10.0, project.smoothing) * mbna_offsetweight;
-		while (done == MB_NO)
-			{
-			/* zero smoothed adjustment vector solution */
-			for (i=0;i<ncols;i++)
-				{
-				xx[i] = 0.0;
-				xs[i] = 0.0;
-				xw[i] = 0.0;
-				}
-
-			/* loop over each crossing, applying offsets evenly to both points */
-			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
-				{
-				crossing = &project.crossings[icrossing];
-	
-				/* use only set crossings */
-				if (crossing->status == MBNA_CROSSING_STATUS_SET)
-				for (j=0;j<crossing->num_ties;j++)
-					{
-					/* get tie */
-					tie = (struct mbna_tie *) &crossing->ties[j];
-	
-					/* get absolute id for first snav point */
-					file1 = &project.files[crossing->file_id_1];
-					section1 = &file1->sections[crossing->section_1];
-					nc1 = section1->snav_invert_id[tie->snav_1];
-	
-					/* get absolute id for second snav point */
-					file2 = &project.files[crossing->file_id_2];
-					section2 = &file2->sections[crossing->section_2];
-					nc2 = section2->snav_invert_id[tie->snav_2];
-if (file1->sections[crossing->section_1].snav_time_d[tie->snav_1] == file2->sections[crossing->section_2].snav_time_d[tie->snav_2])
-fprintf(stderr,"ZERO TIME BETWEEN TIED POINTS!!  file:section:snav - %d:%d:%d   %d:%d:%d  DIFF:%f\n",
-	crossing->file_id_1,crossing->section_1,tie->snav_1,
-	crossing->file_id_2,crossing->section_2,tie->snav_2,
-	(file1->sections[crossing->section_1].snav_time_d[tie->snav_1]
-	 - file2->sections[crossing->section_2].snav_time_d[tie->snav_2]));
-	
-					/* get current offset vector including reduction of block solution */
-					if (tie->status != MBNA_TIE_Z)
-						{
-						offsetx = tie->offset_x_m - (xa[3*nc2] - xa[3*nc1]) - (x[3*nc2] - x[3*nc1]);
-						offsety = tie->offset_y_m - (xa[3*nc2+1] - xa[3*nc1+1]) - (x[3*nc2+1] - x[3*nc1+1]);
-						}
-					else
-						{
-						offsetx = 0.0;
-						offsety = 0.0;
-						}
-					if (tie->status != MBNA_TIE_XY)
-						{
-						offsetz = tie->offset_z_m - (xa[3*nc2+2] - xa[3*nc1+2]) - (x[3*nc2+2] - x[3*nc1+2]);
-						}
-					else
-						{
-						offsetz = 0.0;
-						}
-					offsetr = sqrt(offsetx * offsetx + offsety * offsety + offsetz * offsetz);
-
-					/* deal with each component of the error ellipse
-						- project offset vector onto each component by dot-product
-					- weight inversely by size of error for that component */
-	
-					/* deal with long axis */
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						projected_offset = offsetx * tie->sigmax1[0]
-								+ offsety * tie->sigmax1[1]
-								+ offsetz * tie->sigmax1[2];
-					else
-						projected_offset = offsetx * tie->sigmax1[0]
-								+ offsety * tie->sigmax1[1];
-					if (fabs(tie->sigmar1) > 0.0)
-						{
-						xyweight = sqrt(mbna_offsetweight / tie->sigmar1);
-						zweight = sqrt(mbna_offsetweight / mbna_zweightfactor / tie->sigmar1);
-						}
-					else
-						{
-						xyweight = 0.0;
-						zweight = 0.0;
-						}
-//zweight = 0.0;
-
-					/* deal with fixed, good, or poor status of sections */
-					if (file1->status == file2->status)
-						{
-						if (file1->status == MBNA_FILE_GOODNAV || file1->status == MBNA_FILE_POORNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax1[2];				    
-							}
-						else if (file1->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax1[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file1->status == MBNA_FILE_FIXEDZNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_GOODNAV)
-						{
-						if (file2->status == MBNA_FILE_POORNAV)
-							{
-							xs[3*nc1]   += -0.005 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.005 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.005 * zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  0.995 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.995 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.995 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax1[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax1[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_POORNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							xs[3*nc1]   += -0.995 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.995 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.995 * zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  0.005 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.005 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.005 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax1[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.995 * zweight * projected_offset * tie->sigmax1[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.005 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							xs[3*nc1]   += -0.995 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.995 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  0.005 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.005 * xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV || file2->status == MBNA_FILE_POORNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDXYNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_POORNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.005 * zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.995 * zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax1[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax1[2];
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDZNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_POORNAV)
-							{
-							xs[3*nc1]   += -0.005 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -0.005 * xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  0.995 * xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc2+1] +=  0.995 * xyweight * projected_offset * tie->sigmax1[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax1[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax1[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax1[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax1[2];
-							}
-						}
-					xw[3*nc1]   += xyweight;
-					xw[3*nc1+1] += xyweight;
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-					xw[3*nc1+2] += zweight;
-					xw[3*nc2]   += xyweight;
-					xw[3*nc2+1] += xyweight;
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-					xw[3*nc2+2] += zweight;
-/* fprintf(stderr,"long axis:  nc1:%d xx:%f %f %f  nc2:%d xx:%f %f %f\n",
-nc1,xs[3*nc1],xs[3*nc1+1],xs[3*nc1+2],
-nc2,xs[3*nc2],xs[3*nc2+1],xs[3*nc2+2]);*/
-
-					/* deal with horizontal axis */
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						projected_offset = offsetx * tie->sigmax2[0]
-							+ offsety * tie->sigmax2[1]
-							+ offsetz * tie->sigmax2[2];
-					else
-						projected_offset = offsetx * tie->sigmax2[0]
-							+ offsety * tie->sigmax2[1];
-					if (fabs(tie->sigmar2) > 0.0)
-						{
-						xyweight = sqrt(mbna_offsetweight / tie->sigmar2);
-						zweight = sqrt(mbna_offsetweight / mbna_zweightfactor / tie->sigmar2);
-						}
-					else
-						{
-						xyweight = 0.0;
-						zweight = 0.0;
-						}
-//zweight = 0.0;
-
-					/* deal with fixed, good, or poor status of sections */
-					if (file1->status == file2->status)
-						{
-						if (file1->status == MBNA_FILE_GOODNAV || file1->status == MBNA_FILE_POORNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file1->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax2[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file1->status == MBNA_FILE_FIXEDZNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_GOODNAV)
-						{
-						if (file2->status == MBNA_FILE_POORNAV)
-							{
-							xs[3*nc1]   += -0.005 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.005 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.005 * zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  0.995 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.995 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.995 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax2[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax2[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_POORNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							xs[3*nc1]   += -0.995 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.995 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.995 * zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  0.005 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.005 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.005 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax2[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.995 * zweight * projected_offset * tie->sigmax2[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.005 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							xs[3*nc1]   += -0.995 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.995 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  0.005 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.005 * xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV || file2->status == MBNA_FILE_POORNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDXYNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_POORNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] += -0.005 * zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.995 * zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax2[2];
-							/*
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							/*
-							xs[3*nc1]   +=  0.0;
-							xs[3*nc1+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax2[2];
-							xs[3*nc2]   +=  xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDZNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_POORNAV)
-							{
-							xs[3*nc1]   += -0.005 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -0.005 * xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							*/
-							xs[3*nc2]   +=  0.995 * xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc2+1] +=  0.995 * xyweight * projected_offset * tie->sigmax2[1];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax2[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							xs[3*nc1]   += -xyweight * projected_offset * tie->sigmax2[0];
-							xs[3*nc1+1] += -xyweight * projected_offset * tie->sigmax2[1];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc1+2] +=  0.0;
-							xs[3*nc2]   +=  0.0;
-							xs[3*nc2+1] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax2[2];
-							}
-						}
-					xw[3*nc1]   += xyweight;
-					xw[3*nc1+1] += xyweight;
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						xw[3*nc1+2] += zweight;
-					xw[3*nc2]   += xyweight;
-					xw[3*nc2+1] += xyweight;
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						xw[3*nc2+2] += zweight;
-	/* fprintf(stderr,"horizontal:  nc1:%d xx:%f %f %f  nc2:%d xx:%f %f %f\n",
-	nc1,xs[3*nc1],xs[3*nc1+1],xs[3*nc1+2],
-	nc2,xs[3*nc2],xs[3*nc2+1],xs[3*nc2+2]);*/
-	
-					/* deal with semi-vertical axis */
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						projected_offset = offsetx * tie->sigmax3[0]
-								+ offsety * tie->sigmax3[1]
-								+ offsetz * tie->sigmax3[2];
-					else
-						projected_offset = offsetz * tie->sigmax3[2];
-					if (fabs(tie->sigmar3) > 0.0)
-						{
-						xyweight = sqrt(mbna_offsetweight / tie->sigmar3);
-						zweight = sqrt(mbna_zweightfactor * mbna_offsetweight / tie->sigmar3);
-						}
-					else
-						{
-						xyweight = 0.0;
-						zweight = 0.0;
-						}
-	//xyweight = 0.0;
-	//zweight = 1.0;
-	
-					/* deal with fixed, good, or poor status of sections */
-					if (file1->status == file2->status)
-						{
-						if (file1->status == MBNA_FILE_GOODNAV || file1->status == MBNA_FILE_POORNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file1->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							*/
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax3[2];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							*/
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file1->status == MBNA_FILE_FIXEDZNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc1+2] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_GOODNAV)
-						{
-						if (file2->status == MBNA_FILE_POORNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-							}
-							xs[3*nc1+2] += -0.005 * zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							{
-							xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-							}
-							xs[3*nc2+2] +=  0.995 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							{
-							xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-							xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-							}
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax3[2];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax3[2];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							*/
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_POORNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -0.995 * zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  0.005 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax3[2];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -0.995 * zweight * projected_offset * tie->sigmax3[2];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							*/
-							xs[3*nc2+2] +=  0.005 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV || file2->status == MBNA_FILE_POORNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							xs[3*nc1+2] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							xs[3*nc1+2] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							*/
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							xs[3*nc1+2] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDXYNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							*/
-							xs[3*nc1+2] += -0.5 * zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  0.5 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_POORNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							*/
-							xs[3*nc1+2] += -0.005 * zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  0.995 * zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							*/
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax3[2];
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDZNAV)
-							{
-							/*
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   +=  0.0;
-								xs[3*nc1+1] +=  0.0;
-								}
-							*/
-							xs[3*nc1+2] += -zweight * projected_offset * tie->sigmax3[2];
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						}
-					else if (file1->status == MBNA_FILE_FIXEDZNAV)
-						{
-						if (file2->status == MBNA_FILE_GOODNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc1+2] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-									xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_POORNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc1+2] +=  0.0;
-							*/
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc2+1] +=  0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax3[2];
-							}
-						else if (file2->status == MBNA_FILE_FIXEDNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc1+2] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-							{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							xs[3*nc2+2] +=  0.0;
-							*/
-							}
-						else if (file2->status == MBNA_FILE_FIXEDXYNAV)
-							{
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc1]   += -0.5 * xyweight * projected_offset * tie->sigmax3[0];
-								xs[3*nc1+1] += -0.5 * xyweight * projected_offset * tie->sigmax3[1];
-								}
-							/*
-							xs[3*nc1+2] +=  0.0;
-							if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-								{
-								xs[3*nc2]   +=  0.0;
-								xs[3*nc2+1] +=  0.0;
-								}
-							*/
-							xs[3*nc2+2] +=  zweight * projected_offset * tie->sigmax3[2];
-							}
-						}
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						{
-						xw[3*nc1]   += xyweight;
-						xw[3*nc1+1] += xyweight;
-						}
-					xw[3*nc1+2] += zweight;
-					if (mbna_invert_mode == MBNA_INVERT_ZFULL)
-						{
-						xw[3*nc2]   += xyweight;
-						xw[3*nc2+1] += xyweight;
-						}
-					xw[3*nc2+2] += zweight;
-	/* fprintf(stderr,"semi-vertical:  nc1:%d xx:%f %f %f  nc2:%d xx:%f %f %f\n",
-	nc1,xs[3*nc1],xs[3*nc1+1],xs[3*nc1+2],
-	nc2,xs[3*nc2],xs[3*nc2+1],xs[3*nc2+2]);*/
-	
-					}
-				}
-
-			/* loop over all global ties applying offsets to the affected points */
-			for (ifile=0;ifile<project.num_files;ifile++)
-				{
-				file = &project.files[ifile];
-	
-				for (isection=0;isection<file->num_sections;isection++)
-					{
-					/* use only set global ties */
-					section = &file->sections[isection];
-					if (section->global_tie_status != MBNA_TIE_NONE)
-						{
-						/* get absolute id for first snav point */
-						nc1 = section->snav_invert_id[section->global_tie_snav];
-						
-						/* get current offset vector including reduction of block solution */
-						offsetx = 0.0;
-						offsety = 0.0;
-						offsetz = 0.0;
-						if (section->global_tie_status != MBNA_TIE_Z)
-							{
-							offsetx = section->global_tie_offset_x_m - xa[3*nc1] - x[3*nc1];
-							offsety = section->global_tie_offset_y_m - xa[3*nc1+1] - x[3*nc1+1];
-							}
-						if (section->global_tie_status != MBNA_TIE_XY)
-							{
-							offsetz = section->global_tie_offset_z_m - xa[3*nc1+2] - x[3*nc1+2];
-							}
-						offsetr = sqrt(offsetx * offsetx + offsety * offsety + offsetz * offsetz);
-						
-						/* global ties have a simple error ellipse oriented on the axes */
-						
-						if (section->global_tie_status != MBNA_TIE_Z)
-							{
-							/* deal with x-axis */
-							projected_offset = offsetx;
-							if (fabs(section->global_tie_xsigma) > 0.0)
-							xyweight = sqrt(mbna_offsetweight / section->global_tie_xsigma);
-							else
-							xyweight = 0.0;
-	//fprintf(stderr,"GLOBAL X: xyweight:%f mbna_offsetweight:%f xsigma:%f\n",xyweight,mbna_offsetweight,section->global_tie_xsigma);
-							xs[3*nc1]   += xyweight * projected_offset;
-							xw[3*nc1]   += xyweight;
-							
-							/* deal with y-axis */
-							projected_offset = offsety;
-							if (fabs(section->global_tie_ysigma) > 0.0)
-							xyweight = sqrt(mbna_offsetweight / section->global_tie_ysigma);
-							else
-							xyweight = 0.0;
-	//fprintf(stderr,"GLOBAL Y: xyweight:%f mbna_offsetweight:%f zsigma:%f\n",xyweight,mbna_offsetweight,section->global_tie_ysigma);
-							xs[3*nc1+1] += xyweight * projected_offset;
-							xw[3*nc1+1] += xyweight;
-							}
-							
-						if (section->global_tie_status != MBNA_TIE_XY)
-							{
-							/* deal with z-axis */
-							projected_offset = offsetz;
-							if (fabs(section->global_tie_zsigma) > 0.0)
-							zweight = sqrt(mbna_zweightfactor * mbna_offsetweight / section->global_tie_zsigma);
-							else
-							zweight = 0.0;
-	//fprintf(stderr,"GLOBAL Z: zweight:%f mbna_offsetweight:%f sigma:%f\n",zweight,mbna_offsetweight,section->global_tie_zsigma);
-							xs[3*nc1+2] += zweight * projected_offset;
-							xw[3*nc1+2] += zweight;
-							}
-/* fprintf(stderr,"STAGE 3 GLOBAL TIE: %2d:%2d:%2d  status:%d  nc1:%d  tie: ",ifile,isection,section->global_tie_snav,section->global_tie_status,nc1);
-if (section->global_tie_status != MBNA_TIE_Z) fprintf(stderr,"x:%f y:%f ",section->global_tie_offset_x_m,section->global_tie_offset_y_m);
-if (section->global_tie_status != MBNA_TIE_XY) fprintf(stderr,"z:%f ",section->global_tie_offset_z_m);
-fprintf(stderr," xa: ");
-if (section->global_tie_status != MBNA_TIE_Z) fprintf(stderr,"x:%f y:%f ",xa[3*nc1],xa[3*nc1+1]);
-if (section->global_tie_status != MBNA_TIE_XY) fprintf(stderr,"z:%f ",xa[3*nc1+2]);
-fprintf(stderr," x: ");
-if (section->global_tie_status != MBNA_TIE_Z) fprintf(stderr,"x:%f y:%f ",x[3*nc1],x[3*nc1+1]);
-if (section->global_tie_status != MBNA_TIE_XY) fprintf(stderr,"z:%f ",x[3*nc1+2]);
-fprintf(stderr," xx: ");
-if (section->global_tie_status != MBNA_TIE_Z) fprintf(stderr,"x:%f y:%f ",xs[3*nc1],xs[3*nc1+1]);
-if (section->global_tie_status != MBNA_TIE_XY) fprintf(stderr,"z:%f ",xs[3*nc1+2]);
-fprintf(stderr," (off-xa-x-xx): ");
-if (section->global_tie_status != MBNA_TIE_Z) fprintf(stderr,"x:%f y:%f ",offsetx,offsety);
-if (section->global_tie_status != MBNA_TIE_XY) fprintf(stderr,"z:%f ",offsetz);
-fprintf(stderr,"\n");*/
-						}
-					}
-				}
-
-			/* now loop over all points applying smoothing to the xx[] vector */
-			nseq = 0;
-			ndx = 0;
-			ndx2 = 0;
-			for (ifile=0;ifile<project.num_files;ifile++)
-				{
-				file = &project.files[ifile];
-				if (file->status != MBNA_FILE_FIXEDNAV)
-				for (isection=0;isection<file->num_sections;isection++)
-					{
-					section = &file->sections[isection];
-					if (section->continuity == MB_NO)
-						nseq = 0;
-					for (isnav=0;isnav<section->num_snav;isnav++)
-						{
-						/* work only with points that are tied */
-						if (section->snav_num_ties[isnav] > 0
-							|| (section->global_tie_status != MBNA_TIE_NONE && section->global_tie_snav == isnav))
-							{
-							/* get ids for tied nav points */
-							if (nseq > 1)
-								{
-								nc1 = nc2;
-								time_d1 = time_d2;
-								}
-							if (nseq > 0)
-								{
-								nc2 = nc3;
-								time_d2 = time_d3;
-								}
-							nc3 = section->snav_invert_id[isnav];
-							time_d3 = section->snav_time_d[isnav];
-		
-							/* add first derivative constraint if nseq > 1 AND dtime_d > 0.0 */
-							dtime_d = time_d3 - time_d2;
-							if (nseq > 0 && dtime_d > 0.0)
-								{
-								/* get current offset vector */
-								offsetx = (x[3*nc3]   - x[3*nc2]);
-								offsety = (x[3*nc3+1] - x[3*nc2+1]);
-								offsetz = (x[3*nc3+2] - x[3*nc2+2]);
-		
-								/* add remaining offsets to both points */
-								xyweight = MIN(mbna_smoothweight / dtime_d, 0.5);
-								zweight = MIN(mbna_smoothweight / dtime_d, 0.5);
-								xs[3*nc2]   +=  0.5 * xyweight * offsetx;
-								xs[3*nc2+1] +=  0.5 * xyweight * offsety;
-								xs[3*nc2+2] +=  0.5 * zweight * offsetz;
-								xs[3*nc3]   += -0.5 * xyweight * offsetx;
-								xs[3*nc3+1] += -0.5 * xyweight * offsety;
-								xs[3*nc3+2] += -0.5 * zweight * offsetz;
-								xw[3*nc2]   += xyweight;
-								xw[3*nc2+1] += xyweight;
-								xw[3*nc2+2] += zweight;
-								xw[3*nc3]   += xyweight;
-								xw[3*nc3+1] += xyweight;
-								xw[3*nc3+2] += zweight;
-			
-								ndx++;
-								}
-		
-							/* add second derivative constraint if nseq > 2  AND dtime_d > 0.0 */
-							dtime_d = time_d3 - time_d1;
-							if (nseq > 1 && dtime_d > 0.0)
-								{
-									/* get current offset vector */
-								offsetx = x[3*nc1]   - 2.0 * x[3*nc2]   + x[3*nc3];
-								offsety = x[3*nc1+1] - 2.0 * x[3*nc2+1] + x[3*nc3+1];
-								offsetz = x[3*nc1+2] - 2.0 * x[3*nc2+2] + x[3*nc3+2];
-			
-								/* add remaining offsets to both points, or just one if one is fixed (weight 2nd derivative 1/4th of first derivative)*/
-								xyweight = MIN(mbna_smoothweight / dtime_d / dtime_d, 0.05);
-								zweight = MIN(mbna_smoothweight / dtime_d / dtime_d, 0.05);
-								xs[3*nc1]   += -xyweight * offsetx;
-								xs[3*nc1+1] += -xyweight * offsety;
-								xs[3*nc1+2] += -zweight * offsetz;
-								xs[3*nc2]   +=  2.0 * xyweight * offsetx;
-								xs[3*nc2+1] +=  2.0 * xyweight * offsety;
-								xs[3*nc2+2] +=  2.0 * zweight * offsetz;
-								xs[3*nc3]   += -xyweight * offsetx;
-								xs[3*nc3+1] += -xyweight * offsety;
-								xs[3*nc3+2] += -zweight * offsetz;
-								xw[3*nc1]   += xyweight;
-								xw[3*nc1+1] += xyweight;
-								xw[3*nc1+2] += zweight;
-								xw[3*nc2]   += xyweight;
-								xw[3*nc2+1] += xyweight;
-								xw[3*nc2+2] += zweight;
-								xw[3*nc3]   += xyweight;
-								xw[3*nc3+1] += xyweight;
-								xw[3*nc3+2] += zweight;
-			
-								ndx2++;
-								}
-		
-							/* increment sequence counter */
-							nseq++;
-							}
-						}
-					}
-				}
-
-			/* calculate perturbation and 2-norm of perturbation */
-			perturbationsize = 0.0;
-			for (i=0;i<ncols;i++)
-				{
-				if (xw[i] > 0.0)
-					xx[i] = xs[i] / xw[i];
-				else
-					xx[i] = 0.0;
-				perturbationsize += xx[i] * xx[i];
-				}
-			perturbationsize = sqrt(perturbationsize) / ncols;
-
-			/* apply perturbation */
-			for (i=0;i<ncols;i++)
-				{
-/* fprintf(stderr,"i:%d x:%f xx:%f ",i,x[i],xx[i]);*/
-				x[i] += xx[i];
-				xx[i] = 0.0;
-/* fprintf(stderr,"x:%f\n",x[i]);*/
-				}
-
-			/* calculate misfit */
-			misfit_ties = 0.0;
-			misfit_norm = 0.0;
-			nmisfit = 0;
-			for (icrossing=0;icrossing<project.num_crossings;icrossing++)
-				{
-				crossing = &project.crossings[icrossing];
-	
-				/* use only set crossings */
-				if (crossing->status == MBNA_CROSSING_STATUS_SET)
-				for (j=0;j<crossing->num_ties;j++)
-					{
-					/* get tie */
-					tie = (struct mbna_tie *) &crossing->ties[j];
-	
-					/* get absolute id for first snav point */
-					file1 = &project.files[crossing->file_id_1];
-					section1 = &file1->sections[crossing->section_1];
-					nc1 = section1->snav_invert_id[tie->snav_1];
-	
-					/* get absolute id for second snav point */
-					file2 = &project.files[crossing->file_id_2];
-					section2 = &file2->sections[crossing->section_2];
-					nc2 = section2->snav_invert_id[tie->snav_2];
-if (nc1 > nsnav - 1 || nc2 > nsnav -1
-|| nc1 < 0 || nc2 < 0)
-fprintf(stderr, "BAD TIE snav ID: %d %d %d\n", nc1, nc2, nsnav);
-	
-					/* get observed offset vector including removal of block solution */
-					offsetx = (x[3*nc2] + xa[3*nc2] - x[3*nc1] - xa[3*nc1]) - tie->offset_x_m;
-					offsety = (x[3*nc2+1] + xa[3*nc2+1] - x[3*nc1+1] - xa[3*nc1+1]) - tie->offset_y_m;
-					offsetz = (x[3*nc2+2] + xa[3*nc2+2] - x[3*nc1+2] - xa[3*nc1+2]) - tie->offset_z_m;
-	
-					if (tie->status != MBNA_TIE_Z)
-						{
-						/* get long axis misfit */
-						misfit = (offsetx * tie->sigmax1[0]
-								+ offsety * tie->sigmax1[1]
-								+ offsetz * tie->sigmax1[2]);
-						misfit_ties += misfit * misfit;
-						misfit_norm += misfit * misfit / tie->sigmar1 / tie->sigmar1;
-						nmisfit++;
-			
-						/* get horizontal axis misfit */
-						misfit = (offsetx * tie->sigmax2[0]
-								+ offsety * tie->sigmax2[1]
-								+ offsetz * tie->sigmax2[2]);
-						misfit_ties += misfit * misfit;
-						misfit_norm += misfit * misfit / tie->sigmar2 / tie->sigmar2;
-						nmisfit++;
-						}
-	
-					if (tie->status != MBNA_TIE_XY)
-						{
-						/* get semi-vertical axis misfit */
-						misfit = (offsetx * tie->sigmax3[0]
-								+ offsety * tie->sigmax3[1]
-								+ offsetz * tie->sigmax3[2]);
-						misfit_ties += misfit * misfit;
-						misfit_norm += misfit * misfit / tie->sigmar3 / tie->sigmar3;
-						nmisfit++;
-						}
-					}
-				}
-			for (ifile=0;ifile<project.num_files;ifile++)
-				{
-				/* get file */
-				file = &project.files[ifile];
-				for (isection=0;isection<file->num_sections;isection++)
-					{
-					/* get section */
-					section = &file->sections[isection];
-					if (section->global_tie_status != MBNA_TIE_NONE)
-						{
-						/* get absolute id for snav point */
-						nc1 = section->snav_invert_id[section->global_tie_snav];
-if (nc1 > nsnav - 1 || nc1 < 0)
-fprintf(stderr, "BAD GLOBAL TIE snav ID: %d %d\n", nc1, nsnav);
-		
-						/* get observed offset vector including removal of block solution */
-						offsetx = (x[3*nc1] + xa[3*nc1]) - section->global_tie_offset_x_m;
-						offsety = (x[3*nc1+1] + xa[3*nc1+1]) - section->global_tie_offset_y_m;
-						offsetz = (x[3*nc1+2] + xa[3*nc1+2]) - section->global_tie_offset_z_m;
-				
-						if (section->global_tie_status != MBNA_TIE_Z)
-							{
-							/* get x axis misfit */
-							misfit = offsetx;
-							misfit_ties += misfit * misfit;
-							misfit_norm += misfit * misfit / section->global_tie_xsigma / section->global_tie_xsigma;
-							nmisfit++;
-			
-							/* get y axis misfit */
-							misfit = offsety;
-							misfit_ties += misfit * misfit;
-							misfit_norm += misfit * misfit / section->global_tie_ysigma / section->global_tie_ysigma;
-							nmisfit++;
-							}
-			
-						if (section->global_tie_status != MBNA_TIE_XY)
-							{
-							/* get z axis misfit */
-							misfit = offsetz;
-							misfit_ties += misfit * misfit;
-							misfit_norm += misfit * misfit / section->global_tie_zsigma / section->global_tie_zsigma;
-							nmisfit++;
-							}
-						}
-					}
-				}
-			misfit_ties = sqrt(misfit_ties) / nmisfit;
-			misfit_norm = sqrt(misfit_norm) / nmisfit;
-
-			/* check for convergence */
-			perturbationchange = perturbationsize - perturbationsizeold;
-			convergencecriterea = fabs(perturbationchange) / misfit_ties_initial;
-			if (convergencecriterea < MBNA_CONVERGENCE || convergencecriterea > 10000.0 || iter > MBNA_INTERATION_MAX)
-				done = MB_YES;
-
-fprintf(stderr,"MODEL INVERT: iter:%d nmisfit:%d misfit_initial:%f misfit_ties_initial:%f misfit_ties:%f misfit_norm_initial:%f misfit_norm:%f perturbationsize:%g perturbationchange:%g convergencecriterea:%g done:%d\n",
-iter,nmisfit,misfit_initial,misfit_ties_initial,misfit_ties,misfit_norm_initial,misfit_norm,perturbationsize,perturbationchange,convergencecriterea,done);
-
-			if (done == MB_NO)
-				{
-				perturbationsizeold = perturbationsize;
-				iter++;
-				}
-
-			/* save solution */
-			k = 0;
-			for (i=0;i<project.num_files;i++)
-				{
-				file = &project.files[i];
-				for (j=0;j<file->num_sections;j++)
-					{
-					section = &file->sections[j];
-					for (isnav=0;isnav<section->num_snav;isnav++)
-						{
-						if (section->snav_num_ties[isnav] > 0
-							|| section->global_tie_snav == isnav)
-							{
-							k = section->snav_invert_id[isnav];
-							section->snav_lon_offset[isnav] = (x[3*k] + xa[3*k]) * project.mtodeglon;
-/* fprintf(stderr,"isnav:%d k:%d x[3*k]:%f xa[3*k]:%f project.mtodeglon:%f section->snav_lon_offset[isnav]:%f\n",
-isnav,k,x[3*k],xa[3*k],project.mtodeglon,section->snav_lon_offset[isnav]);*/
-					section->snav_lat_offset[isnav] = (x[3*k+1] + xa[3*k+1]) * project.mtodeglat;
-/* fprintf(stderr,"isnav:%d k:%d x[3*k+1]:%f xa[3*k+1]:%f project.mtodeglat:%f section->snav_lat_offset[isnav]:%f\n",
-isnav,k,x[3*k+1],xa[3*k+1],project.mtodeglat,section->snav_lat_offset[isnav]);*/
-					section->snav_z_offset[isnav] = (x[3*k+2] + xa[3*k+2]);
-/* fprintf(stderr,"isnav:%d k:%d x[3*k+2]:%f xa[3*k+2]:%f section->snav_lat_offset[isnav]:%f\n\n",
-isnav,k,x[3*k+2],xa[3*k+2],section->snav_lat_offset[isnav]); */
-							}
-						}
-					}
-				}
-
-			/* interpolate the solution */
-			mbnavadjust_interpolatesolution(mbna_verbose, &project, &error);
-
-			/* save interpolated solution */
-			k = 0;
-			for (i=0;i<project.num_files;i++)
-				{
-				file = &project.files[i];
-				for (j=0;j<file->num_sections;j++)
-					{
-					section = &file->sections[j];
-					for (isnav=0;isnav<section->num_snav;isnav++)
-					{
-					section->snav_lon_offset[isnav] = section->snav_lon_offset_int[isnav];
-					section->snav_lat_offset[isnav] = section->snav_lat_offset_int[isnav];
-					section->snav_z_offset[isnav] = section->snav_z_offset_int[isnav];
-					}
-					}
-				}
-
-			/* set message dialog on */
-			if (iter % 100 == 0)
-				{
-				sprintf(message,"Completed inversion iteration %d Convergence:%.2f", iter, convergencecriterea / MBNA_CONVERGENCE);
-				do_message_update(message);
-				}
-
-
-			/* update model plot */
-			if (project.modelplot == MB_YES && iter % 25 == 0)
-				mbnavadjust_modelplot_plot();
-			}
-		}
-
-	/* output results from navigation solution */
-	if (project.open == MB_YES
-		&& project.num_crossings > 0
-		&& (project.num_crossings_analyzed >= 10
-			|| project.num_truecrossings_analyzed == project.num_truecrossings)
-		&& ok_to_invert == MB_YES
-		&& error == MB_ERROR_NO_ERROR)
-		{
 		/* now output inverse solution */
 		sprintf(message,"Outputting navigation solution...");
 		do_message_update(message);
 
 		sprintf(message, " > Final misfit:%12g\n > Initial misfit:%12g\n",
-		misfit_ties, misfit_initial);
+				rms_misfit_final, rms_misfit_initial);
 		do_info_add(message, MB_NO);
 
 		/* get crossing offset results */
@@ -10976,12 +9945,28 @@ isnav,k,x[3*k+2],xa[3*k+2],section->snav_lat_offset[isnav]); */
 						- project.files[crossing->file_id_1].sections[crossing->section_1].snav_lat_offset[tie->snav_1];
 					offset_z =  project.files[crossing->file_id_2].sections[crossing->section_2].snav_z_offset[tie->snav_2]
 						- project.files[crossing->file_id_1].sections[crossing->section_1].snav_z_offset[tie->snav_1];
-					tie->inversion_status = MBNA_INVERSION_CURRENT;
-					tie->inversion_offset_x = offset_x;
-					tie->inversion_offset_y = offset_y;
-					tie->inversion_offset_x_m = offset_x / project.mtodeglon;
-					tie->inversion_offset_y_m = offset_y / project.mtodeglat;
-					tie->inversion_offset_z_m = offset_z;
+					
+					/* discard outrageous inversion_offset values - this happens if the inversion blows up */
+					if (fabs(offset_x) > 10000.0
+						|| fabs(offset_y) > 10000.0
+						|| fabs(offset_z) > 10000.0)
+						{
+						tie->inversion_status = MBNA_INVERSION_OLD;
+						tie->inversion_offset_x = 0.0;
+						tie->inversion_offset_y = 0.0;
+						tie->inversion_offset_x_m = 0.0;
+						tie->inversion_offset_y_m = 0.0;
+						tie->inversion_offset_z_m = 0.0;
+						}
+					else
+						{
+						tie->inversion_status = MBNA_INVERSION_CURRENT;
+						tie->inversion_offset_x = offset_x;
+						tie->inversion_offset_y = offset_y;
+						tie->inversion_offset_x_m = offset_x / project.mtodeglon;
+						tie->inversion_offset_y_m = offset_y / project.mtodeglat;
+						tie->inversion_offset_z_m = offset_z;
+						}
 /* fprintf(stderr,"project.mtodeglon:%f project.mtodeglat:%f\n",project.mtodeglon,project.mtodeglat);
 fprintf(stderr,"offsets:%f %f %f   offsets_m:%f %f %f\n",
 offset_x,offset_y,offset_z,tie->inversion_offset_x_m,tie->inversion_offset_y_m,tie->inversion_offset_z_m);*/
@@ -11037,13 +10022,20 @@ offset_x,offset_y,offset_z,tie->inversion_offset_x_m,tie->inversion_offset_y_m,t
 		project.inversion_status = MBNA_INVERSION_CURRENT;
 		project.grid_status = MBNA_GRID_OLD;
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 
 		/* deallocate arrays */
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x_continuity,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x_time_d,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&u,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&v,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&w,&error);
 		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&x,&error);
-		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&xx,&error);
-		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&xa,&error);
-		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&xs,&error);
-		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&xw,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&se,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&b,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&matrix.nia,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&matrix.ia,&error);
+		status = mb_freed(mbna_verbose, __FILE__, __LINE__, (void **)&matrix.a,&error);
 
 		/* turn off message dialog */
 		do_message_off();
@@ -11390,6 +10382,7 @@ mbnavadjust_updategrid()
 			
 			/* write current project */
 			mbnavadjust_write_project(mbna_verbose, &project, &error);
+			project.save_count = 0;
 	
 			/* turn off message dialog */
 			do_message_off();
@@ -13337,6 +12330,7 @@ mbnavadjust_modelplot_clearblock()
 
 		/* write updated project */
 		mbnavadjust_write_project(mbna_verbose, &project, &error);
+		project.save_count = 0;
 		}
 
  	/* print output debug statements */
@@ -16440,8 +15434,7 @@ int mbnavadjust_reset_visualization_navties()
 									+ section->snav_lon_offset[section->global_tie_snav];
 					navtielat[1] = section->snav_lat[section->global_tie_snav]
 									+ section->snav_lat_offset[section->global_tie_snav];
-					sprintf(navtiename, "%2.2d:%4.4d:%2.2d",
-							file->block, i, j);
+					sprintf(navtiename, "%2.2d:%4.4d:%2.2d", file->block, i, j);
 					status = mbview_addroute(mbna_verbose, instance, npoint,
 												navtielon, navtielat, waypoint,
 												navtiecolor, navtiesize,

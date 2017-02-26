@@ -23,7 +23,7 @@ LDFLAGS = -nologo -incremental:no -opt:ref Ws2_32.lib $(ONCRPCLIB) $(PROJLIB) $(
 
 ### put together the static library
 OBJS =  mem_surf.obj pb_math.obj sapi_build.obj sapi_data.obj sapi_files.obj sapi_globals.obj \
-	sapi_simple.obj util_surf.obj xdr_surf.obj
+	sapi_simple.obj util_surf.obj xdr_surf.obj xdr_win32.obj
 
 # targets
 all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
@@ -50,6 +50,7 @@ sapi_globals.obj: sapi_globals.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.
 sapi_simple.obj:  sapi_simple.c mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
 util_surf.obj:    util_surf.c  mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
 xdr_surf.obj:     xdr_surf.c  mem_surf.h mb_sapi.h xdr_surf.h pb_math.h surf.h util_surf.h
+xdr_win32.obj:    xdr_surf.c  xdr_win32.h
 
 # cleanup
 clean:

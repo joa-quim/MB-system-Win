@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_sb2000.c	10/4/94
- *	$Id: mbsys_sb2000.c 2272 2016-05-05 01:14:09Z caress $
+ *	$Id: mbsys_sb2000.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1994-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -38,7 +38,7 @@
 #include "mb_define.h"
 #include "mbsys_sb2000.h"
 
-static char rcs_id[]="$Id: mbsys_sb2000.c 2272 2016-05-05 01:14:09Z caress $";
+static char rcs_id[]="$Id: mbsys_sb2000.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_sb2000_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -62,7 +62,7 @@ int mbsys_sb2000_alloc(int verbose, void *mbio_ptr, void **store_ptr,
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* allocate memory for data structure */
-	status = mb_malloc(verbose,sizeof(struct mbsys_sb2000_struct),
+	status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct mbsys_sb2000_struct),
 				store_ptr,error);
 
 	/* print output debug statements */
@@ -98,7 +98,7 @@ int mbsys_sb2000_deall(int verbose, void *mbio_ptr, void **store_ptr,
 		}
 
 	/* deallocate memory for data structure */
-	status = mb_free(verbose,store_ptr,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)store_ptr,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_callbacks.c	2/22/2000
- *    $Id: mbnavadjust_callbacks.c 2282 2016-08-26 01:10:17Z caress $
+ *    $Id: mbnavadjust_callbacks.c 2290 2017-01-02 21:02:49Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -104,7 +104,7 @@ WidgetList	BxWidgetIdsFromNames PROTOTYPE((Widget, char*, char*));
 /*--------------------------------------------------------------------*/
 
 /* id variables */
-static char svn_id[] = "$Id: mbnavadjust_callbacks.c 2282 2016-08-26 01:10:17Z caress $";
+static char svn_id[] = "$Id: mbnavadjust_callbacks.c 2290 2017-01-02 21:02:49Z caress $";
 static char program_name[] = "MBnavadjust";
 
 /* XG variable declarations */
@@ -1725,13 +1725,13 @@ void do_update_status()
 						dx = section->global_tie_offset_x_m - section->snav_lon_offset[section->global_tie_snav] / project.mtodeglon;
 						dy = section->global_tie_offset_y_m - section->snav_lat_offset[section->global_tie_snav] / project.mtodeglat;
 						dz = section->global_tie_offset_z_m - section->snav_z_offset[section->global_tie_snav];
-fprintf(stderr,"dx:%f dy:%f dz:%f  snav:%d  tie:%f %f %f  offset:%f %f %f  mtodeg:%f %f\n",
+/*fprintf(stderr,"dx:%f dy:%f dz:%f  snav:%d  tie:%f %f %f  offset:%f %f %f  mtodeg:%f %f\n",
 dx, dy, dz, section->global_tie_snav,
 section->global_tie_offset_x_m, section->global_tie_offset_y_m, section->global_tie_offset_z_m,
 section->snav_lon_offset[section->global_tie_snav] / project.mtodeglon,
 section->snav_lat_offset[section->global_tie_snav] / project.mtodeglon,
 section->snav_z_offset[section->global_tie_snav],
-project.mtodeglon, project.mtodeglat);
+project.mtodeglon, project.mtodeglat);*/
 						dr1 = fabs(dx / section->global_tie_xsigma);
 						dr2 = fabs(dy / section->global_tie_ysigma);
 						dr3 = fabs(dz / section->global_tie_zsigma);

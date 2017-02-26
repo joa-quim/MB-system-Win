@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_dslnavfix.perl	8/9/96
-#    $Id: mbm_dslnavfix 2264 2016-02-02 19:59:53Z caress $
+#    $Id: mbm_dslnavfix 2283 2016-10-23 09:33:10Z caress $
 #
 #    Copyright (c) 1996-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -34,7 +34,7 @@
 #   August 9, 1996
 #
 # Version:
-#   $Id: mbm_dslnavfix 2264 2016-02-02 19:59:53Z caress $
+#   $Id: mbm_dslnavfix 2283 2016-10-23 09:33:10Z caress $
 #
 #
 #
@@ -56,7 +56,7 @@ $verbose =    		($opt_V || $opt_v);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_dslnavfix 2264 2016-02-02 19:59:53Z caress $\n";
+	print "\nVersion: $Id: mbm_dslnavfix 2283 2016-10-23 09:33:10Z caress $\n";
 	print "\nMacro to take WHOI DSL AMS-120 processed navigation \n";
 	print "in UTM projected eastings and northings and produce \n";
 	print "navigation in longitude and latitude. The output navigation \n";
@@ -143,9 +143,9 @@ $bounds = "$org_lon" . "/" . "$org_lat"
 		. "/" . "$org_lat_plus1" . "r";
 
 # set gmt defaults
-($d_format) = `gmtdefaults -L | grep D_FORMAT` =~ /\S+\s+\S+\s+(\S+)/;
-($ellipsoid_save) = `gmtdefaults -L | grep ELLIPSOID` =~ /\S+\s+\S+\s+(\S+)/;
-`gmtset D_FORMAT %.10lg ELLIPSOID $ellipsoid_use`;
+($d_format) = `gmt gmtdefaults | grep FORMAT_FLOAT_OUT` =~ /\S+\s+\S+\s+(\S+)/;
+($ellipsoid_save) = `gmt gmtdefaults | grep ELLIPSOID` =~ /\S+\s+\S+\s+(\S+)/;
+`gmt gmtset FORMAT_FLOAT_OUT %.10lg ELLIPSOID $ellipsoid_use`;
 
 # print out info
 if ($verbose)
@@ -441,7 +441,7 @@ if ($verbose)
 	}
 
 # reset the gmt defaults
-`gmtset D_FORMAT $d_format ELLIPSOID $ellipsoid_save`;
+`gmt gmtset FORMAT_FLOAT_OUT $d_format ELLIPSOID $ellipsoid_save`;
 
 # now open the unprojected navigation data
 if (!open(INP,"<$tmp_geo_navfile"))

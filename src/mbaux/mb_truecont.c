@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_truecont.c	4/21/94
- *    $Id: mb_truecont.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_truecont.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1994-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -89,12 +89,12 @@ int get_hand_old(struct swath *data, int *hand,
 		int k, int i, int j, int d);
 int get_azimuth_old(struct swath *data, int iping, double *angle);
 
-static char rcs_id[]="$Id: mb_truecont.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mb_truecont.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------------*/
 /* 	function mb_contour_init initializes the memory required to
 	contour multibeam bathymetry data.
-	if mbio_ptr is null, the arrays are allocated using mb_malloc. If
+	if mbio_ptr is null, the arrays are allocated using mb_mallocd. If
 	mbio_ptr is a valid mbio structure, then the arrays tied to
 	beams_bath will be registered using mb_register_array */
 int mb_contour_init(

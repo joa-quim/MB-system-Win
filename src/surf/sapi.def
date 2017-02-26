@@ -133,3 +133,17 @@ EXPORTS
     xdr_SurfAmplitudes
     xdr_SurfExtendedAmplitudes
     xdr_SurfSidescanData
+; From xdr_win32.h
+    xdrstdio_create
+    xdr_long
+    xdr_u_long
+    xdr_short
+    xdr_u_short
+    xdr_int
+    xdr_u_int
+    xdr_char
+    xdr_u_char
+    xdr_opaque
+    xdr_bytes
+    xdr_double
+    xdr_float

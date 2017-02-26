@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbview_callbacks.c	10/7/2002
- *    $Id: mbview_callbacks.c 2276 2016-06-11 05:17:46Z caress $
+ *    $Id: mbview_callbacks.c 2286 2016-11-09 01:33:41Z caress $
  *
  *    Copyright (c) 2002-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -110,7 +110,7 @@ static Cardinal 	ac;
 static Arg      	args[256];
 static char		value_text[MB_PATH_MAXLINE];
 
-static char rcs_id[]="$Id: mbview_callbacks.c 2276 2016-06-11 05:17:46Z caress $";
+static char rcs_id[]="$Id: mbview_callbacks.c 2286 2016-11-09 01:33:41Z caress $";
 
 /* function prototypes */
 /*------------------------------------------------------------------------------*/
@@ -8685,7 +8685,7 @@ fprintf(stderr,"do_mbview_routelistselect:\n");
 			/* increment waypoint type */
 			shared.shareddata.routes[iroute].waypoint[iwaypoint]++;
 			if (shared.shareddata.routes[iroute].waypoint[iwaypoint] < MBV_ROUTE_WAYPOINT_SIMPLE
-				|| shared.shareddata.routes[iroute].waypoint[iwaypoint] > MBV_ROUTE_WAYPOINT_ENDLINE4)
+				|| shared.shareddata.routes[iroute].waypoint[iwaypoint] > MBV_ROUTE_WAYPOINT_ENDLINE5)
 				shared.shareddata.routes[iroute].waypoint[iwaypoint] = MBV_ROUTE_WAYPOINT_SIMPLE;
 
 			/* update route list */

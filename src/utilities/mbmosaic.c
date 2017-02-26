@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbmosaic.c	2/10/97
- *    $Id: mbmosaic.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbmosaic.c 2290 2017-01-02 21:02:49Z caress $
  *
  *    Copyright (c) 1997-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -239,7 +239,7 @@ int mbmosaic_get_footprint(
 int double_compare(double *a, double *b);
 
 /* program identifiers */
-static char rcs_id[] = "$Id: mbmosaic.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbmosaic.c 2290 2017-01-02 21:02:49Z caress $";
 char program_name[] = "mbmosaic";
 char help_message[] =  "mbmosaic is an utility used to mosaic amplitude or \nsidescan data contained in a set of swath sonar data files.  \nThis program uses one of four algorithms (gaussian weighted mean, \nmedian filter, minimum filter, maximum filter) to grid regions \ncovered by multibeam swaths and then fills in gaps between \nthe swaths (to the degree specified by the user) using a minimum\ncurvature algorithm.";
 char usage_message[] = "mbmosaic -Ifilelist -Oroot \
@@ -1062,10 +1062,10 @@ int main (int argc, char **argv)
 		/* calculate grid properties */
 		if (set_spacing == MB_YES)
 			{
-			xdim = (gbnd[1] - gbnd[0])/dx_set + 1;
+			xdim = lrint((gbnd[1] - gbnd[0])/dx_set + 1);
 			if (dy_set <= 0.0)
 				dy_set = dx_set;
-			ydim = (gbnd[3] - gbnd[2])/dy_set + 1;
+			ydim = lrint((gbnd[3] - gbnd[2])/dy_set + 1);
 			if (spacing_priority == MB_YES)
 				{
 				gbnd[1] = gbnd[0] + dx_set * (xdim - 1);
@@ -1077,6 +1077,18 @@ int main (int argc, char **argv)
 				strcpy(units, "km");
 			else if (units[0] == 'F' || units[0] == 'f')
 				strcpy(units, "feet");
+			else if (strncmp(units, "arcmin", 6) == 0)
+				{
+				dx_set = dx_set / 60.0;
+				dy_set = dy_set / 60.0;
+				strcpy(units, "degrees");
+				}
+			else if (strncmp(units, "arcsec", 6) == 0)
+				{
+				dx_set = dx_set / 3600.0;
+				dy_set = dy_set / 3600.0;
+				strcpy(units, "degrees");
+				}
 			else
 				strcpy(units, "unknown");
 			}
@@ -1100,10 +1112,10 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);
 		if (set_spacing == MB_YES
 			&& (units[0] == 'M' || units[0] == 'm'))
 			{
-			xdim = (gbnd[1] - gbnd[0])/(mtodeglon*dx_set) + 1;
+			xdim = lrint((gbnd[1] - gbnd[0])/(mtodeglon*dx_set) + 1);
 			if (dy_set <= 0.0)
 				dy_set = mtodeglon * dx_set / mtodeglat;
-			ydim = (gbnd[3] - gbnd[2])/(mtodeglat*dy_set) + 1;
+			ydim = lrint((gbnd[3] - gbnd[2])/(mtodeglat*dy_set) + 1);
 			if (spacing_priority == MB_YES)
 				{
 				gbnd[1] = gbnd[0] + mtodeglon * dx_set * (xdim - 1);
@@ -1114,10 +1126,10 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);
 		else if (set_spacing == MB_YES
 			&& (units[0] == 'K' || units[0] == 'k'))
 			{
-			xdim = (gbnd[1] - gbnd[0])*deglontokm/dx_set + 1;
+			xdim = lrint((gbnd[1] - gbnd[0])*deglontokm/dx_set + 1);
 			if (dy_set <= 0.0)
 				dy_set = deglattokm * dx_set / deglontokm;
-			ydim = (gbnd[3] - gbnd[2])*deglattokm/dy_set + 1;
+			ydim = lrint((gbnd[3] - gbnd[2])*deglattokm/dy_set + 1);
 			if (spacing_priority == MB_YES)
 				{
 				gbnd[1] = gbnd[0] + dx_set * (xdim - 1) / deglontokm;
@@ -1128,10 +1140,10 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);
 		else if (set_spacing == MB_YES
 			&& (units[0] == 'F' || units[0] == 'f'))
 			{
-			xdim = (gbnd[1] - gbnd[0])/(mtodeglon * 0.3048 * dx_set) + 1;
+			xdim = lrint((gbnd[1] - gbnd[0])/(mtodeglon * 0.3048 * dx_set) + 1);
 			if (dy_set <= 0.0)
 				dy_set = mtodeglon * dx_set / mtodeglat;
-			ydim = (gbnd[3] - gbnd[2])/(mtodeglat * 0.3048 * dy_set) + 1;
+			ydim = lrint((gbnd[3] - gbnd[2])/(mtodeglat * 0.3048 * dy_set) + 1);
 			if (spacing_priority == MB_YES)
 				{
 				gbnd[1] = gbnd[0] + mtodeglon * 0.3048 * dx_set * (xdim - 1);
@@ -1141,16 +1153,29 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);
 			}
 		else if (set_spacing == MB_YES)
 			{
-			xdim = (gbnd[1] - gbnd[0])/dx_set + 1;
+			if (strncmp(units, "arcmin", 6) == 0)
+				{
+				dx_set = dx_set / 60.0;
+				dy_set = dy_set / 60.0;
+				strcpy(units, "degrees");
+				}
+			else if (strncmp(units, "arcsec", 6) == 0)
+				{
+				dx_set = dx_set / 3600.0;
+				dy_set = dy_set / 3600.0;
+				strcpy(units, "degrees");
+				}
+			else
+				strcpy(units, "degrees");
+			xdim = lrint((gbnd[1] - gbnd[0])/dx_set + 1);
 			if (dy_set <= 0.0)
 				dy_set = dx_set;
-			ydim = (gbnd[3] - gbnd[2])/dy_set + 1;
+			ydim = lrint((gbnd[3] - gbnd[2])/dy_set + 1);
 			if (spacing_priority == MB_YES)
 				{
 				gbnd[1] = gbnd[0] + dx_set * (xdim - 1);
 				gbnd[3] = gbnd[2] + dy_set * (ydim - 1);
 				}
-			strcpy(units, "degrees");
 			}
 		}
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_zgrid.c	    4/25/95
- *    $Id: mb_zgrid.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_zgrid.c 2292 2017-01-30 18:11:01Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -119,9 +119,9 @@
 #include "mb_status.h"
 #include "mb_aux.h"
 
-#define ITERMIN 100
+#define ITERMIN 50
 #define ITERMAX 1000
-#define ITERTRANSITION 150
+#define ITERTRANSITION 100
 
 #define ZGRID_DIMENSION_MAX	500
 
@@ -950,18 +950,25 @@ L3720:
 	    root = 0.0;
 	if (root - (float).9999 >= (float)0.) {
 	    fprintf(stderr,"Zgrid iteration %d convergence test skipped root: %f\n",iter,root);
-	    goto L4000;
+        if (iter >= ITERTRANSITION)
+            nconvtestincrease++;
+        if (iter >= ITERMIN
+            || (iter >= ITERTRANSITION && nconvtestincrease >= 4)) {
+            goto L4010;
+        } else {
+            goto L4000;
+        }
 	} else {
 	    goto L3730;
 	}
 L3730:
 	/* convtest = dzmaxf / ((float)1. - root) - eps; */
 	convtest = dzmaxf - dzcriteria;
-	if (iter > ITERTRANSITION && convtest > convtestlast)
+	if (iter >= ITERTRANSITION && convtest > convtestlast)
 	    nconvtestincrease++;
 	fprintf(stderr,"Zgrid iteration %d convergence test: %f last:%f\n",iter,convtest,convtestlast);
-	if ((convtest <= (float)0. && iter > ITERMIN)
-	    || (iter > ITERTRANSITION && nconvtestincrease >= 4)) {
+	if ((convtest <= (float)0. && iter >= ITERMIN)
+	    || (iter >= ITERTRANSITION && nconvtestincrease >= 4)) {
 	    goto L4010;
 	} else {
 	    convtestlast = convtest;

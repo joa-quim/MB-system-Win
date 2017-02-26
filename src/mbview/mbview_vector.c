@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_vector.c	1/11/2012
- *    $Id: mbview_vector.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbview_vector.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2012-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -70,7 +70,7 @@
 /*------------------------------------------------------------------------------*/
 
 /* local variables */
-static char rcs_id[]="$Id: mbview_vector.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbview_vector.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_getvectorcount(int verbose, size_t instance,
@@ -209,7 +209,7 @@ int mbview_allocvectorarrays(int verbose,
 		fprintf(stderr,"dbg2       vecdata:                   %p\n", *vecdata);
 		}
 
-	/* allocate the arrays using mb_realloc */
+	/* allocate the arrays using mb_reallocd */
 	status = mb_reallocd(verbose,__FILE__,__LINE__,npointtotal*sizeof(double),(void **)veclon,error);
 	if (status == MB_SUCCESS)
 		status = mb_reallocd(verbose,__FILE__,__LINE__,npointtotal*sizeof(double),(void **)veclat,error);
@@ -265,7 +265,7 @@ int mbview_freevectorarrays(int verbose,
 		fprintf(stderr,"dbg2       vecdata:                   %p\n", *vecdata);
 		}
 
-	/* free the arrays using mb_free */
+	/* free the arrays using mb_freed */
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)veclon,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)veclat,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)vecz,error);
@@ -351,7 +351,7 @@ int mbview_addvector(int verbose, size_t instance,
 	if (shared.shareddata.nvector_alloc < shared.shareddata.nvector + 1)
 		{
 		shared.shareddata.nvector_alloc = shared.shareddata.nvector + 1;
-		status = mb_realloc(mbv_verbose,
+		status = mb_reallocd(mbv_verbose, __FILE__, __LINE__,
 			    	shared.shareddata.nvector_alloc * sizeof(struct mbview_vector_struct),
 			    	(void **)&(shared.shareddata.vectors), error);
 		if (status == MB_FAILURE)

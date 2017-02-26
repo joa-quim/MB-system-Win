@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_buffer.c	2/25/93
- *    $Id: mb_buffer.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_buffer.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -52,7 +52,7 @@
 #include "mb_io.h"
 #include "mb_define.h"
 
-static char rcs_id[]="$Id: mb_buffer.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mb_buffer.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_buffer_init(int verbose, void **buff_ptr, int *error)
@@ -132,7 +132,7 @@ int mb_buffer_close(int verbose, void **buff_ptr, void *mbio_ptr, int *error)
 		}
 
 	/* deallocate memory for data structure */
-	status = mb_free(verbose,buff_ptr,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)buff_ptr,error);
 
 	/* print output debug statements */
 	if (verbose >= 2)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbinfo.c	2/1/93
- *    $Id: mbinfo.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbinfo.c 2290 2017-01-02 21:02:49Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -59,7 +59,7 @@ struct ping
 #define XML			2
 #define MAX_OUTPUT_FORMAT 2
 
-static char rcs_id[] = "$Id: mbinfo.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbinfo.c 2290 2017-01-02 21:02:49Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -829,6 +829,7 @@ int main (int argc, char **argv)
 				len1+=strspn(&format_description[len1],"InformalDescription: ");
 				len2=strcspn(&format_description[len1],"\n");
 				strncpy(string,&format_description[len1],len2);
+				string[len2]='\0';
 				fprintf(output,"\"informal_description\": \"%s\",\n",string);
 				len1+=len2+1;
 				len1+=strspn(&format_description[len1],"Attributes: ");
@@ -2328,7 +2329,7 @@ int main (int argc, char **argv)
 			fprintf(output,"\"number_of_pixels\": \"%d\",\n", ntsbeams);
 			fprintf(output,"\"number_good_pixels\": \"%d\",\n\"percent_good_pixels\": \"%5.2f\",\n",
 				ngsbeams, ngs_percent);
-			fprintf(output,"\"number_zero_pixels\": \"%d\",\n\"percent_good_pixels\": \"%5.2f\",\n",
+			fprintf(output,"\"number_zero_pixels\": \"%d\",\n\"percent_zero_pixels\": \"%5.2f\",\n",
 				nzsbeams, nzs_percent);
 			fprintf(output,"\"number_flagged_pixels\": \"%d\",\n\"percent_flagged_pixels\": \"%5.2f\"\n",
 				nfsbeams, nfs_percent);
@@ -2719,50 +2720,50 @@ int main (int argc, char **argv)
 			case JSON:
 				fprintf(output,",\n\"notices\": {\n");
 				notice_total=0;
-				fprintf(output,"\"data_record_type_notices\": {\n");
+				fprintf(output,"\"data_record_type_notices\": [\n");
 				for (i=0;i<=MB_DATA_KINDS;i++)
 					{
 					if (notice_list_tot[i] > 0)
 						{
 						mb_notice_message(verbose, i, &notice_msg);
 						if(notice_total>0) fprintf(output,",\n");
-						fprintf(output, "\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}",
+						fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}}",
 							notice_list_tot[i], notice_msg);
 						notice_total++;
 						}
 					}
 				if (notice_total>0) fprintf(output,"\n");
-				fprintf(output,"}");
+				fprintf(output,"]");
 				notice_total=0;
-				fprintf(output,",\n\"nonfatal_error_notices\": {\n");
+				fprintf(output,",\n\"nonfatal_error_notices\": [\n");
 				for (i=MB_DATA_KINDS+1;i<=MB_DATA_KINDS-(MB_ERROR_MIN);i++)
 					{
 					if (notice_list_tot[i] > 0)
 						{
 						mb_notice_message(verbose, i, &notice_msg);
 						if(notice_total>0) fprintf(output,",\n");
-						fprintf(output, "\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}",
+						fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}}",
 							notice_list_tot[i], notice_msg);
 						notice_total++;
 						}
 					}
 				if (notice_total>0) fprintf(output,"\n");
-				fprintf(output,"}");
+				fprintf(output,"]");
 				notice_total=0;
-				fprintf(output,",\n\"problem_notices\": {\n");
+				fprintf(output,",\n\"problem_notices\": [\n");
 				for (i=MB_DATA_KINDS-(MB_ERROR_MIN)+1;i<MB_NOTICE_MAX;i++)
 					{
 					if (notice_list_tot[i] > 0)
 						{
 						mb_notice_message(verbose, i, &notice_msg);
 						if(notice_total>0) fprintf(output,",\n");
-						fprintf(output, "\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}",
+						fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}}",
 							notice_list_tot[i], notice_msg);
 						notice_total++;
 						}
 					}
 				if (notice_total>0) fprintf(output,"\n");
-				fprintf(output,"}\n");
+				fprintf(output,"]\n");
 				fprintf(output,"}");
 				break;
 			case XML:

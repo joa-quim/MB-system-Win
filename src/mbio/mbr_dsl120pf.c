@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_dsl120pf.c	8/6/96
- *	$Id: mbr_dsl120pf.c 2275 2016-05-18 01:58:45Z caress $
+ *	$Id: mbr_dsl120pf.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 1996-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -80,7 +80,7 @@ int mbr_dsl120pf_wr_bath(int verbose, void *mbio_ptr, FILE *mbfp, int *error);
 int mbr_dsl120pf_wr_amp(int verbose, void *mbio_ptr, FILE *mbfp, int *error);
 int mbr_dsl120pf_wr_comment(int verbose, void *mbio_ptr, FILE *mbfp, int *error);
 
-static char rcs_id[]="$Id: mbr_dsl120pf.c 2275 2016-05-18 01:58:45Z caress $";
+static char rcs_id[]="$Id: mbr_dsl120pf.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_dsl120pf(int verbose, void *mbio_ptr, int *error)
@@ -316,7 +316,7 @@ int mbr_alm_dsl120pf(int verbose, void *mbio_ptr, int *error)
 	/* allocate memory for data structure */
 	mb_io_ptr->structure_size = sizeof(struct mbf_dsl120pf_struct);
 	mb_io_ptr->data_structure_size = 0;
-	status = mb_malloc(verbose,mb_io_ptr->structure_size,
+	status = mb_mallocd(verbose, __FILE__, __LINE__, mb_io_ptr->structure_size,
 				&mb_io_ptr->raw_data,error);
 	status = mbsys_dsl_alloc(
 			verbose,mbio_ptr,
@@ -389,7 +389,7 @@ int mbr_dem_dsl120pf(int verbose, void *mbio_ptr, int *error)
 	mb_io_ptr = (struct mb_io_struct *) mbio_ptr;
 
 	/* deallocate memory for data descriptor */
-	status = mb_free(verbose,&mb_io_ptr->raw_data,error);
+	status = mb_freed(verbose, __FILE__, __LINE__, (void **)&mb_io_ptr->raw_data,error);
 	status = mbsys_dsl_deall(
 			verbose,mbio_ptr,
 			&mb_io_ptr->store_data,error);

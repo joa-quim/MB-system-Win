@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_route.c	9/25/2003
- *    $Id: mbview_route.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbview_route.c 2291 2017-01-12 09:20:59Z caress $
  *
  *    Copyright (c) 2003-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -76,7 +76,7 @@
 /* local variables */
 static char		value_string[MB_PATH_MAXLINE];
 
-static char rcs_id[]="$Id: mbview_route.c 2268 2016-03-15 02:11:26Z caress $";
+static char rcs_id[]="$Id: mbview_route.c 2291 2017-01-12 09:20:59Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_getroutecount(int verbose, size_t instance,
@@ -354,20 +354,20 @@ int mbview_allocroutearrays(int verbose,
 		fprintf(stderr,"dbg2       routelon:                  %p\n", *routelon);
 		fprintf(stderr,"dbg2       routelat:                  %p\n", *routelat);
 		if (waypoint != NULL)
-		fprintf(stderr,"dbg2       waypoint:                  %p\n", *waypoint);
+			fprintf(stderr,"dbg2       waypoint:                  %p\n", *waypoint);
 		if (routetopo != NULL)
-		fprintf(stderr,"dbg2       routetopo:                 %p\n", *routetopo);
+			fprintf(stderr,"dbg2       routetopo:                 %p\n", *routetopo);
 		if (routebearing != NULL)
-		fprintf(stderr,"dbg2       routebearing:              %p\n", *routebearing);
+			fprintf(stderr,"dbg2       routebearing:              %p\n", *routebearing);
 		if (distlateral != NULL)
-		fprintf(stderr,"dbg2       distlateral:               %p\n", *distlateral);
+			fprintf(stderr,"dbg2       distlateral:               %p\n", *distlateral);
 		if (distovertopo != NULL)
-		fprintf(stderr,"dbg2       distovertopo:              %p\n", *distovertopo);
+			fprintf(stderr,"dbg2       distovertopo:              %p\n", *distovertopo);
 		if (slope != NULL)
-		fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
+			fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
 		}
 
-	/* allocate the arrays using mb_realloc */
+	/* allocate the arrays using mb_reallocd */
 	status = mb_reallocd(verbose,__FILE__,__LINE__,npointtotal*sizeof(double),(void **)routelon,error);
 	if (status == MB_SUCCESS)
 		status = mb_reallocd(verbose,__FILE__,__LINE__,npointtotal*sizeof(double),(void **)routelat,error);
@@ -393,17 +393,17 @@ int mbview_allocroutearrays(int verbose,
 		fprintf(stderr,"dbg2       routelon:                  %p\n", *routelon);
 		fprintf(stderr,"dbg2       routelat:                  %p\n", *routelat);
 		if (waypoint != NULL)
-		fprintf(stderr,"dbg2       waypoint:                  %p\n", *waypoint);
+			fprintf(stderr,"dbg2       waypoint:                  %p\n", *waypoint);
 		if (routetopo != NULL)
-		fprintf(stderr,"dbg2       routetopo:                 %p\n", *routetopo);
+			fprintf(stderr,"dbg2       routetopo:                 %p\n", *routetopo);
 		if (routebearing != NULL)
-		fprintf(stderr,"dbg2       routebearing:              %p\n", *routebearing);
+			fprintf(stderr,"dbg2       routebearing:              %p\n", *routebearing);
 		if (distlateral != NULL)
-		fprintf(stderr,"dbg2       distlateral:               %p\n", *distlateral);
+			fprintf(stderr,"dbg2       distlateral:               %p\n", *distlateral);
 		if (distovertopo != NULL)
-		fprintf(stderr,"dbg2       distovertopo:              %p\n", *distovertopo);
+			fprintf(stderr,"dbg2       distovertopo:              %p\n", *distovertopo);
 		if (slope != NULL)
-		fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
+			fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
 		fprintf(stderr,"dbg2       error:                     %d\n", *error);
 		fprintf(stderr,"dbg2  Return status:\n");
 		fprintf(stderr,"dbg2       status:                    %d\n", status);
@@ -441,20 +441,20 @@ int mbview_freeroutearrays(int verbose,
 		fprintf(stderr,"dbg2       routelon:                  %p\n", *routelon);
 		fprintf(stderr,"dbg2       routelat:                  %p\n", *routelat);
 		if (waypoint != NULL)
-		fprintf(stderr,"dbg2       waypoint:                  %p\n", *waypoint);
+			fprintf(stderr,"dbg2       waypoint:                  %p\n", *waypoint);
 		if (routetopo != NULL)
-		fprintf(stderr,"dbg2       routetopo:                 %p\n", *routetopo);
+			fprintf(stderr,"dbg2       routetopo:                 %p\n", *routetopo);
 		if (routebearing != NULL)
-		fprintf(stderr,"dbg2       routebearing:              %p\n", *routebearing);
+			fprintf(stderr,"dbg2       routebearing:              %p\n", *routebearing);
 		if (distlateral != NULL)
-		fprintf(stderr,"dbg2       distlateral:               %p\n", *distlateral);
+			fprintf(stderr,"dbg2       distlateral:               %p\n", *distlateral);
 		if (distovertopo != NULL)
-		fprintf(stderr,"dbg2       distovertopo:              %p\n", *distovertopo);
+			fprintf(stderr,"dbg2       distovertopo:              %p\n", *distovertopo);
 		if (slope != NULL)
-		fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
+			fprintf(stderr,"dbg2       slope:                     %p\n", *slope);
 		}
 
-	/* free the arrays using mb_free */
+	/* free the arrays using mb_freed */
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)routelon,error);
 	status = mb_freed(verbose,__FILE__,__LINE__,(void **)routelat,error);
 	if (waypoint != NULL)
@@ -563,7 +563,7 @@ int mbview_addroute(int verbose, size_t instance,
 		{
 		/* check waypoint flag correct */
 		if (waypoint[i] <= MBV_ROUTE_WAYPOINT_NONE
-			|| waypoint[i] > MBV_ROUTE_WAYPOINT_ENDLINE4)
+			|| waypoint[i] > MBV_ROUTE_WAYPOINT_ENDLINE5)
 			waypoint[i] = MBV_ROUTE_WAYPOINT_SIMPLE;
 
 		/* get route positions in grid coordinates */
@@ -2883,8 +2883,8 @@ int mbview_updateroutelist()
 	int	jpoint;
 	int	nitems;
 	int	iitem;
-	char	lonstr0[24];
-	char	latstr0[24];
+	char	londstr0[24], lonmstr0[24];
+	char	latdstr0[24], latmstr0[24];
 	char	waypointstr[10];
 	int	iroute, jwaypoint;
 
@@ -2941,10 +2941,9 @@ int mbview_updateroutelist()
 				for (jpoint=0;jpoint<shared.shareddata.routes[iroute].npoints;jpoint++)
 					{
 					/* add list item for each route */
-					mbview_setlonlatstrings(shared.lonlatstyle,
-								shared.shareddata.routes[iroute].points[jpoint].xlon,
+					mbview_setlonlatstrings(shared.shareddata.routes[iroute].points[jpoint].xlon,
 								shared.shareddata.routes[iroute].points[jpoint].ylat,
-								lonstr0, latstr0);
+								londstr0, latdstr0, lonmstr0, latmstr0);
 
 					if (shared.shareddata.routes[iroute].waypoint[jpoint] == MBV_ROUTE_WAYPOINT_SIMPLE)
 						strcpy(waypointstr, "---------");
@@ -2966,15 +2965,27 @@ int mbview_updateroutelist()
 						strcpy(waypointstr, "--START4-");
 					else if (shared.shareddata.routes[iroute].waypoint[jpoint] == MBV_ROUTE_WAYPOINT_ENDLINE4)
 						strcpy(waypointstr, "---END4--");
+					else if (shared.shareddata.routes[iroute].waypoint[jpoint] == MBV_ROUTE_WAYPOINT_STARTLINE5)
+						strcpy(waypointstr, "--START5-");
+					else if (shared.shareddata.routes[iroute].waypoint[jpoint] == MBV_ROUTE_WAYPOINT_ENDLINE5)
+						strcpy(waypointstr, "---END5--");
 					else
 						strcpy(waypointstr, "-------");
-					sprintf(value_string,"%3d | %3d | %s | %s | %.2f | %.2f | %.2f | %s",
-						iroute, jpoint, lonstr0, latstr0,
-						shared.shareddata.routes[iroute].points[jpoint].zdata,
-						shared.shareddata.routes[iroute].distlateral[jpoint],
-						shared.shareddata.routes[iroute].disttopo[jpoint],
-						waypointstr);
-      					xstr[nitems] = XmStringCreateLocalized(value_string);
+					if (shared.lonlatstyle == MBV_LONLAT_DEGREESDECIMAL)
+						sprintf(value_string,"%3d | %3d | %s | %s | %.2f | %.2f | %.2f | %s",
+							iroute, jpoint, londstr0, latdstr0,
+							shared.shareddata.routes[iroute].points[jpoint].zdata,
+							shared.shareddata.routes[iroute].distlateral[jpoint],
+							shared.shareddata.routes[iroute].disttopo[jpoint],
+							waypointstr);
+					else
+						sprintf(value_string,"%3d | %3d | %s | %s | %.2f | %.2f | %.2f | %s",
+							iroute, jpoint, lonmstr0, latmstr0,
+							shared.shareddata.routes[iroute].points[jpoint].zdata,
+							shared.shareddata.routes[iroute].distlateral[jpoint],
+							shared.shareddata.routes[iroute].disttopo[jpoint],
+							waypointstr);
+      				xstr[nitems] = XmStringCreateLocalized(value_string);
 					nitems++;
 					}
 				}

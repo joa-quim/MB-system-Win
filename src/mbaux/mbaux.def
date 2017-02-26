@@ -32,3 +32,4 @@ EXPORTS
     mb_topogrid_topo
     mb_topogrid_intersect
     mb_topogrid_getangletable
+	mblsqr_lsqr
