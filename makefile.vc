@@ -18,7 +18,7 @@
 # Load file with the Bitage setting
 !INCLUDE Bitage.txt
 
-target-lib: bsio_dir gsf_dir surf_dir mr1pr_dir mbio_dir mbaux_dir mbview_dir gmt_dir otps_dir utilities_dir \
+target-lib: surf_dir bsio_dir gsf_dir mbio_dir mbaux_dir mbview_dir gmt_dir otps_dir utilities_dir \
 	mbedit_dir mbnavadjust_dir mbnavedit_dir mbvelocitool_dir
 
 clean:
