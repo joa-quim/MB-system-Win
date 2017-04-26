@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbprocess.c	3/31/93
- *    $Id: mbprocess.c 2291 2017-01-12 09:20:59Z caress $
+ *    $Id: mbprocess.c 2293 2017-03-06 20:21:22Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -107,7 +107,7 @@ int get_anglecorr(int verbose,
 	int nangle, double *angles, double *corrs,
 	double angle, double *corr, int *error);
 
-static char rcs_id[] = "$Id: mbprocess.c 2291 2017-01-12 09:20:59Z caress $";
+static char rcs_id[] = "$Id: mbprocess.c 2293 2017-03-06 20:21:22Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -5443,14 +5443,14 @@ time_d); */
 								alpha += pitch - pitch_org;
 								}
 							if (process.mbp_pitchbias_mode == MBP_PITCHBIAS_ON)
-									alpha += process.mbp_pitchbias;
-								if (process.mbp_rollbias_mode == MBP_ROLLBIAS_SINGLE)
-									beta += process.mbp_rollbias;
-								else if (process.mbp_rollbias_mode == MBP_ROLLBIAS_DOUBLE
+								alpha += process.mbp_pitchbias;
+							if (process.mbp_rollbias_mode == MBP_ROLLBIAS_SINGLE)
+								beta += process.mbp_rollbias;
+							else if (process.mbp_rollbias_mode == MBP_ROLLBIAS_DOUBLE
 								&& angles[i] >= 0.0)
-									beta += process.mbp_rollbias_stbd;
-								else if (process.mbp_rollbias_mode == MBP_ROLLBIAS_DOUBLE)
-									beta += process.mbp_rollbias_port;
+								beta += process.mbp_rollbias_stbd;
+							else if (process.mbp_rollbias_mode == MBP_ROLLBIAS_DOUBLE)
+								beta += process.mbp_rollbias_port;
 							mb_rollpitch_to_takeoff(
 								verbose,
 								alpha, beta,

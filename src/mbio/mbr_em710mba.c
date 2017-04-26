@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_em710mba.c	2/26/2008
- *	$Id: mbr_em710mba.c 2271 2016-04-01 19:54:30Z caress $
+ *	$Id: mbr_em710mba.c 2296 2017-04-01 01:48:27Z caress $
  *
  *    Copyright (c) 2008-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -75,9 +75,9 @@ extern int isnanf(float x);
 /* #define MBR_EM710MBA_BATH_RECALC_TWEAK_ANGLE_RANGE 1 */
 
 /* turn on debug statements here */
-/* #define MBR_EM710MBA_DEBUG 1 */
-/* #define MBR_EM710MBA_DEBUG2 1 */
-/* #define MBR_EM710MBA_DEBUG3 1 */
+// #define MBR_EM710MBA_DEBUG 1
+// #define MBR_EM710MBA_DEBUG2 1
+// #define MBR_EM710MBA_DEBUG3 1
 
 /* essential function prototypes */
 int mbr_register_em710mba(int verbose, void *mbio_ptr,
@@ -225,7 +225,7 @@ int mbr_em710mba_wr_ss2_mba(int verbose, void *mbio_ptr, int swap,
 int mbr_em710mba_wr_wc(int verbose, void *mbio_ptr, int swap,
 		struct mbsys_simrad3_struct *store, int *error);
 
-static char rcs_id[]="$Id: mbr_em710mba.c 2271 2016-04-01 19:54:30Z caress $";
+static char rcs_id[]="$Id: mbr_em710mba.c 2296 2017-04-01 01:48:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_em710mba(int verbose, void *mbio_ptr, int *error)
@@ -1696,6 +1696,7 @@ int mbr_em710mba_chk_label(int verbose, void *mbio_ptr, char *label, short *type
 
 		/* check for valid sonarunswap */
 		if (sonarunswap == MBSYS_SIMRAD3_EM710
+			|| sonarunswap == MBSYS_SIMRAD3_EM712
 			|| sonarunswap == MBSYS_SIMRAD3_EM850
 			|| sonarunswap == MBSYS_SIMRAD3_EM3002
 			|| sonarunswap == MBSYS_SIMRAD3_EM302
@@ -1713,6 +1714,7 @@ int mbr_em710mba_chk_label(int verbose, void *mbio_ptr, char *label, short *type
 
 		/* check for valid sonarswap */
 		if (sonarswap == MBSYS_SIMRAD3_EM710
+			|| sonarswap == MBSYS_SIMRAD3_EM712
 			|| sonarswap == MBSYS_SIMRAD3_EM850
 			|| sonarswap == MBSYS_SIMRAD3_EM3002
 			|| sonarswap == MBSYS_SIMRAD3_EM302
@@ -1761,6 +1763,7 @@ fprintf(stderr,"typegood:%d mb_io_ptr->byteswapped:%d sonarswapgood:%d *databyte
 
 	/* check for valid sonar */
 	if (*sonar != MBSYS_SIMRAD3_EM710
+		&& *sonar != MBSYS_SIMRAD3_EM712
 		&& *sonar != MBSYS_SIMRAD3_EM850
 		&& *sonar != MBSYS_SIMRAD3_EM3002
 		&& *sonar != MBSYS_SIMRAD3_EM302

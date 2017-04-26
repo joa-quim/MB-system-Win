@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_prog.c	3/23/00
- *    $Id: mbnavadjust_prog.c 2292 2017-01-30 18:11:01Z caress $
+ *    $Id: mbnavadjust_prog.c 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -81,7 +81,7 @@ struct swathraw
 	};
 
 /* id variables */
-static char rcs_id[] = "$Id: mbnavadjust_prog.c 2292 2017-01-30 18:11:01Z caress $";
+static char rcs_id[] = "$Id: mbnavadjust_prog.c 2295 2017-03-27 07:28:28Z caress $";
 static char program_name[] = "mbnavadjust";
 static char help_message[] =  "mbnavadjust is an interactive navigation adjustment package for swath sonar data.\n";
 static char usage_message[] = "mbnavadjust [-Iproject -V -H]";
@@ -10375,7 +10375,7 @@ mbnavadjust_updategrid()
 			do_info_add(message, MB_NO);
 			if (mbna_verbose == 0)
 				fprintf(stderr,"%s",message);
-			sprintf(command, "cd %s ; mbgrid_adj.cmd", project.datadir);
+			sprintf(command, "cd %s ; ./mbgrid_adj.cmd", project.datadir);
 			fprintf(stderr,"Executing:\n%s\n\n",command);
 			shellstatus = system(command);
 			project.grid_status = MBNA_GRID_CURRENT;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_format.c	2/18/94
- *    $Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $
+ *    $Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -62,7 +62,7 @@ int mb_datalist_readorg(int verbose,
 		int *error);
 int cvt_to_nix_path(char *path);
 
-static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_format_register(int verbose,
@@ -1603,7 +1603,7 @@ int mb_format(int verbose, int *format, int *error)
 /*--------------------------------------------------------------------*/
 int mb_format_system(int verbose, int *format, int *system, int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 	char	*function_name = "mb_format_system";
 	int	status;
 
@@ -1674,7 +1674,7 @@ int mb_format_dimensions(int verbose, int *format,
 		int *beams_bath_max, int *beams_amp_max, int *pixels_ss_max,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 	char	*function_name = "mb_format_dimensions";
 	int	status;
 
@@ -1744,7 +1744,7 @@ int mb_format_dimensions(int verbose, int *format,
 /*--------------------------------------------------------------------*/
 int mb_format_description(int verbose, int *format, char *description, int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 	char	*function_name = "mb_format_description";
 	int	status;
 
@@ -1811,7 +1811,7 @@ int mb_format_flags(int verbose, int *format,
 		int *variable_beams, int *traveltime, int *beam_flagging,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 	char	*function_name = "mb_format_flags";
 	int	status;
 
@@ -1885,7 +1885,7 @@ int mb_format_source(int verbose, int *format,
 		int *vru_source, int *svp_source,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 	char	*function_name = "mb_format_source";
 	int	status;
 
@@ -1958,7 +1958,7 @@ int mb_format_beamwidth(int verbose, int *format,
 		double *beamwidth_xtrack, double *beamwidth_ltrack,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2291 2017-01-12 09:20:59Z caress $";
+  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
 	char	*function_name = "mb_format_beamwidth";
 	int	status;
 
@@ -2361,7 +2361,9 @@ int mb_get_format(int verbose, char *filename, char *fileroot,
 			    shortptr = (short *) &buffer[6];
 			    sonar2 = *shortptr;
 			    sonar2swap = (short) mb_swap_short(sonar2);
-			    if (sonar2 == MBSYS_SIMRAD3_EM710 || sonar2swap == MBSYS_SIMRAD3_EM710
+			    if (sonar2 == MBSYS_SIMRAD3_M3 || sonar2swap == MBSYS_SIMRAD3_M3
+					|| sonar2 == MBSYS_SIMRAD3_EM710 || sonar2swap == MBSYS_SIMRAD3_EM710
+					|| sonar2 == MBSYS_SIMRAD3_EM712 || sonar2swap == MBSYS_SIMRAD3_EM712
 					|| sonar2 == MBSYS_SIMRAD3_EM850|| sonar2swap == MBSYS_SIMRAD3_EM850
 			    	|| sonar2 == MBSYS_SIMRAD3_EM302 || sonar2swap == MBSYS_SIMRAD3_EM302
 			    	|| sonar2 == MBSYS_SIMRAD3_EM122 || sonar2swap == MBSYS_SIMRAD3_EM122
@@ -2461,13 +2463,14 @@ int mb_get_format(int verbose, char *filename, char *fileroot,
 			    shortptr = (short *) &buffer[6];
 			    sonar2 = *shortptr;
 			    sonar2swap = (short) mb_swap_short(sonar2);
-			    if (sonar2 == MBSYS_SIMRAD3_EM710 || sonar2swap == MBSYS_SIMRAD3_EM710
-			    	|| sonar2 == MBSYS_SIMRAD3_EM850 || sonar2swap == MBSYS_SIMRAD3_EM850
+			    if (sonar2 == MBSYS_SIMRAD3_M3 || sonar2swap == MBSYS_SIMRAD3_M3
+					|| sonar2 == MBSYS_SIMRAD3_EM710 || sonar2swap == MBSYS_SIMRAD3_EM710
+					|| sonar2 == MBSYS_SIMRAD3_EM712 || sonar2swap == MBSYS_SIMRAD3_EM712
+					|| sonar2 == MBSYS_SIMRAD3_EM850|| sonar2swap == MBSYS_SIMRAD3_EM850
 			    	|| sonar2 == MBSYS_SIMRAD3_EM302 || sonar2swap == MBSYS_SIMRAD3_EM302
 			    	|| sonar2 == MBSYS_SIMRAD3_EM122 || sonar2swap == MBSYS_SIMRAD3_EM122
 			    	|| sonar2 == MBSYS_SIMRAD3_EM2040 || sonar2swap == MBSYS_SIMRAD3_EM2040
-			    	|| sonar2 == MBSYS_SIMRAD3_EM2045 || sonar2swap == MBSYS_SIMRAD3_EM2045
-			    	|| sonar2 == MBSYS_SIMRAD3_M3 || sonar2swap == MBSYS_SIMRAD3_M3)
+			    	|| sonar2 == MBSYS_SIMRAD3_EM2045 || sonar2swap == MBSYS_SIMRAD3_EM2045)
 				*format = MBF_EM710RAW;
 			    else if (type2 == EM_START
 				|| type2 == EM_STOP

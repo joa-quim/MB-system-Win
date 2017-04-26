@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mblist.c	2/1/93
- *    $Id: mblist.c 2292 2017-01-30 18:11:01Z caress $
+ *    $Id: mblist.c 2293 2017-03-06 20:21:22Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -173,7 +173,7 @@ int mb_get_raw_simrad3(int verbose, void *mbio_ptr,
 /* NaN value */
 double	NaN;
 
-static char rcs_id[] = "$Id: mblist.c 2292 2017-01-30 18:11:01Z caress $";
+static char rcs_id[] = "$Id: mblist.c 2293 2017-03-06 20:21:22Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -2418,8 +2418,8 @@ int main (int argc, char **argv)
 			&& kind == MB_DATA_DATA)
 			{
 			nread++;
-                        if (use_pingnumber == MB_NO)
-                            pingnumber = nread;
+            if (use_pingnumber == MB_NO)
+                pingnumber = nread;
 			distance_total += distance;
 			}
 			
@@ -4107,7 +4107,7 @@ int main (int argc, char **argv)
 							    &signflip_next_value, &error);
 					break;
 				case 'p': /* draft */
-					printsimplevalue(verbose, output[i], draft, 6, 3, ascii,
+					printsimplevalue(verbose, output[i], draft, 7, 4, ascii,
 							    &invert_next_value,
 							    &signflip_next_value, &error);
 					break;

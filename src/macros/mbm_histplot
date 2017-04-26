@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_histplot.perl	3/20/2006
-#    $Id: mbm_histplot 2286 2016-11-09 01:33:41Z caress $
+#    $Id: mbm_histplot 2295 2017-03-27 07:28:28Z caress $
 #
 #    Copyright (c) 2006-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -46,7 +46,7 @@
 #   March 20, 2006
 #
 # Version:
-#   $Id: mbm_histplot 2286 2016-11-09 01:33:41Z caress $
+#   $Id: mbm_histplot 2295 2017-03-27 07:28:28Z caress $
 #
 #
 #
@@ -137,17 +137,7 @@ use POSIX;
 	"m4",   "16m",   "m5",   "16m",   "m6",   "16m");
 
 # Determine the GMT version
-@grdinfo = `gmt grdinfo 2>&1`;
-while (@grdinfo)
-	{
-	$line = shift @grdinfo;
-	if ($line =~
-		/^grdinfo\(core\)\s+(\S+)\s+\S+/)
-		{
-		($gmt_version) = $line =~
-			/^grdinfo\(core\)\s+(\S+)\s+\S+/;
-		}
-	}
+$gmt_version = `gmt --version`;
 
 # Get the current working directory.
 $current_working_dir = `pwd`;
@@ -175,7 +165,7 @@ $execute = 		($opt_X || $opt_x);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_histplot 2286 2016-11-09 01:33:41Z caress $\n";
+	print "\nVersion: $Id: mbm_histplot 2295 2017-03-27 07:28:28Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which, \n";
 	print "when executed, will generate a Postscript histogram plot\n";
 	print "of a set of data values.\n";

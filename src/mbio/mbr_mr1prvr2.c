@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_mr1prvr2.c	3/6/2003
- *	$Id: mbr_mr1prvr2.c 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbr_mr1prvr2.c 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 2003-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -73,7 +73,7 @@ int mbr_wt_mr1prvr2(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_mr1prvr2_rd_data(int verbose, void *mbio_ptr, int *error);
 int mbr_mr1prvr2_wr_data(int verbose, void *mbio_ptr, char *store_ptr, int *error);
 
-static char rcs_id[]="$Id: mbr_mr1prvr2.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mbr_mr1prvr2.c 2295 2017-03-27 07:28:28Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_mr1prvr2(int verbose, void *mbio_ptr, int *error)
@@ -649,7 +649,7 @@ int mbr_mr1prvr2_rd_data(int verbose, void *mbio_ptr, int *error)
 			fprintf(stderr,"\ndbg5  Values read in MBIO function <%s>\n",function_name);
 			fprintf(stderr,"dbg5       png_flags:        %u\n",store->ping.png_flags);
 			fprintf(stderr,"dbg5       sec:              %ld\n",store->ping.png_tm.tv_sec);
-			fprintf(stderr,"dbg5       usec:             %ld\n",store->ping.png_tm.tv_usec);
+			fprintf(stderr,"dbg5       usec:             %d\n",store->ping.png_tm.tv_usec);
 			fprintf(stderr,"dbg5       period:           %f\n",store->ping.png_period);
 			fprintf(stderr,"dbg5       ship longitude:   %f\n",store->ping.png_slon);
 			fprintf(stderr,"dbg5       ship latitude:    %f\n",store->ping.png_slat);
@@ -851,7 +851,7 @@ int mbr_mr1prvr2_wr_data(int verbose, void *mbio_ptr, char *store_ptr, int *erro
 		fprintf(stderr,"\ndbg5  Values to be written in MBIO function <%s>\n",function_name);
 		fprintf(stderr,"dbg5       png_flags:        %u\n",store->ping.png_flags);
 		fprintf(stderr,"dbg5       sec:              %ld\n",store->ping.png_tm.tv_sec);
-		fprintf(stderr,"dbg5       usec:             %ld\n",store->ping.png_tm.tv_usec);
+		fprintf(stderr,"dbg5       usec:             %l\n",store->ping.png_tm.tv_usec);
 		fprintf(stderr,"dbg5       period:           %f\n",store->ping.png_period);
 		fprintf(stderr,"dbg5       ship longitude:   %f\n",store->ping.png_slon);
 		fprintf(stderr,"dbg5       ship latitude:    %f\n",store->ping.png_slat);

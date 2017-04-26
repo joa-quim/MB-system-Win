@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system: mbm_route2mission.perl   7/18/2004
-#    $Id: mbm_route2mission 2292 2017-01-30 18:11:01Z caress $
+#    $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $
 #
 #    Copyright (c) 2004-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -36,7 +36,7 @@
 #      Moss Landing, CA
 #
 # Version:
-# $Id: mbm_route2mission 2292 2017-01-30 18:11:01Z caress $
+# $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $
 #
 #
 $program_name = "mbm_route2mission";
@@ -194,7 +194,7 @@ $outputoff =		($opt_Z || $opt_z);
 # print out help message if required
 if ($help) {
     print "\r\n$program_name:\r\n";
-    print "\nVersion: $Id: mbm_route2mission 2292 2017-01-30 18:11:01Z caress $\r\n";
+    print "\nVersion: $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $\r\n";
     print "\r\nPerl shellscript to translate survey route file derived from \r\n";
     print "MBgrdviz into an MBARI AUV mission script. Developed for use\r\n";
     print "in survey planning for the MBARI Mapping AUV.\r\n";
@@ -876,7 +876,12 @@ for ($i = $nmissionpoints-1; $i > 0; $i--)
 	else
 		{
 		$distance = $mdistances[$i] - $mdistances[$i-1];
-		$slope = -($mmissiondepths[$i] - $mmissiondepths[$i-1])/$distance;
+        if ($distance < 1.0) {
+            $slope = 0.0;
+        }
+        else {
+            $slope = -($mmissiondepths[$i] - $mmissiondepths[$i-1])/$distance;
+        }
 		}
 	if ($slope > $maxslope)
 		{
@@ -1108,7 +1113,7 @@ if (!$outputoff)
 	printf MFILE "# user <$user> on cpu <$host> at <$date>\r\n";
 	printf MFILE "# \r\n";
 	printf MFILE "# Program mbm_route2mission version:\r\n";
-	printf MFILE "#     $Id: mbm_route2mission 2292 2017-01-30 18:11:01Z caress $\r\n";
+	printf MFILE "#     $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $\r\n";
 	printf MFILE "# \r\n";
 	printf MFILE "# Mission Summary:\r\n";
 	printf MFILE "#     Route File:               $routefile\r\n";

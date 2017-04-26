@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_xyplot.perl	8/6/95
-#    $Id: mbm_xyplot 2285 2016-11-03 06:54:46Z caress $
+#    $Id: mbm_xyplot 2295 2017-03-27 07:28:28Z caress $
 #
 #    Copyright (c) 1993-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -54,7 +54,7 @@
 #   August 9, 1995
 #
 # Version:
-#   $Id: mbm_xyplot 2285 2016-11-03 06:54:46Z caress $
+#   $Id: mbm_xyplot 2295 2017-03-27 07:28:28Z caress $
 #
 #
 $program_name = "mbm_xyplot";
@@ -141,17 +141,7 @@ $program_name = "mbm_xyplot";
 	"m4",   "16m",   "m5",   "16m",   "m6",   "16m");
 
 # Determine the GMT version
-@grdinfo = `gmt grdinfo 2>&1`;
-while (@grdinfo)
-	{
-	$line = shift @grdinfo;
-	if ($line =~
-		/^grdinfo\(core\)\s+(\S+)\s+\S+/)
-		{
-		($gmt_version) = $line =~
-			/^grdinfo\(core\)\s+(\S+)\s+\S+/;
-		}
-	}
+$gmt_version = `gmt --version`;
 
 # Get the current working directory.
 $current_working_dir = `pwd`;
@@ -183,7 +173,7 @@ $delete_temp_files = 	($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_xyplot 2285 2016-11-03 06:54:46Z caress $\n";
+	print "\nVersion: $Id: mbm_xyplot 2295 2017-03-27 07:28:28Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which,  \n";
 	print "when executed, will generate a Postscript plot of xy data. \n";
 	print "Axes may be linear, log,  or any of several geographic  \n";

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_time.c	10/30/2000
- *    $Id: mb_navint.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_navint.c 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -41,7 +41,7 @@
 //    #define MB_DEPINT_DEBUG 1
 //    #define MB_ALTINT_DEBUG 1
 
-static char rcs_id[]="$Id: mb_navint.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mb_navint.c 2295 2017-03-27 07:28:28Z caress $";
 
 /*--------------------------------------------------------------------*/
 /* 	function mb_navint_add adds a nav fix to the internal
@@ -3346,7 +3346,6 @@ int mb_apply_time_latency(int verbose, int data_num, double *data_time_d,
 		}
 	else if (time_latency_mode == MB_SENSOR_TIME_LATENCY_STATIC)
 		{
-fprintf(stderr,"Applying time latency: %f to %d data\n",time_latency_static,data_num);
 		for (i=0;i<data_num;i++)
 			{
 			data_time_d[i] -= time_latency_static;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_hsatlraw.c	2/11/93
- *	$Id: mbr_hsatlraw.c 2291 2017-01-12 09:20:59Z caress $
+ *	$Id: mbr_hsatlraw.c 2293 2017-03-06 20:21:22Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -111,7 +111,7 @@ int mbr_hsatlraw_wr_ergnctds(int verbose, FILE *mbfp, void *data_ptr, int *error
 int mbr_hsatlraw_wr_ergnampl(int verbose, FILE *mbfp, void *data_ptr, int *error);
 int mbr_hsatlraw_wr_ldeocmnt(int verbose, FILE *mbfp, void *data_ptr, int *error);
 
-static char rcs_id[]="$Id: mbr_hsatlraw.c 2291 2017-01-12 09:20:59Z caress $";
+static char rcs_id[]="$Id: mbr_hsatlraw.c 2293 2017-03-06 20:21:22Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_hsatlraw(int verbose, void *mbio_ptr, int *error)
@@ -2426,7 +2426,10 @@ int mbr_hsatlraw_rd_ldeocmnt(int verbose, FILE *mbfp,
 	if (status == MB_SUCCESS)
 		{
 		nchars = strlen(line+shift);
-		strncpy(data->comment,line+shift,nchars-1);
+		if (nchars > 0)
+			strncpy(data->comment,line+shift,nchars);
+		else
+			data->comment[0] = '\0';
 		}
 
 	/* print debug statements */

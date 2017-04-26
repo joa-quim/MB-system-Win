@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_plot.perl	6/18/93
-#    $Id: mbm_plot 2283 2016-10-23 09:33:10Z caress $
+#    $Id: mbm_plot 2295 2017-03-27 07:28:28Z caress $
 #
 #    Copyright (c) 1993-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -72,7 +72,7 @@
 #   June 17, 1993
 #
 # Version:
-#   $Id: mbm_plot 2283 2016-10-23 09:33:10Z caress $
+#   $Id: mbm_plot 2295 2017-03-27 07:28:28Z caress $
 #
 #
 $program_name = "mbm_plot";
@@ -214,17 +214,7 @@ $ncpt = 11;
 	@cptbb7 = (255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255);
 
 # Determine the GMT version
-@grdinfo = `gmt grdinfo 2>&1`;
-while (@grdinfo)
-	{
-	$line = shift @grdinfo;
-	if ($line =~
-		/^grdinfo\(core\)\s+(\S+)\s+\S+/)
-		{
-		($gmt_version) = $line =~
-			/^grdinfo\(core\)\s+(\S+)\s+\S+/;
-		}
-	}
+$gmt_version = `gmt --version`;
 
 # Deal with command line arguments
 $command_line = "@ARGV";
@@ -262,7 +252,7 @@ $zbounds = 		($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_plot 2283 2016-10-23 09:33:10Z caress $\n";
+	print "\nVersion: $Id: mbm_plot 2295 2017-03-27 07:28:28Z caress $\n";
 	print "\nMacro to generate a shellscript of MB-System and GMT commands \n";
 	print "which, when executed, will generate a Postscript plot of the \n";
 	print "specified swath sonar data. The plot may include bathymetry color \n";

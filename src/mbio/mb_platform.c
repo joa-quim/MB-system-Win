@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_platform.c	11/1/00
- *    $Id: mb_platform.c 2283 2016-10-23 09:33:10Z caress $
+ *    $Id: mb_platform.c 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 2015-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -38,7 +38,7 @@
 #include "mb_define.h"
 #include "mb_segy.h"
 
-static char svn_id[]="$Id: mb_platform.c 2283 2016-10-23 09:33:10Z caress $";
+static char svn_id[]="$Id: mb_platform.c 2295 2017-03-27 07:28:28Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_platform_init(int verbose, void **platform_ptr, int *error)
@@ -1360,7 +1360,6 @@ int mb_platform_write(int verbose, char *platform_file, void *platform_ptr, int 
 		if ((fp = fopen(platform_file, "w")) != NULL)
 			{
 			right_now = time((time_t *)0);
-fprintf(stderr,"ctime:%s\n",ctime(&right_now));
 			strcpy(date,ctime(&right_now));
 			date[strlen(date)-1] = '\0';
 			if ((user_ptr = getenv("USER")) == NULL)
@@ -1730,9 +1729,9 @@ int mb_platform_lever(int verbose, void *platform_ptr,
 		if (targetsensor < 0 || targetsensor >= platform->num_sensors
 				|| platform->source_position < 0 || platform->source_position >= platform->num_sensors
 				|| platform->source_depth < 0 || platform->source_depth >= platform->num_sensors)
-				{
-				status = MB_FAILURE;
-				*error = MB_ERROR_BAD_PARAMETER;
+			{
+			status = MB_FAILURE;
+			*error = MB_ERROR_BAD_PARAMETER;
 			}
 			
 		/* else proceed */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_swathplus.h	1/28/2014
- *	$Id: mbsys_swathplus.h 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbsys_swathplus.h 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -520,11 +520,8 @@ int mbsys_swathplus_sonartype(int verbose, void *mbio_ptr, void *store_ptr,
 int mbsys_swathplus_sidescantype(int verbose, void *mbio_ptr, void *store_ptr,
 	int *ss_type, int *error);
 
-/* int mbsys_swathplus_preprocess(int verbose, void *mbio_ptr, void *store_ptr, */
-/*                        double time_d, double navlon, double navlat, */
-/*                        double speed, double heading, double sonardepth, */
-/*                        double roll, double pitch, double heave, */
-/*                        int *error); */
+/* int mbsys_swathplus_preprocess(int verbose, void *mbio_ptr, void *store_ptr,
+        void *platform_ptr, void *preprocess_pars_ptr, int *error); */
 int mbsys_swathplus_extract(int verbose, void *mbio_ptr, void *store_ptr,
 	int *kind, int time_i[7], double *time_d,
 	double *navlon, double *navlat, double *speed,

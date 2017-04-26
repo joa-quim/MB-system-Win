@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_define.h	4/21/96
- *    $Id: mb_define.h 2282 2016-08-26 01:10:17Z caress $
+ *    $Id: mb_define.h 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 1996-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -73,7 +73,7 @@
 /* MB-system version id */
 #define	MB_VERSION	VERSION
 #define	MB_BUILD_DATE	VERSION_DATE
-#define	MB_SVN		"$Id: mb_define.h 2282 2016-08-26 01:10:17Z caress $"
+#define	MB_SVN		"$Id: mb_define.h 2295 2017-03-27 07:28:28Z caress $"
 
 /* type definitions of signed and unsigned char */
 typedef unsigned char	mb_u_char;
@@ -395,15 +395,7 @@ int mb_sonartype(int verbose, void *mbio_ptr, void *store_ptr,
 int mb_sidescantype(int verbose, void *mbio_ptr, void *store_ptr,
 		int *ss_type, int *error);
 int mb_preprocess(int verbose, void *mbio_ptr, void *store_ptr,
-        void *platform_ptr, int platform_target_sensor,
-		int n_nav, double *nav_time_d, double *nav_lon, double *nav_lat,
-				double *nav_speed,
-		int n_sensordepth, double *sensordepth_time_d,
-				double *sensordepth_sensordepth,
-		int n_heading, double *heading_time_d, double *heading_heading,
-		int n_altitude, double *altitude_time_d, double *altitude_altitude,
-		int n_attitude, double *attitude_time_d, double *attitude_roll,
-				double *attitude_pitch, double *attitude_heave,
+        void *platform_ptr, void *preprocess_pars_ptr,
 		int *error);
 int mb_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 		int *kind, void **platform_ptr, int *error);

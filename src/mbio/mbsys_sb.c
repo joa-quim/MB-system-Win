@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_sb.c	2/26/93
- *	$Id: mbsys_sb.c 2291 2017-01-12 09:20:59Z caress $
+ *	$Id: mbsys_sb.c 2295 2017-03-27 07:28:28Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -33,6 +33,7 @@
 
 /* standard include files */
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
@@ -43,7 +44,7 @@
 #include "mb_define.h"
 #include "mbsys_sb.h"
 
-static char rcs_id[]="$Id: mbsys_sb.c 2291 2017-01-12 09:20:59Z caress $";
+static char rcs_id[]="$Id: mbsys_sb.c 2295 2017-03-27 07:28:28Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_sb_alloc(int verbose, void *mbio_ptr, void **store_ptr,

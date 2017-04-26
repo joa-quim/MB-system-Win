@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_grd2arc.perl	6/11/99
-#    $Id: mbm_grd2arc 2283 2016-10-23 09:33:10Z caress $
+#    $Id: mbm_grd2arc 2296 2017-04-01 01:48:27Z caress $
 #
 #    Copyright (c) 1999-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -36,7 +36,7 @@
 #   October 5, 1999
 #
 # Version:
-#   $Id: mbm_grd2arc 2283 2016-10-23 09:33:10Z caress $
+#   $Id: mbm_grd2arc 2296 2017-04-01 01:48:27Z caress $
 #
 #
 #
@@ -57,7 +57,7 @@ $verbose =  ($opt_V || $opt_v);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_grd2arc 2283 2016-10-23 09:33:10Z caress $\n";
+	print "\nVersion: $Id: mbm_grd2arc 2296 2017-04-01 01:48:27Z caress $\n";
 	print "\nMacro to convert a GMT grid file in the GMT NetCDF grid format \n";
 	print "to an ArcView ASCII grid. This allows users to import the grid\n";
 	print "into Arc/Info and ArcView. The grids must have the same grid \n";
@@ -115,6 +115,12 @@ while (@grdinfo)
 			/\S+\s+x_min:\s+(\S+)\s+x_max:\s+(\S+)\s+x_inc:\s+(\S+)\s+name:\s+(.+)\s+nx:\s+(\S+)/;
 		}
 	elsif ($line =~
+            /\S+\s+x_min:\s+\S+\s+x_max:\s+\S+\s+x_inc:\s+\S+\s+name:\s+.+\s+n_columns:\s+\S+/)
+        {
+        ($xmin_f,$xmax_f,$xinc_f,$xunits,$xnx_d) = $line =~
+            /\S+\s+x_min:\s+(\S+)\s+x_max:\s+(\S+)\s+x_inc:\s+(\S+)\s+name:\s+(.+)\s+n_columns:\s+(\S+)/;
+        }
+    elsif ($line =~
 		/\S+\s+x_min:\s+(\S+)\s+x_max:\s+(\S+)\s+x_inc:/)
 		{
 		($xmin_f,$xmax_f) = $line =~
@@ -130,6 +136,11 @@ while (@grdinfo)
 		($ymin_f,$ymax_f,$yinc_f,$yunits,$yny_d) = $line =~
 			/\S+\s+y_min:\s+(\S+)\s+y_max:\s+(\S+)\s+y_inc:\s+(\S+)\s+name:\s+(.+)\s+ny:\s+(\S+)/;
 		}
+    elsif ($line =~ /\S+\s+y_min:\s+\S+\s+y_max:\s+\S+\s+y_inc:\s+\S+\s+name:\s+.+\s+n_rows:\s+\S+/)
+        {
+        ($ymin_f,$ymax_f,$yinc_f,$yunits,$yny_d) = $line =~
+            /\S+\s+y_min:\s+(\S+)\s+y_max:\s+(\S+)\s+y_inc:\s+(\S+)\s+name:\s+(.+)\s+n_rows:\s+(\S+)/;
+        }
 	elsif ($line =~ /\S+\s+y_min:\s+\S+\s+y_max:\s+\S+\s+y_inc:/)
 		{
 		($ymin_f,$ymax_f) = $line =~
