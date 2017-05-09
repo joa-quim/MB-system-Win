@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------
-# Version: $Id: configure.cmd 2283 2016-10-23 09:33:10Z caress $
+# Version: $Id: configure.cmd 2298 2017-04-10 07:57:48Z caress $
 #------------------------------------------------------------------------------
 # Notes on using the MB-System autotools based build system 
 #------------------------------------------------------------------------------
@@ -351,12 +351,7 @@ autoheader
 automake --add-missing --include-deps
 autoconf
 autoupdate
-
 autoreconf --force --install --warnings=all
-
-# We used to have to force configure.ac to reduce the autoconf version
-# requirement from 2.69 to 2.65 but we don't anymore
-#sed -i.bak s/2\.69/2\.65/ configure.ac
 
 CFLAGS="-g -Wall -Wmissing-prototypes -I/opt/X11/include " LDFLAGS="-L/opt/X11/lib" \
 ./configure \

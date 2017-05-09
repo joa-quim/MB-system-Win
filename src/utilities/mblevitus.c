@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mblevitus.c	4/15/93
- *    $Id: mblevitus.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mblevitus.c 2304 2017-05-06 09:42:34Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -53,7 +53,7 @@
 #define	NDEPTH_MAX		46
 #define	NLEVITUS_MAX		33
 
-static char rcs_id[] = "$Id: mblevitus.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mblevitus.c 2304 2017-05-06 09:42:34Z caress $";
 
 /* Windows header file */
 #ifdef WIN32
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 #	include "levitus.h"
 #else
 	/* But on Windows get it from the bin dir */
-	char *pch, ifile[PATH_MAX+1];
+	char *pch, levitusfile[PATH_MAX+1];
 #endif
 
 	/* control parameters */
@@ -182,10 +182,10 @@ int main (int argc, char **argv)
 
 #ifdef WIN32
 	/* Find the path to the bin directory and from it, the location of the Levitus file */
-	GMT_runtime_bindir_win32 (ifile);
-	pch = strrchr(ifile, '\\');
+	GMT_runtime_bindir_win32 (levitusfile);
+	pch = strrchr(levitusfile, '\\');
 	pch[0] = '\0';
-	strcat(ifile, "\\share\\mbsystem\\LevitusAnnual82.dat");
+	strcat(levitusfile, "\\share\\mbsystem\\LevitusAnnual82.dat");
 #endif
 
 	/* print starting message */
@@ -203,12 +203,12 @@ int main (int argc, char **argv)
 		fprintf(outfp,"dbg2  Version %s\n",rcs_id);
 		fprintf(outfp,"dbg2  MB-system Version %s\n",MB_VERSION);
 		fprintf(outfp,"dbg2  Control Parameters:\n");
-		fprintf(outfp,"dbg2       verbose:    %d\n",verbose);
-		fprintf(outfp,"dbg2       help:       %d\n",help);
-		fprintf(outfp,"dbg2       ifile:      %s\n",ifile);
-		fprintf(outfp,"dbg2       ofile:      %s\n",ofile);
-		fprintf(outfp,"dbg2       longitude:  %f\n",longitude);
-		fprintf(outfp,"dbg2       latitude:   %f\n",latitude);
+		fprintf(outfp,"dbg2       verbose:          %d\n",verbose);
+		fprintf(outfp,"dbg2       help:             %d\n",help);
+		fprintf(outfp,"dbg2       levitusfile:      %s\n",levitusfile);
+		fprintf(outfp,"dbg2       ofile:            %s\n",ofile);
+		fprintf(outfp,"dbg2       longitude:        %f\n",longitude);
+		fprintf(outfp,"dbg2       latitude:         %f\n",latitude);
 		}
 
 	/* if help desired then print it and exit */
@@ -220,10 +220,10 @@ int main (int argc, char **argv)
 		}
 
 	/* open the data file */
-	if ((ifp = fopen(ifile, "rb")) == NULL)
+	if ((ifp = fopen(levitusfile, "rb")) == NULL)
 		{
 		error = MB_ERROR_OPEN_FAIL;
-		fprintf(stderr,"\nUnable to Open Levitus database file <%s> for reading\n",ifile);
+		fprintf(stderr,"\nUnable to Open Levitus database file <%s> for reading\n",levitusfile);
 		fprintf(stderr,"\nProgram <%s> Terminated\n",
 			program_name);
 		exit(error);

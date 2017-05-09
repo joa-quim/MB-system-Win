@@ -153,6 +153,7 @@ int main (int argc, char **argv) {
 	char	read_file[MB_PATH_MAXLINE];
 	char	swathfile[MB_PATH_MAXLINE];
 	char	swathfileread[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	void	*datalist;
 	int	look_processed = MB_DATALIST_LOOK_UNSET;
 	int	oktoprocess;
@@ -554,7 +555,7 @@ int main (int argc, char **argv) {
 			fprintf(stderr,"\nProgram <%s> Terminated\n", program_name);
 			exit(error);
 		}
-		if ((status = mb_datalist_read(verbose,datalist, swathfile,&format,&file_weight,&error)) == MB_SUCCESS)
+		if ((status = mb_datalist_read(verbose,datalist, swathfile,dfile,&format,&file_weight,&error)) == MB_SUCCESS)
 			read_data = MB_YES;
 		else
 			read_data = MB_NO;
@@ -1355,7 +1356,7 @@ int main (int argc, char **argv) {
 
 		/* figure out whether and what to read next */
 		if (read_datalist == MB_YES) {
-			if ((status = mb_datalist_read(verbose,datalist, swathfile,&format,&file_weight,&error)) == MB_SUCCESS)
+			if ((status = mb_datalist_read(verbose,datalist, swathfile,dfile,&format,&file_weight,&error)) == MB_SUCCESS)
 				read_data = MB_YES;
 			else
 				read_data = MB_NO;

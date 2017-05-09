@@ -94,14 +94,15 @@
 #undef PACKAGE_URL
 
 /* Define to the version of this package. */
-#undef PACKAGE_VERSION
+//#undef PACKAGE_VERSION
+#define PACKAGE_VERSION "5.4.2304"
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Version number of package */
 //#undef VERSION
-#define VERSION "5.4.2233"
+#define VERSION "5.4.2304"
 
 /* Set VERSION_DATE define in mb_config.h */
 //#undef VERSION_DATE

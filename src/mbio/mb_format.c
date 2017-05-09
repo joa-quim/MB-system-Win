@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_format.c	2/18/94
- *    $Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $
+ *    $Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -56,13 +56,9 @@ static int format_alias_table[] =
 	};
 
 /* local prototypes not found in mb_define.h */
-int mb_datalist_readorg(int verbose,
-		void *datalist,
-		char *path, int *format, double *weight,
-		int *error);
 int cvt_to_nix_path(char *path);
 
-static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_format_register(int verbose,
@@ -1689,7 +1685,7 @@ int mb_format(int verbose, int *format, int *error)
 /*--------------------------------------------------------------------*/
 int mb_format_system(int verbose, int *format, int *system, int *error)
 {
-  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 	char	*function_name = "mb_format_system";
 	int	status;
 
@@ -1762,7 +1758,7 @@ int mb_format_dimensions(int verbose, int *format,
 		int *beams_bath_max, int *beams_amp_max, int *pixels_ss_max,
 		int *error)
 {
-  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 	char	*function_name = "mb_format_dimensions";
 	int	status;
 
@@ -1834,7 +1830,7 @@ int mb_format_dimensions(int verbose, int *format,
 /*--------------------------------------------------------------------*/
 int mb_format_description(int verbose, int *format, char *description, int *error)
 {
-  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 	char	*function_name = "mb_format_description";
 	int	status;
 
@@ -1903,7 +1899,7 @@ int mb_format_flags(int verbose, int *format,
 		int *variable_beams, int *traveltime, int *beam_flagging,
 		int *error)
 {
-  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 	char	*function_name = "mb_format_flags";
 	int	status;
 
@@ -1979,7 +1975,7 @@ int mb_format_source(int verbose, int *format,
 		int *heading_source, int *attitude_source, int *svp_source,
 		int *error)
 {
-  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 	char	*function_name = "mb_format_source";
 	int	status;
 
@@ -2057,7 +2053,7 @@ int mb_format_beamwidth(int verbose, int *format,
 		double *beamwidth_xtrack, double *beamwidth_ltrack,
 		int *error)
 {
-  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2304 2017-05-06 09:42:34Z caress $";
 	char	*function_name = "mb_format_beamwidth";
 	int	status;
 
@@ -3869,6 +3865,74 @@ int mb_datalist_close(int verbose,
 		fprintf(stderr,"dbg2       error:         %d\n",*error);
 		fprintf(stderr,"dbg2  Return status:\n");
 		fprintf(stderr,"dbg2       status:        %d\n",status);
+		}
+
+	return(status);
+}
+/*--------------------------------------------------------------------*/
+int mb_datalist_readorg(int verbose,
+		void *datalist_ptr,
+		char *path, int *format, double *weight,
+		int *error)
+{
+	/* local variables */
+	char	*function_name = "mb_datalist_readorg";
+	int	status = MB_SUCCESS;
+	struct mb_datalist_struct *datalist;
+	char	ppath[MB_PATH_MAXLINE];
+	char	dpath[MB_PATH_MAXLINE];
+	int	pstatus;
+
+	/* print input debug statements */
+	if (verbose >= 2)
+		{
+		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
+		fprintf(stderr,"dbg2  Input arguments:\n");
+		fprintf(stderr,"dbg2       svn_id:                     %s\n",svn_id);
+		fprintf(stderr,"dbg2       verbose:                    %d\n",verbose);
+		fprintf(stderr,"dbg2       datalist_ptr:               %p\n",(void *)datalist_ptr);
+		}
+
+	/* get datalist pointer */
+	datalist = (struct mb_datalist_struct *) datalist_ptr;
+
+	/* print input debug statements */
+	if (verbose >= 2)
+		{
+		fprintf(stderr,"dbg2       datalist->open:             %d\n",datalist->open);
+		fprintf(stderr,"dbg2       datalist->fp:               %p\n",(void *)datalist->fp);
+		fprintf(stderr,"dbg2       datalist->recursion:        %d\n",datalist->recursion);
+		fprintf(stderr,"dbg2       datalist->path:             %s\n",datalist->path);
+		fprintf(stderr,"dbg2       datalist->printed:          %d\n",datalist->printed);
+		fprintf(stderr,"dbg2       datalist->datalist:         %p\n",(void *)datalist->datalist);
+		fprintf(stderr,"dbg2       datalist->look_processed:   %d\n",datalist->look_processed);
+		}
+
+	/* call mb_datalist_read2() */
+	status = mb_datalist_read2(verbose, datalist_ptr, &pstatus, path, ppath, dpath, format, weight, error);
+
+	/* deal with pstatus */
+	if (status == MB_SUCCESS && *error == MB_ERROR_NO_ERROR)
+		{
+		if (pstatus == MB_PROCESSED_USE)
+			{
+			strcpy(path, ppath);
+			}
+		}
+
+	/* print output debug statements */
+	if (verbose >= 2)
+		{
+		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
+		fprintf(stderr,"dbg2  Return values:\n");
+		fprintf(stderr,"dbg2       path:                       %s\n",path);
+		fprintf(stderr,"dbg2       format:                     %d\n",*format);
+		fprintf(stderr,"dbg2       weight:                     %f\n",*weight);
+		fprintf(stderr,"dbg2       error:                      %d\n",*error);
+		fprintf(stderr,"dbg2  Return status:\n");
+		fprintf(stderr,"dbg2       status:                     %d\n",status);
 		}
 
 	return(status);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_access.c	11/1/00
- *    $Id: mb_access.c 2295 2017-03-27 07:28:28Z caress $
+ *    $Id: mb_access.c 2304 2017-05-06 09:42:34Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -35,8 +35,7 @@
 #include "mb_define.h"
 #include "mb_segy.h"
 
-static char svn_id[]="$Id: mb_access.c 2295 2017-03-27 07:28:28Z caress $";
-
+static char svn_id[]="$Id: mb_access.c 2304 2017-05-06 09:42:34Z caress $";
 /*--------------------------------------------------------------------*/
 int mb_alloc(int verbose, void *mbio_ptr,
 		    void **store_ptr, int *error)
