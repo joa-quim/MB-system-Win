@@ -123,7 +123,7 @@ struct MBGRID_CTRL {
 	} D;
 	struct mbgrid_E {	/* -E */
 		bool   active;
-		char   units[2];
+		char   units[16];
 		double dx_set, dy_set;
 	} E;
 	struct mbgrid_F {	/* -F */
@@ -651,7 +651,7 @@ int GMT_mbgrid_j (void *V_API, int mode, void *args) {
 	double	dy_set = 0.0;
 	double	dx = 0.0;
 	double	dy = 0.0;
-	char	units[MB_PATH_MAXLINE];
+	char	units[64] = {""};
 	int	clip = 0;
 	int	clipmode = MBGRID_INTERP_NONE;
 #ifdef USESURFACE
@@ -679,6 +679,7 @@ int GMT_mbgrid_j (void *V_API, int mode, void *args) {
 	int	pstatus;
 	char	path[MB_PATH_MAXLINE];
 	char	ppath[MB_PATH_MAXLINE];
+	char	dpath[MB_PATH_MAXLINE];
 	char	rfile[MB_PATH_MAXLINE];
 	char	ofile[MB_PATH_MAXLINE];
 	char	dfile[MB_PATH_MAXLINE];
@@ -1901,7 +1902,7 @@ int GMT_mbgrid_j (void *V_API, int mode, void *args) {
 		Return(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error)) == MB_SUCCESS)
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error)) == MB_SUCCESS)
 		{
 		ndatafile = 0;
 
@@ -2294,7 +2295,7 @@ status = write_cdfgrd(verbose,ofile,output,sxdim,sydim,
 		Return(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -2796,7 +2797,7 @@ status = write_cdfgrd(verbose,ofile,output,sxdim,sydim,
 		Return(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -3281,7 +3282,7 @@ ib, ix, iy, bathlon[ib], bathlat[ib], bath[ib], navlon, navlat);*/
 		Return(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -3974,7 +3975,7 @@ ib, ix, iy, bathlon[ib], bathlat[ib], bath[ib], dx, dy, wbnd[0], wbnd[1]); */
 		Return(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;

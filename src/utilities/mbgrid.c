@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgrid.c	5/2/94
- *    $Id: mbgrid.c 2290 2017-01-02 21:02:49Z caress $
+ *    $Id: mbgrid.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -135,7 +135,7 @@ int mbgrid_weight(int verbose, double foot_a, double foot_b,
 FILE	*outfp;
 
 /* program identifiers */
-static char rcs_id[] = "$Id: mbgrid.c 2290 2017-01-02 21:02:49Z caress $";
+static char rcs_id[] = "$Id: mbgrid.c 2298 2017-04-10 07:57:48Z caress $";
 char program_name[] = "mbgrid";
 char help_message[] =  "mbgrid is an utility used to grid bathymetry, amplitude, or \nsidescan data contained in a set of swath sonar data files.  \nThis program uses one of four algorithms (gaussian weighted mean, \nmedian filter, minimum filter, maximum filter) to grid regions \ncovered swaths and then fills in gaps between \nthe swaths (to the degree specified by the user) using a minimum\ncurvature algorithm.";
 char usage_message[] = "mbgrid -Ifilelist -Oroot \
@@ -222,6 +222,7 @@ int main (int argc, char **argv)
 	int	pstatus;
 	char	path[MB_PATH_MAXLINE];
 	char	ppath[MB_PATH_MAXLINE];
+	char	dpath[MB_PATH_MAXLINE];
 	char	rfile[MB_PATH_MAXLINE];
 	char	ofile[MB_PATH_MAXLINE];
 	char	dfile[MB_PATH_MAXLINE];
@@ -1683,7 +1684,7 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);*/
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -2117,7 +2118,7 @@ status = write_cdfgrd(verbose,ofile,output,sxdim,sydim,
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -2641,7 +2642,7 @@ ib, ix, iy, bathlon[ib], bathlat[ib], bath[ib], navlon, navlat);*/
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -3148,7 +3149,7 @@ ib, ix, iy, bathlon[ib], bathlat[ib], bath[ib], navlon, navlat);*/
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -3879,7 +3880,7 @@ ib, ix, iy, bathlon[ib], bathlat[ib], bath[ib], dx, dy, wbnd[0], wbnd[1]); */
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;

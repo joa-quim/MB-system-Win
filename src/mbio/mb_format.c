@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_format.c	2/18/94
- *    $Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $
+ *    $Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -62,7 +62,7 @@ int mb_datalist_readorg(int verbose,
 		int *error);
 int cvt_to_nix_path(char *path);
 
-static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_format_register(int verbose,
@@ -79,9 +79,9 @@ int mb_format_register(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:    %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:    %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:   %d\n",verbose);
 		fprintf(stderr,"dbg2       mbio_ptr:  %p\n",(void *)mbio_ptr);
 		fprintf(stderr,"dbg2       format:    %d\n",*format);
@@ -459,7 +459,7 @@ int mb_format_register(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:             %d\n",*format);
 		fprintf(stderr,"dbg2       system:             %d\n",mb_io_ptr->system);
@@ -476,8 +476,9 @@ int mb_format_register(int verbose,
 		fprintf(stderr,"dbg2       beam_flagging:      %d\n",mb_io_ptr->beam_flagging);
 		fprintf(stderr,"dbg2       platform_source:    %d\n",mb_io_ptr->platform_source);
 		fprintf(stderr,"dbg2       nav_source:         %d\n",mb_io_ptr->nav_source);
+		fprintf(stderr,"dbg2       sensordepth_source: %d\n",mb_io_ptr->sensordepth_source);
 		fprintf(stderr,"dbg2       heading_source:     %d\n",mb_io_ptr->heading_source);
-		fprintf(stderr,"dbg2       vru_source:         %d\n",mb_io_ptr->vru_source);
+		fprintf(stderr,"dbg2       attitude_source:    %d\n",mb_io_ptr->attitude_source);
 		fprintf(stderr,"dbg2       svp_source:         %d\n",mb_io_ptr->svp_source);
 		fprintf(stderr,"dbg2       beamwidth_xtrack:   %f\n",mb_io_ptr->beamwidth_xtrack);
 		fprintf(stderr,"dbg2       beamwidth_ltrack:   %f\n",mb_io_ptr->beamwidth_ltrack);
@@ -523,8 +524,9 @@ int mb_format_info(int verbose,
 			int *beam_flagging,
 			int *platform_source,
 			int *nav_source,
+			int *sensordepth_source,
 			int *heading_source,
-			int *vru_source,
+			int *attitude_source,
 			int *svp_source,
 			double *beamwidth_xtrack,
 			double *beamwidth_ltrack,
@@ -538,9 +540,9 @@ int mb_format_info(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:    %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:    %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:   %d\n",verbose);
 		fprintf(stderr,"dbg2       format:    %d\n",*format);
 		}
@@ -588,7 +590,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -599,7 +602,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -610,7 +614,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -621,7 +626,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -632,7 +638,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -643,7 +650,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -654,7 +662,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -665,7 +674,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -676,7 +686,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -687,7 +698,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -698,7 +710,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -709,7 +722,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -720,7 +734,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -731,7 +746,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -742,7 +758,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -753,7 +770,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -764,7 +782,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -775,7 +794,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -786,7 +806,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -797,7 +818,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -808,7 +830,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -819,7 +842,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -830,7 +854,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -841,7 +866,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -852,7 +878,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -863,7 +890,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -874,7 +902,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -885,7 +914,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -896,7 +926,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -907,7 +938,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -918,7 +950,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -929,7 +962,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -940,7 +974,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -951,7 +986,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -962,7 +998,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -973,7 +1010,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -984,7 +1022,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -995,7 +1034,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1006,7 +1046,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1017,7 +1058,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1028,7 +1070,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1039,7 +1082,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1050,7 +1094,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1061,7 +1106,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1072,7 +1118,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1083,7 +1130,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1094,7 +1142,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1105,7 +1154,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1116,7 +1166,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1127,7 +1178,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1138,7 +1190,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1149,7 +1202,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1160,7 +1214,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1171,7 +1226,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1182,7 +1238,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1193,7 +1250,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1204,7 +1262,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1215,7 +1274,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1226,7 +1286,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1237,7 +1298,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1248,7 +1310,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1259,7 +1322,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1270,7 +1334,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1281,7 +1346,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1292,7 +1358,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1303,7 +1370,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1314,7 +1382,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1325,7 +1394,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1336,7 +1406,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1347,7 +1418,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1358,7 +1430,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1369,7 +1442,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1380,7 +1454,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1391,7 +1466,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 		}
@@ -1402,7 +1478,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error); 
 		}
@@ -1413,7 +1490,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error); 
 		}
@@ -1424,7 +1502,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error); 
 		}
@@ -1435,7 +1514,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error); 
 		}
@@ -1446,7 +1526,8 @@ int mb_format_info(int verbose,
 			format_name, system_name, format_description,
 			numfile, filetype,
 			variable_beams, traveltime, beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error); 
 		}
@@ -1468,8 +1549,9 @@ int mb_format_info(int verbose,
 		*beam_flagging = MB_NO;
 		*platform_source = MB_DATA_NONE;
 		*nav_source = MB_DATA_NONE;
+		*sensordepth_source = MB_DATA_NONE;
 		*heading_source = MB_DATA_NONE;
-		*vru_source = MB_DATA_NONE;
+		*attitude_source = MB_DATA_NONE;
 		*svp_source = MB_DATA_NONE;
 		*beamwidth_xtrack = 0.0;
 		*beamwidth_ltrack = 0.0;
@@ -1493,8 +1575,9 @@ int mb_format_info(int verbose,
 		*beam_flagging = MB_NO;
 		*platform_source = MB_DATA_NONE;
 		*nav_source = MB_DATA_NONE;
+		*sensordepth_source = MB_DATA_NONE;
 		*heading_source = MB_DATA_NONE;
-		*vru_source = MB_DATA_NONE;
+		*attitude_source = MB_DATA_NONE;
 		*svp_source = MB_DATA_NONE;
 		*beamwidth_xtrack = 0.0;
 		*beamwidth_ltrack = 0.0;
@@ -1506,7 +1589,7 @@ int mb_format_info(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:             %d\n",*format);
 		fprintf(stderr,"dbg2       system:             %d\n",*system);
@@ -1523,8 +1606,9 @@ int mb_format_info(int verbose,
 		fprintf(stderr,"dbg2       beam_flagging:      %d\n",*beam_flagging);
 		fprintf(stderr,"dbg2       platform_source:    %d\n",*platform_source);
 		fprintf(stderr,"dbg2       nav_source:         %d\n",*nav_source);
+		fprintf(stderr,"dbg2       sensordepth_source: %d\n",*sensordepth_source);
 		fprintf(stderr,"dbg2       heading_source:     %d\n",*heading_source);
-		fprintf(stderr,"dbg2       vru_source:         %d\n",*vru_source);
+		fprintf(stderr,"dbg2       attitude_source:    %d\n",*attitude_source);
 		fprintf(stderr,"dbg2       svp_source:         %d\n",*svp_source);
 		fprintf(stderr,"dbg2       beamwidth_xtrack:   %f\n",*beamwidth_xtrack);
 		fprintf(stderr,"dbg2       beamwidth_ltrack:   %f\n",*beamwidth_ltrack);
@@ -1558,8 +1642,9 @@ int mb_format(int verbose, int *format, int *error)
 	int	beam_flagging;	/* if true then beam flagging supported */
 	int	platform_source;	/* data record type containing sensor offsets */
 	int	nav_source;	/* data record types containing the primary navigation */
+	int	sensordepth_source;	/* data record types containing the primary sensordepth */
 	int	heading_source;	/* data record types containing the primary heading */
-	int	vru_source;	/* data record types containing the primary vru */
+	int	attitude_source;	/* data record types containing the primary attitude */
 	int	svp_source;	/* data record types containing the primary svp */
 	double	beamwidth_xtrack;   /* nominal acrosstrack beamwidth */
 	double	beamwidth_ltrack;   /* nominal alongtrack beamwidth */
@@ -1568,9 +1653,9 @@ int mb_format(int verbose, int *format, int *error)
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1581,7 +1666,8 @@ int mb_format(int verbose, int *format, int *error)
 			format_name, system_name, format_description,
 			&numfile, &filetype,
 			&variable_beams, &traveltime, &beam_flagging,
-			&platform_source, &nav_source, &heading_source, &vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			&beamwidth_xtrack, &beamwidth_ltrack,
 			error);
 
@@ -1589,7 +1675,7 @@ int mb_format(int verbose, int *format, int *error)
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		fprintf(stderr,"dbg2  Return status:\n");
@@ -1603,7 +1689,7 @@ int mb_format(int verbose, int *format, int *error)
 /*--------------------------------------------------------------------*/
 int mb_format_system(int verbose, int *format, int *system, int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 	char	*function_name = "mb_format_system";
 	int	status;
 
@@ -1622,8 +1708,9 @@ int mb_format_system(int verbose, int *format, int *system, int *error)
 	int	beam_flagging;	/* if true then beam flagging supported */
 	int	platform_source; /* data record type containing sensor offsets */
 	int	nav_source;	/* data record types containing the primary navigation */
+	int	sensordepth_source;	/* data record types containing the primary sensordepth */
 	int	heading_source;	/* data record types containing the primary heading */
-	int	vru_source;	/* data record types containing the primary vru */
+	int	attitude_source;	/* data record types containing the primary attitude */
 	int	svp_source;	/* data record types containing the primary svp */
 	double	beamwidth_xtrack;   /* nominal acrosstrack beamwidth */
 	double	beamwidth_ltrack;   /* nominal alongtrack beamwidth */
@@ -1632,9 +1719,9 @@ int mb_format_system(int verbose, int *format, int *system, int *error)
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1645,7 +1732,8 @@ int mb_format_system(int verbose, int *format, int *system, int *error)
 			format_name, system_name, format_description,
 			&numfile, &filetype,
 			&variable_beams, &traveltime, &beam_flagging,
-			&platform_source, &nav_source, &heading_source, &vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			&beamwidth_xtrack, &beamwidth_ltrack,
 			error);
 	if (status == MB_FAILURE)
@@ -1657,7 +1745,7 @@ int mb_format_system(int verbose, int *format, int *system, int *error)
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:      %d\n",*format);
 		fprintf(stderr,"dbg2       system:      %d\n",*system);
@@ -1674,7 +1762,7 @@ int mb_format_dimensions(int verbose, int *format,
 		int *beams_bath_max, int *beams_amp_max, int *pixels_ss_max,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 	char	*function_name = "mb_format_dimensions";
 	int	status;
 
@@ -1690,8 +1778,9 @@ int mb_format_dimensions(int verbose, int *format,
 	int	beam_flagging;	/* if true then beam flagging supported */
 	int	platform_source;	/* data record type containing sensor offsets */
 	int	nav_source;	/* data record types containing the primary navigation */
+	int	sensordepth_source;	/* data record types containing the primary sensordepth */
 	int	heading_source;	/* data record types containing the primary heading */
-	int	vru_source;	/* data record types containing the primary vru */
+	int	attitude_source;	/* data record types containing the primary attitude */
 	int	svp_source;	/* data record types containing the primary svp */
 	double	beamwidth_xtrack;   /* nominal acrosstrack beamwidth */
 	double	beamwidth_ltrack;   /* nominal alongtrack beamwidth */
@@ -1700,9 +1789,9 @@ int mb_format_dimensions(int verbose, int *format,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1713,7 +1802,8 @@ int mb_format_dimensions(int verbose, int *format,
 			format_name, system_name, format_description,
 			&numfile, &filetype,
 			&variable_beams, &traveltime, &beam_flagging,
-			&platform_source, &nav_source, &heading_source, &vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			&beamwidth_xtrack, &beamwidth_ltrack,
 			error);
 	if (status == MB_FAILURE)
@@ -1727,7 +1817,7 @@ int mb_format_dimensions(int verbose, int *format,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:         %d\n",*format);
 		fprintf(stderr,"dbg2       beams_bath_max: %d\n",*beams_bath_max);
@@ -1744,7 +1834,7 @@ int mb_format_dimensions(int verbose, int *format,
 /*--------------------------------------------------------------------*/
 int mb_format_description(int verbose, int *format, char *description, int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 	char	*function_name = "mb_format_description";
 	int	status;
 
@@ -1763,8 +1853,9 @@ int mb_format_description(int verbose, int *format, char *description, int *erro
 	int	beam_flagging;	/* if true then beam flagging supported */
 	int	platform_source;	/* data record type containing sensor offsets */
 	int	nav_source;	/* data record types containing the primary navigation */
+	int	sensordepth_source;	/* data record types containing the primary sensordepth */
 	int	heading_source;	/* data record types containing the primary heading */
-	int	vru_source;	/* data record types containing the primary vru */
+	int	attitude_source;	/* data record types containing the primary attitude */
 	int	svp_source;	/* data record types containing the primary svp */
 	double	beamwidth_xtrack;   /* nominal acrosstrack beamwidth */
 	double	beamwidth_ltrack;   /* nominal alongtrack beamwidth */
@@ -1773,9 +1864,9 @@ int mb_format_description(int verbose, int *format, char *description, int *erro
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1786,7 +1877,8 @@ int mb_format_description(int verbose, int *format, char *description, int *erro
 			format_name, system_name, description,
 			&numfile, &filetype,
 			&variable_beams, &traveltime, &beam_flagging,
-			&platform_source, &nav_source, &heading_source, &vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			&beamwidth_xtrack, &beamwidth_ltrack,
 			error);
 
@@ -1794,7 +1886,7 @@ int mb_format_description(int verbose, int *format, char *description, int *erro
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:      %d\n",*format);
 		fprintf(stderr,"dbg2       description: %s\n",description);
@@ -1811,7 +1903,7 @@ int mb_format_flags(int verbose, int *format,
 		int *variable_beams, int *traveltime, int *beam_flagging,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 	char	*function_name = "mb_format_flags";
 	int	status;
 
@@ -1828,8 +1920,9 @@ int mb_format_flags(int verbose, int *format,
 	int	filetype;	/* type of files used (normal, xdr, or gsf) */
 	int	platform_source;	/* data record type containing sensor offsets */
 	int	nav_source;	/* data record types containing the primary navigation */
+	int	sensordepth_source;	/* data record types containing the primary sensordepth */
 	int	heading_source;	/* data record types containing the primary heading */
-	int	vru_source;	/* data record types containing the primary vru */
+	int	attitude_source;	/* data record types containing the primary attitude */
 	int	svp_source;	/* data record types containing the primary svp */
 	double	beamwidth_xtrack;   /* nominal acrosstrack beamwidth */
 	double	beamwidth_ltrack;   /* nominal alongtrack beamwidth */
@@ -1838,9 +1931,9 @@ int mb_format_flags(int verbose, int *format,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1851,7 +1944,8 @@ int mb_format_flags(int verbose, int *format,
 			format_name, system_name, format_description,
 			&numfile, &filetype,
 			variable_beams, traveltime, beam_flagging,
-			&platform_source, &nav_source, &heading_source, &vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			&beamwidth_xtrack, &beamwidth_ltrack,
 			error);
 	if (status == MB_FAILURE)
@@ -1865,7 +1959,7 @@ int mb_format_flags(int verbose, int *format,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:         %d\n",*format);
 		fprintf(stderr,"dbg2       variable_beams: %d\n",*variable_beams);
@@ -1881,11 +1975,11 @@ int mb_format_flags(int verbose, int *format,
 }
 /*--------------------------------------------------------------------*/
 int mb_format_source(int verbose, int *format,
-		int *platform_source, int *nav_source, int *heading_source,
-		int *vru_source, int *svp_source,
+		int *platform_source, int *nav_source, int *sensordepth_source,
+		int *heading_source, int *attitude_source, int *svp_source,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 	char	*function_name = "mb_format_source";
 	int	status;
 
@@ -1910,9 +2004,9 @@ int mb_format_source(int verbose, int *format,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1923,28 +2017,33 @@ int mb_format_source(int verbose, int *format,
 			format_name, system_name, format_description,
 			&numfile, &filetype,
 			&variable_beams, &traveltime, &beam_flagging,
-			platform_source, nav_source, heading_source, vru_source, svp_source,
+			platform_source, nav_source, sensordepth_source,
+			heading_source, attitude_source, svp_source,
 			&beamwidth_xtrack, &beamwidth_ltrack,
 			error);
 	if (status == MB_FAILURE)
 		{
 		*platform_source = MB_DATA_NONE;
 		*nav_source = MB_DATA_NONE;
+		*sensordepth_source = MB_DATA_NONE;
 		*heading_source = MB_DATA_NONE;
-		*vru_source = MB_DATA_NONE;
+		*attitude_source = MB_DATA_NONE;
+		*svp_source = MB_DATA_NONE;
 		}
 
 	/* print output debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
-		fprintf(stderr,"dbg2       format:         %d\n",*format);
-		fprintf(stderr,"dbg2       platform_source:%d\n",*platform_source);
-		fprintf(stderr,"dbg2       nav_source:     %d\n",*nav_source);
-		fprintf(stderr,"dbg2       heading_source: %d\n",*heading_source);
-		fprintf(stderr,"dbg2       vru_source:     %d\n",*vru_source);
+		fprintf(stderr,"dbg2       format:             %d\n",*format);
+		fprintf(stderr,"dbg2       platform_source:    %d\n",*platform_source);
+		fprintf(stderr,"dbg2       nav_source:         %d\n",*nav_source);
+		fprintf(stderr,"dbg2       sensordepth_source: %d\n",*sensordepth_source);
+		fprintf(stderr,"dbg2       heading_source:     %d\n",*heading_source);
+		fprintf(stderr,"dbg2       attitude_source:    %d\n",*attitude_source);
+		fprintf(stderr,"dbg2       svp_source:         %d\n",*svp_source);
 		fprintf(stderr,"dbg2  Return status:\n");
 		fprintf(stderr,"dbg2       status:         %d\n",status);
 		fprintf(stderr,"dbg2       error:          %d\n",*error);
@@ -1958,7 +2057,7 @@ int mb_format_beamwidth(int verbose, int *format,
 		double *beamwidth_xtrack, double *beamwidth_ltrack,
 		int *error)
 {
-  static char rcs_id[]="$Id: mb_format.c 2296 2017-04-01 01:48:27Z caress $";
+  static char svn_id[]="$Id: mb_format.c 2298 2017-04-10 07:57:48Z caress $";
 	char	*function_name = "mb_format_beamwidth";
 	int	status;
 
@@ -1978,17 +2077,18 @@ int mb_format_beamwidth(int verbose, int *format,
 	int	beam_flagging;	/* if true then beam flagging supported */
 	int	platform_source;	/* data record type containing sensor offsets */
  	int nav_source;     /* data record types containing the primary navigation */
+    int sensordepth_source;	/* data record types containing the primary sensordepth */
     int heading_source;	/* data record types containing the primary heading */
-    int vru_source;	/* data record types containing the primary vru */
+    int attitude_source;	/* data record types containing the primary attitude */
     int svp_source;	/* data record types containing the primary svp */
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:     %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:     %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:    %d\n",verbose);
 		fprintf(stderr,"dbg2       format:     %d\n",*format);
 		}
@@ -1999,7 +2099,8 @@ int mb_format_beamwidth(int verbose, int *format,
 			format_name, system_name, format_description,
 			&numfile, &filetype,
 			&variable_beams, &traveltime, &beam_flagging,
-			&platform_source, &nav_source, &heading_source, &vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			beamwidth_xtrack, beamwidth_ltrack,
 			error);
 	if (status == MB_FAILURE)
@@ -2012,7 +2113,7 @@ int mb_format_beamwidth(int verbose, int *format,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		fprintf(stderr,"dbg2       format:           %d\n",*format);
 		fprintf(stderr,"dbg2       beamwidth_xtrack: %f\n",*beamwidth_xtrack);
@@ -2052,9 +2153,9 @@ int mb_get_format(int verbose, char *filename, char *fileroot,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:    %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:    %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:   %d\n",verbose);
 		fprintf(stderr,"dbg2       filename:  %s\n",filename);
 		}
@@ -3630,7 +3731,7 @@ int mb_get_format(int verbose, char *filename, char *fileroot,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return value:\n");
 		if (fileroot != NULL)
 		    fprintf(stderr,"dbg2       fileroot:   %s\n",fileroot);
@@ -3645,51 +3746,52 @@ int mb_get_format(int verbose, char *filename, char *fileroot,
 }
 /*--------------------------------------------------------------------*/
 int mb_datalist_open(int verbose,
-		void **datalist,
+		void **datalist_ptr,
 		char *path,
 		int look_processed, int *error)
 {
 	/* local variables */
 	char	*function_name = "mb_datalist_open";
 	int	status = MB_SUCCESS;
-	struct mb_datalist_struct *datalist_ptr;
+	struct mb_datalist_struct *datalist;
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)*datalist);
+		fprintf(stderr,"dbg2       datalist_ptr:      %p\n",(void *)*datalist_ptr);
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		fprintf(stderr,"dbg2       look_processed:%d\n",look_processed);
 		}
 
 	/* allocate memory for datalist structure */
 	if ((status = mb_mallocd(verbose,__FILE__,__LINE__,sizeof(struct mb_datalist_struct),
-				datalist,error)) == MB_SUCCESS)
+				datalist_ptr,error)) == MB_SUCCESS)
 		{
 		/* get datalist pointer */
-		datalist_ptr = (struct mb_datalist_struct *) *datalist;
+		datalist = (struct mb_datalist_struct *) *datalist_ptr;
 
-		if ((datalist_ptr->fp = fopen(path,"r")) == NULL)
+		if ((datalist->fp = fopen(path,"r")) == NULL)
 			{
-			mb_freed(verbose, __FILE__, __LINE__, (void **)datalist,error);
+			mb_freed(verbose, __FILE__, __LINE__, (void **)datalist_ptr,error);
 			status = MB_FAILURE;
 			*error = MB_ERROR_OPEN_FAIL;
 			}
 		else
 			{
-			strcpy(datalist_ptr->path,path);
-			datalist_ptr->open = MB_YES;
-			datalist_ptr->recursion = 0;
-			datalist_ptr->look_processed = look_processed;
-			datalist_ptr->local_weight = MB_YES;
-			datalist_ptr->weight_set = MB_NO;
-			datalist_ptr->weight = 0.0;
-			datalist_ptr->datalist = NULL;
+			strcpy(datalist->path, path);
+			datalist->printed = MB_NO;
+			datalist->open = MB_YES;
+			datalist->recursion = 0;
+			datalist->look_processed = look_processed;
+			datalist->local_weight = MB_YES;
+			datalist->weight_set = MB_NO;
+			datalist->weight = 0.0;
+			datalist->datalist = NULL;
 			}
 
 		}
@@ -3698,16 +3800,17 @@ int mb_datalist_open(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)*datalist);
-		if (*datalist != NULL)
+		fprintf(stderr,"dbg2       datalist_ptr:         %p\n",(void *)*datalist_ptr);
+		if (*datalist_ptr != NULL)
 			{
-			fprintf(stderr,"dbg2       datalist->open:       %d\n",datalist_ptr->open);
-			fprintf(stderr,"dbg2       datalist->fp:         %p\n",(void *)datalist_ptr->fp);
-			fprintf(stderr,"dbg2       datalist->recursion:  %d\n",datalist_ptr->recursion);
-			fprintf(stderr,"dbg2       datalist->path:       %s\n",datalist_ptr->path);
-			fprintf(stderr,"dbg2       datalist->datalist:   %p\n",(void *)datalist_ptr->datalist);
+			fprintf(stderr,"dbg2       datalist->open:       %d\n",datalist->open);
+			fprintf(stderr,"dbg2       datalist->fp:         %p\n",(void *)datalist->fp);
+			fprintf(stderr,"dbg2       datalist->recursion:  %d\n",datalist->recursion);
+			fprintf(stderr,"dbg2       datalist->path:       %s\n",datalist->path);
+			fprintf(stderr,"dbg2       datalist->printed:    %d\n",datalist->printed);
+			fprintf(stderr,"dbg2       datalist->datalist:   %p\n",(void *)datalist->datalist);
 			}
 		fprintf(stderr,"dbg2       error:         %d\n",*error);
 		fprintf(stderr,"dbg2  Return status:\n");
@@ -3719,50 +3822,50 @@ int mb_datalist_open(int verbose,
 
 /*--------------------------------------------------------------------*/
 int mb_datalist_close(int verbose,
-		void **datalist, int *error)
+		void **datalist_ptr, int *error)
 {
 	/* local variables */
 	char	*function_name = "mb_datalist_close";
 	int	status = MB_SUCCESS;
-	struct mb_datalist_struct *datalist_ptr;
+	struct mb_datalist_struct *datalist;
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)*datalist);
+		fprintf(stderr,"dbg2       datalist_ptr:  %p\n",(void *)*datalist_ptr);
 		}
 
 	/* close file */
-	if (*datalist != NULL)
+	if (*datalist_ptr != NULL)
 		{
 		/* get datalist pointer */
-		datalist_ptr = (struct mb_datalist_struct *) *datalist;
+		datalist = (struct mb_datalist_struct *) *datalist_ptr;
 
 		/* close file */
-		if (datalist_ptr->open == MB_YES)
+		if (datalist->open == MB_YES)
 			{
-			fclose(datalist_ptr->fp);
+			fclose(datalist->fp);
 			}
 		}
 
 	/* deallocate structure */
-	if (*datalist != NULL)
+	if (*datalist_ptr != NULL)
 		{
-		status = mb_freed(verbose, __FILE__, __LINE__, (void **)datalist,error);
+		status = mb_freed(verbose, __FILE__, __LINE__, (void **)datalist_ptr,error);
 		}
 
 	/* print output debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)*datalist);
+		fprintf(stderr,"dbg2       datalist_ptr:  %p\n",(void *)*datalist_ptr);
 		fprintf(stderr,"dbg2       error:         %d\n",*error);
 		fprintf(stderr,"dbg2  Return status:\n");
 		fprintf(stderr,"dbg2       status:        %d\n",status);
@@ -3773,44 +3876,46 @@ int mb_datalist_close(int verbose,
 
 /*--------------------------------------------------------------------*/
 int mb_datalist_read(int verbose,
-		void *datalist,
-		char *path, int *format, double *weight,
+		void *datalist_ptr,
+		char *path, char *dpath, int *format, double *weight,
 		int *error)
 {
 	/* local variables */
 	char	*function_name = "mb_datalist_read";
+	char t[64] = {""};
 	int	status = MB_SUCCESS;
-	struct mb_datalist_struct *datalist_ptr;
-	char	ppath[MB_PATH_MAXLINE];
+	struct mb_datalist_struct *datalist;
+	char	ppath[MB_PATH_MAXLINE] = {""};
 	int	pstatus;
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
-		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)datalist);
+		fprintf(stderr,"dbg2       svn_id:                     %s\n",svn_id);
+		fprintf(stderr,"dbg2       verbose:                    %d\n",verbose);
+		fprintf(stderr,"dbg2       datalist_ptr:               %p\n",(void *)datalist_ptr);
 		}
 
 	/* get datalist pointer */
-	datalist_ptr = (struct mb_datalist_struct *) datalist;
+	datalist = (struct mb_datalist_struct *) datalist_ptr;
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
-		fprintf(stderr,"dbg2       datalist_ptr->open:       %d\n",datalist_ptr->open);
-		fprintf(stderr,"dbg2       datalist_ptr->fp:         %p\n",(void *)datalist_ptr->fp);
-		fprintf(stderr,"dbg2       datalist_ptr->recursion:  %d\n",datalist_ptr->recursion);
-		fprintf(stderr,"dbg2       datalist_ptr->path:       %s\n",datalist_ptr->path);
-		fprintf(stderr,"dbg2       datalist_ptr->datalist:   %p\n",(void *)datalist_ptr->datalist);
-		fprintf(stderr,"dbg2       datalist_ptr->look_processed:   %d\n",datalist_ptr->look_processed);
+		fprintf(stderr,"dbg2       datalist->open:             %d\n",datalist->open);
+		fprintf(stderr,"dbg2       datalist->fp:               %p\n",(void *)datalist->fp);
+		fprintf(stderr,"dbg2       datalist->recursion:        %d\n",datalist->recursion);
+		fprintf(stderr,"dbg2       datalist->path:             %s\n",datalist->path);
+		fprintf(stderr,"dbg2       datalist->printed:          %d\n",datalist->printed);
+		fprintf(stderr,"dbg2       datalist->datalist:         %p\n",(void *)datalist->datalist);
+		fprintf(stderr,"dbg2       datalist->look_processed:   %d\n",datalist->look_processed);
 		}
 
 	/* call mb_datalist_read2() */
-	status = mb_datalist_read2(verbose, datalist, &pstatus, path, ppath, format, weight, error);
+	status = mb_datalist_read2(verbose, datalist_ptr, &pstatus, path, ppath, dpath, format, weight, error);
 
 	/* deal with pstatus */
 	if (status == MB_SUCCESS && *error == MB_ERROR_NO_ERROR)
@@ -3825,633 +3930,361 @@ int mb_datalist_read(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
-		fprintf(stderr,"dbg2       path:        %s\n",path);
-		fprintf(stderr,"dbg2       format:      %d\n",*format);
-		fprintf(stderr,"dbg2       weight:      %f\n",*weight);
-		fprintf(stderr,"dbg2       error:       %d\n",*error);
+		fprintf(stderr,"dbg2       path:                       %s\n",path);
+		fprintf(stderr,"dbg2       dpath:                      %s\n",dpath);
+		fprintf(stderr,"dbg2       format:                     %d\n",*format);
+		fprintf(stderr,"dbg2       weight:                     %f\n",*weight);
+		fprintf(stderr,"dbg2       error:                      %d\n",*error);
 		fprintf(stderr,"dbg2  Return status:\n");
-		fprintf(stderr,"dbg2       status:      %d\n",status);
+		fprintf(stderr,"dbg2       status:                     %d\n",status);
 		}
 
 	return(status);
 }
 
-/*--------------------------------------------------------------------*/
-int mb_datalist_readorg(int verbose,
-		void *datalist,
-		char *path, int *format, double *weight,
-		int *error)
-{
-	/* local variables */
-	char	*function_name = "mb_datalist_readorg";
-	int	status = MB_SUCCESS;
-	struct mb_datalist_struct *datalist_ptr;
-	struct mb_datalist_struct *datalist2_ptr;
-	char	buffer[MB_PATH_MAXLINE];
-	char	root[MB_PATH_MAXLINE];
-	char	tmpstr[MB_PATH_MAXLINE];
-	char	pfile[MB_PATH_MAXLINE];
-	int	pfile_specified;
-	char	*buffer_ptr;
-	int	len;
-	int	nscan, done, rdone;
-	int	pformat;
-	struct stat file_status;
-	int	fstat, file_ok;
-
-	/* print input debug statements */
-	if (verbose >= 2)
-		{
-		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
-		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
-		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)datalist);
-		}
-
-	/* get datalist pointer */
-	datalist_ptr = (struct mb_datalist_struct *) datalist;
-
-	/* print input debug statements */
-	if (verbose >= 2)
-		{
-		fprintf(stderr,"dbg2       datalist_ptr->open:       %d\n",datalist_ptr->open);
-		fprintf(stderr,"dbg2       datalist_ptr->fp:         %p\n",(void *)datalist_ptr->fp);
-		fprintf(stderr,"dbg2       datalist_ptr->recursion:  %d\n",datalist_ptr->recursion);
-		fprintf(stderr,"dbg2       datalist_ptr->path:       %s\n",datalist_ptr->path);
-		fprintf(stderr,"dbg2       datalist_ptr->datalist:   %p\n",(void *)datalist_ptr->datalist);
-		fprintf(stderr,"dbg2       datalist_ptr->look_processed:   %d\n",datalist_ptr->look_processed);
-		}
-
-	/* loop over reading from datalist_ptr */
-	done = MB_NO;
-	if (datalist_ptr->open == MB_YES
-		&& done == MB_NO)
-		{
-		while (done == MB_NO)
-		    {
-		    /* if recursive datalist closed read current datalist */
-		    if (datalist_ptr->datalist == NULL)
-			{
-			rdone = MB_NO;
-			while (rdone == MB_NO)
-			    {
-			    buffer_ptr = fgets(buffer,MB_PATH_MAXLINE,datalist_ptr->fp);
-
-			    /* deal with end of datalist file */
-			    if (buffer_ptr != buffer)
-				{
-				rdone = MB_YES;
-				done = MB_YES;
-				status = MB_FAILURE;
-				*error = MB_ERROR_EOF;
-				}
-
-			    /* look for special $PROCESSED command */
-			    else if (strncmp(buffer,"$PROCESSED",10) == 0)
-				{
-				if (datalist_ptr->look_processed
-						== MB_DATALIST_LOOK_UNSET)
-						datalist_ptr->look_processed = MB_DATALIST_LOOK_YES;
-				}
-
-			    /* look for special $RAW command */
-			    else if (strncmp(buffer,"$RAW",4) == 0)
-				{
-				if (datalist_ptr->look_processed
-						== MB_DATALIST_LOOK_UNSET)
-						datalist_ptr->look_processed = MB_DATALIST_LOOK_NO;
-				}
-
-			    /* look for special $NOLOCALWEIGHT command */
-			    else if (strncmp(buffer,"$NOLOCALWEIGHT",14) == 0)
-				{
-				datalist_ptr->local_weight = MB_NO;
-				}
-
-			    /* get filename */
-			    else if (buffer[0] != '#')
-				{
-				/* read datalist item */
-				nscan = sscanf(buffer,"%s %d %lf",path,format,weight);
-
-				/* get path */
-				if (nscan >= 1 && path[0] != '/'
-					&& strrchr(datalist_ptr->path,'/') != NULL
-					&& (len = strrchr(datalist_ptr->path,'/')
-						    - datalist_ptr->path + 1) > 1)
-				    {
-				    strcpy(tmpstr,path);
-				    strncpy(path,datalist_ptr->path,len);
-				    path[len] = '\0';
-				    strcat(path,tmpstr);
-				    }
-
-				/* guess format if no format specified */
-				if (nscan == 1)
-				    {
-				    fstat = mb_get_format(verbose, path, root, &pformat, error);
-
-				    /* if no format specified set it */
-				    if (nscan == 1 && pformat != 0)
-					    {
-					    nscan = 2;
-					    *format = pformat;
-					    }
-				    }
-
-				/* check for processed file if requested */
-				if (datalist_ptr->look_processed
-					== MB_DATALIST_LOOK_YES)
-				    {
-				    pfile[0] = '\0';
-				    mb_pr_get_ofile(verbose, path,
-					    &pfile_specified, pfile, error);
-				    if (strlen(pfile) > 0 && pfile[0] != '/'
-					    && strrchr(path,'/') != NULL
-					    && (len = strrchr(path,'/')
-							- path + 1) > 1)
-					{
-					strcpy(tmpstr,pfile);
-					strncpy(pfile,path,len);
-					pfile[len] = '\0';
-					strcat(pfile,tmpstr);
-					}
-
-				    if (pfile_specified == MB_YES)
-					{
-					if ((fstat = stat(pfile, &file_status)) == 0
-					    && (file_status.st_mode & S_IFMT) != S_IFDIR
-					    && file_status.st_size > 0)
-					    strcpy(path,pfile);
-					}
-				    }
-
-				/* check if file or datalist can be opened */
-				if (nscan >= 2)
-				    {
-				    fstat = stat(path, &file_status);
-				    if (fstat == 0
-						&& (file_status.st_mode & S_IFMT) != S_IFDIR
-						&& file_status.st_size > 0)
-						file_ok = MB_YES;
-				    else
-						{
-						file_ok = MB_NO;
-						/* print warning if verbose > 0 */
-						if (verbose > 0)
-					    	{
-					    	fprintf(stderr, "MBIO Warning: Datalist entry skipped because it could not be opened!\n");
-					    	fprintf(stderr, "\tDatalist: %s\n", datalist_ptr->path);
-					    	fprintf(stderr, "\tFile:     %s\n", path);
-					    	}
-						}
-				    }
-
-				/* set weight value - recursive weight from above
-				   overrides local weight as long as local_weight == MB_YES */
-				if (nscan >= 2 && file_ok == MB_YES)
-				    {
-				    /* use recursive weight from above unless prohibited */
-				    if (datalist_ptr->weight_set == MB_YES
-				    	&& (datalist_ptr->local_weight == MB_NO
-						|| nscan != 3))
-					*weight = datalist_ptr->weight;
-
-				    /* else if weight not locally specified set to 1.0 */
-				    else if (nscan != 3)
-					    *weight = 1.0;
-				    }
-
-				/* deal with file */
-				if (nscan >= 2 && file_ok == MB_YES && *format >= 0)
-				    {
-				    /* set done */
-				    done = MB_YES;
-				    rdone = MB_YES;
-				    }
-
-				/* deal with recursive datalist */
-				else if (nscan >= 2 && file_ok == MB_YES && *format == -1
-					&& datalist_ptr->recursion < MB_DATALIST_RECURSION_MAX)
-				    {
-				    if ((status = mb_datalist_open(verbose,
-						    (void **)&(datalist_ptr->datalist), path,
-							datalist_ptr->look_processed, error))
-					    == MB_SUCCESS)
-					{
-					datalist2_ptr = (struct mb_datalist_struct *) datalist_ptr->datalist;
-					datalist2_ptr->recursion =
-						datalist_ptr->recursion + 1;
-					datalist2_ptr->local_weight
-					    		= datalist_ptr->local_weight;
-					rdone = MB_YES;
-
-					/* set weight to recursive value if available */
-					if (nscan >= 3
-						&& (datalist_ptr->weight_set == MB_NO
-							|| datalist_ptr->local_weight == MB_YES))
-					    {
-					    datalist2_ptr->weight_set = MB_YES;
-					    datalist2_ptr->weight = *weight;
-					    }
-
-					else if (datalist_ptr->weight_set == MB_YES)
-					    {
-					    datalist2_ptr->weight_set = MB_YES;
-					    datalist2_ptr->weight = datalist_ptr->weight;
-					    }
-
-					/* else set weight to local value if available */
-					/* else do not set weight */
-					else
-					    {
-					    datalist2_ptr->weight_set = MB_NO;
-					    datalist2_ptr->weight = 0.0;
-					    }
-					}
-				    else
-					{
-					status = MB_SUCCESS;
-					*error = MB_ERROR_NO_ERROR;
-					}
-				    }
-				}
-			    }
-			}
-
-		    /* if open read next entry from recursive datalist */
-		    if (done == MB_NO
-			&& datalist_ptr->open == MB_YES
-			&& datalist_ptr->datalist != NULL)
-			{
-			datalist2_ptr = (struct mb_datalist_struct *) datalist_ptr->datalist;
-			if (datalist2_ptr->open == MB_YES)
-			    {
-			    /* recursively call mb_read_datalist */
-			    status = mb_datalist_read(verbose,
-					    (void *)datalist_ptr->datalist,
-					    path,
-					    format,
-					    weight,
-					    error);
-
-			    /* if datalist read fails close it */
-			    if (status == MB_FAILURE)
-				{
-				status = mb_datalist_close(verbose,
-					    (void **)&(datalist_ptr->datalist),
-					    error);
-				}
-			    else
-				{
-				done = MB_YES;
-				}
-			    }
-			}
-		    }
-		}
-
-	/* print output debug statements */
-	if (verbose >= 2)
-		{
-		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
-		fprintf(stderr,"dbg2  Return values:\n");
-		fprintf(stderr,"dbg2       path:        %s\n",path);
-		fprintf(stderr,"dbg2       format:      %d\n",*format);
-		fprintf(stderr,"dbg2       weight:      %f\n",*weight);
-		fprintf(stderr,"dbg2       error:       %d\n",*error);
-		fprintf(stderr,"dbg2  Return status:\n");
-		fprintf(stderr,"dbg2       status:      %d\n",status);
-		}
-
-	return(status);
-}
 /*--------------------------------------------------------------------*/
 int mb_datalist_read2(int verbose,
-		void *datalist,
-		int *pstatus, char *path, char *ppath, int *format, double *weight,
+		void *datalist_ptr,
+		int *pstatus, char *path, char *ppath, char *dpath, int *format, double *weight,
 		int *error)
 {
 	/* local variables */
 	char	*function_name = "mb_datalist_read2";
-	int	status = MB_SUCCESS;
-	struct mb_datalist_struct *datalist_ptr;
-	struct mb_datalist_struct *datalist2_ptr;
-	char	buffer[MB_PATH_MAXLINE];
-	char	root[MB_PATH_MAXLINE];
-	char	tmpstr[MB_PATH_MAXLINE];
-	char	pfile[MB_PATH_MAXLINE];
-	int	pfile_specified;
+	int		status = MB_SUCCESS;
+	struct mb_datalist_struct *datalist;
+	struct mb_datalist_struct *datalist2;
+	char	buffer[MB_PATH_MAXLINE] = {""};
+	char	root[MB_PATH_MAXLINE]   = {""};
+	char	tmpstr[MB_PATH_MAXLINE] = {""};
+	char	pfile[MB_PATH_MAXLINE]  = {""};
+	char	fpath[MB_PATH_MAXLINE]  = {""};
+	char	*pchar;
+	int		pfile_specified;
 	char	*buffer_ptr;
-	int	len;
-	int	nscan, done, rdone;
-	int	pformat;
+	int		len;
+	int		nscan, done, rdone;
+	int		pformat;
 	struct stat file_status;
-	int	fstat, file_ok;
-	int	rawspecified = MB_NO;
-	int	processedspecified = MB_NO;
-	int	istart;
+	int		fstat, file_ok;
+	int		rawspecified = MB_NO;
+	int		processedspecified = MB_NO;
+	int		istart;
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
-		fprintf(stderr,"dbg2       datalist:      %p\n",(void *)datalist);
+		fprintf(stderr,"dbg2       datalist_ptr:  %p\n",(void *)datalist_ptr);
 		}
 
 	/* get datalist pointer */
-	datalist_ptr = (struct mb_datalist_struct *) datalist;
+	datalist = (struct mb_datalist_struct *) datalist_ptr;
 
 	/* print input debug statements */
 	if (verbose >= 2)
 		{
-		fprintf(stderr,"dbg2       datalist_ptr->open:             %d\n",datalist_ptr->open);
-		fprintf(stderr,"dbg2       datalist_ptr->fp:               %p\n",(void *)datalist_ptr->fp);
-		fprintf(stderr,"dbg2       datalist_ptr->recursion:        %d\n",datalist_ptr->recursion);
-		fprintf(stderr,"dbg2       datalist_ptr->path:             %s\n",datalist_ptr->path);
-		fprintf(stderr,"dbg2       datalist_ptr->datalist:         %p\n",(void *)datalist_ptr->datalist);
-		fprintf(stderr,"dbg2       datalist_ptr->look_processed:   %d\n",datalist_ptr->look_processed);
+		fprintf(stderr,"dbg2       datalist->open:             %d\n",datalist->open);
+		fprintf(stderr,"dbg2       datalist->fp:               %p\n",(void *)datalist->fp);
+		fprintf(stderr,"dbg2       datalist->recursion:        %d\n",datalist->recursion);
+		fprintf(stderr,"dbg2       datalist->path:             %s\n",datalist->path);
+		fprintf(stderr,"dbg2       datalist->printed:          %d\n",datalist->printed);
+		fprintf(stderr,"dbg2       datalist->datalist:         %p\n",(void *)datalist->datalist);
+		fprintf(stderr,"dbg2       datalist->look_processed:   %d\n",datalist->look_processed);
 		}
 
 	/* loop over reading from datalist_ptr */
 	done = MB_NO;
-	if (datalist_ptr->open == MB_YES
-		&& done == MB_NO)
+	if (datalist->open == MB_YES && done == MB_NO)
 		{
+		/* See if datalist file is path and if yes store it in fpath. To be eventually used in reading list files */
+		if (((pchar = strstr(datalist->path, "datalist")) != NULL) && ((pchar - datalist->path) > 1))
+			{
+			strncpy(fpath, datalist->path, pchar - datalist->path);
+			}
 		while (done == MB_NO)
 		    {
+			/* copy current datalist path */
+			strcpy(dpath, datalist->path);
+
 		    /* if recursive datalist closed read current datalist */
-		    if (datalist_ptr->datalist == NULL)
-			{
-			rdone = MB_NO;
-			while (rdone == MB_NO)
-			    {
-			    buffer_ptr = fgets(buffer,MB_PATH_MAXLINE,datalist_ptr->fp);
-
-			    /* deal with end of datalist file */
-			    if (buffer_ptr != buffer)
+		    if (datalist->datalist == NULL)
 				{
-				rdone = MB_YES;
-				done = MB_YES;
-				*pstatus = MB_PROCESSED_NONE;
-				status = MB_FAILURE;
-				*error = MB_ERROR_EOF;
-				}
-
-			    /* look for special $PROCESSED command */
-			    else if (strncmp(buffer,"$PROCESSED",10) == 0)
-				{
-				if (datalist_ptr->look_processed
-						== MB_DATALIST_LOOK_UNSET)
-						datalist_ptr->look_processed = MB_DATALIST_LOOK_YES;
-				}
-
-			    /* look for special $RAW command */
-			    else if (strncmp(buffer,"$RAW",4) == 0)
-				{
-				if (datalist_ptr->look_processed
-						== MB_DATALIST_LOOK_UNSET)
-						datalist_ptr->look_processed = MB_DATALIST_LOOK_NO;
-				}
-
-			    /* look for special $NOLOCALWEIGHT command */
-			    else if (strncmp(buffer,"$NOLOCALWEIGHT",14) == 0)
-				{
-				datalist_ptr->local_weight = MB_NO;
-				}
-
-			    /* get filename */
-			    else if (buffer[0] != '#')
-				{
-				/* check for R: and P: prefixes on paths. If either prefix is found,
-					then the file path is for a raw file, and the R: or P: indicates
-					whether the raw or processed file should be used. These prefixes
-					override the datalist_ptr->look_processed value. In general these
-					prefixes are placed in datalists by mbgrid and mbmosaic to indicate
-					which file was used in gridding/mosaicing */
-				if (buffer[1] == ':')
+				rdone = MB_NO;
+				while (rdone == MB_NO)
 					{
-					if (strncmp(buffer, "R:", 2) == 0)
+					buffer_ptr = fgets(buffer,MB_PATH_MAXLINE,datalist->fp);
+	
+					/* deal with end of datalist file */
+					if (buffer_ptr != buffer)
 						{
-						istart = 2;
-						rawspecified = MB_YES;
+						rdone = MB_YES;
+						done = MB_YES;
+						*pstatus = MB_PROCESSED_NONE;
+						status = MB_FAILURE;
+						*error = MB_ERROR_EOF;
 						}
-					else if (strncmp(buffer, "P:", 2) == 0)
+	
+					/* look for special $PROCESSED command */
+					else if (strncmp(buffer,"$PROCESSED",10) == 0)
 						{
-						istart = 2;
-						processedspecified = MB_YES;
+						if (datalist->look_processed
+								== MB_DATALIST_LOOK_UNSET)
+								datalist->look_processed = MB_DATALIST_LOOK_YES;
 						}
-					else
-						istart = 0;
+	
+					/* look for special $RAW command */
+					else if (strncmp(buffer,"$RAW",4) == 0)
+						{
+						if (datalist->look_processed
+								== MB_DATALIST_LOOK_UNSET)
+								datalist->look_processed = MB_DATALIST_LOOK_NO;
+						}
+	
+					/* look for special $NOLOCALWEIGHT command */
+					else if (strncmp(buffer,"$NOLOCALWEIGHT",14) == 0)
+						{
+						datalist->local_weight = MB_NO;
+						}
+	
+					/* get filename */
+					else if (buffer[0] != '#')
+						{
+						/* check for R: and P: prefixes on paths. If either prefix is found,
+							then the file path is for a raw file, and the R: or P: indicates
+							whether the raw or processed file should be used. These prefixes
+							override the datalist->look_processed value. In general these
+							prefixes are placed in datalists by mbgrid and mbmosaic to indicate
+							which file was used in gridding/mosaicing */
+						if (buffer[1] == ':')
+							{
+							if (strncmp(buffer, "R:", 2) == 0)
+								{
+								istart = 2;
+								rawspecified = MB_YES;
+								}
+							else if (strncmp(buffer, "P:", 2) == 0)
+								{
+								istart = 2;
+								processedspecified = MB_YES;
+								}
+							else
+								istart = 0;
+							}
+						else
+							istart = 0;
+		
+						/* read datalist item */
+						nscan = sscanf(&(buffer[istart]),"%s %d %lf",path,format,weight);
+		
+						/* get path */
+						if (nscan >= 1 && path[0] != '/'
+							&& strrchr(datalist->path,'/') != NULL
+							&& (len = strrchr(datalist->path,'/')
+									- datalist->path + 1) > 1)
+							{
+							strcpy(tmpstr,path);
+							strncpy(path,datalist->path,len);
+							path[len] = '\0';
+							strcat(path,tmpstr);
+							}
+		
+						/* guess format if no format specified */
+						if (nscan == 1)
+							{
+							fstat = mb_get_format(verbose, path, root, &pformat, error);
+		
+							/* if no format specified set it */
+							if (nscan == 1 && pformat != 0)
+								{
+								nscan = 2;
+								*format = pformat;
+								}
+							}
+		
+						/* check if file or datalist can be opened */
+						if (nscan >= 2)
+							{
+							fstat = stat(path, &file_status);
+							if (fstat != 0 && fpath)	/* Try again by prepending the datalist path */
+								{
+								char t[MB_PATH_MAXLINE] = {""};
+								strcpy(t, fpath);
+								strcat(t, path);
+								fstat = stat(t, &file_status);
+								if (!fstat) 
+									strcpy(path, t);
+								}
+							if (fstat == 0
+								&& (file_status.st_mode & S_IFMT) != S_IFDIR
+								&& file_status.st_size > 0)
+								{
+								file_ok = MB_YES;
+								}
+							else
+								{
+								file_ok = MB_NO;
+								/* print warning if verbose > 0 */
+								if (verbose > 0)
+									{
+									fprintf(stderr, "MBIO Warning: Datalist entry skipped because it could not be opened!\n");
+									fprintf(stderr, "\tDatalist: %s\n", datalist->path);
+									fprintf(stderr, "\tFile:     %s\n", path);
+									}
+								}
+							}
+		
+						/* check for processed file */
+						*pstatus = MB_PROCESSED_NONE;
+						pfile[0] = '\0';
+						if (file_ok == MB_YES)
+							{
+							mb_pr_get_ofile(verbose, path,
+								&pfile_specified, pfile, error);
+							if (strlen(pfile) > 0 && pfile[0] != '/'
+								&& strrchr(path,'/') != NULL
+								&& (len = strrchr(path,'/')
+									- path + 1) > 1)
+								{
+								strcpy(tmpstr,pfile);
+								strncpy(pfile,path,len);
+								pfile[len] = '\0';
+								strcat(pfile,tmpstr);
+								}
+		
+							if (pfile_specified == MB_YES)
+								{
+								if ((fstat = stat(pfile, &file_status)) == 0
+									&& (file_status.st_mode & S_IFMT) != S_IFDIR
+									&& file_status.st_size > 0)
+									{
+									strcpy(ppath,pfile);
+									if (datalist->look_processed
+									== MB_DATALIST_LOOK_YES)
+									*pstatus = MB_PROCESSED_USE;
+									else
+									*pstatus = MB_PROCESSED_EXIST;
+									}
+								}
+		
+							/* apply processed or raw prefixes */
+							if (*pstatus ==  MB_PROCESSED_EXIST
+									&& processedspecified == MB_YES)
+							*pstatus = MB_PROCESSED_USE;
+							else if (*pstatus ==  MB_PROCESSED_USE
+									&& rawspecified == MB_YES)
+							*pstatus = MB_PROCESSED_EXIST;
+							}
+		
+						/* set weight value - recursive weight from above
+						   overrides local weight as long as local_weight == MB_YES */
+						if (nscan >= 2 && file_ok == MB_YES)
+							{
+							/* use recursive weight from above unless prohibited */
+							if (datalist->weight_set == MB_YES
+								&& (datalist->local_weight == MB_NO
+								|| nscan != 3))
+							*weight = datalist->weight;
+		
+							/* else if weight not locally specified set to 1.0 */
+							else if (nscan != 3)
+								*weight = 1.0;
+							}
+		
+						/* deal with file */
+						if (nscan >= 2 && file_ok == MB_YES && *format >= 0)
+							{
+							/* set done */
+							done = MB_YES;
+							rdone = MB_YES;
+							}
+		
+						/* deal with recursive datalist */
+						else if (nscan >= 2 && file_ok == MB_YES && *format == -1
+							&& datalist->recursion < MB_DATALIST_RECURSION_MAX)
+							{
+							if ((status = mb_datalist_open(verbose,
+									(void **)&(datalist->datalist), path,
+									datalist->look_processed, error))
+								== MB_SUCCESS)
+								{
+								datalist2 = datalist->datalist;
+								datalist2->recursion =
+									datalist->recursion + 1;
+								datalist2->local_weight
+											= datalist->local_weight;
+								rdone = MB_YES;
+			
+								/* set weight to recursive value if available */
+								if (nscan >= 3
+									&& (datalist->weight_set == MB_NO
+										|| datalist->local_weight == MB_YES))
+									{
+									datalist2->weight_set = MB_YES;
+									datalist2->weight = *weight;
+									}
+			
+								else if (datalist->weight_set == MB_YES)
+									{
+									datalist2->weight_set = MB_YES;
+									datalist2->weight = datalist->weight;
+									}
+			
+								/* else set weight to local value if available */
+								/* else do not set weight */
+								else
+									{
+									datalist2->weight_set = MB_NO;
+									datalist2->weight = 0.0;
+									}
+								}
+							else
+								{
+								status = MB_SUCCESS;
+								*error = MB_ERROR_NO_ERROR;
+								}
+							}
+						}
 					}
-				else
-					istart = 0;
-
-				/* read datalist item */
-				nscan = sscanf(&(buffer[istart]),"%s %d %lf",path,format,weight);
-
-				/* get path */
-				if (nscan >= 1 && path[0] != '/'
-					&& strrchr(datalist_ptr->path,'/') != NULL
-					&& (len = strrchr(datalist_ptr->path,'/')
-						    - datalist_ptr->path + 1) > 1)
-				    {
-				    strcpy(tmpstr,path);
-				    strncpy(path,datalist_ptr->path,len);
-				    path[len] = '\0';
-				    strcat(path,tmpstr);
-				    }
-
-				/* guess format if no format specified */
-				if (nscan == 1)
-				    {
-				    fstat = mb_get_format(verbose, path, root, &pformat, error);
-
-				    /* if no format specified set it */
-				    if (nscan == 1 && pformat != 0)
-					    {
-					    nscan = 2;
-					    *format = pformat;
-					    }
-				    }
-
-				/* check if file or datalist can be opened */
-				if (nscan >= 2)
-				    {
-				    fstat = stat(path, &file_status);
-				    if (fstat == 0
-					    && (file_status.st_mode & S_IFMT) != S_IFDIR
-					    && file_status.st_size > 0)
-					    {
-					    file_ok = MB_YES;
-					    }
-				    else
-					    {
-					    file_ok = MB_NO;
-					    /* print warning if verbose > 0 */
-					    if (verbose > 0)
-						    {
-						    fprintf(stderr, "MBIO Warning: Datalist entry skipped because it could not be opened!\n");
-						    fprintf(stderr, "\tDatalist: %s\n", datalist_ptr->path);
-						    fprintf(stderr, "\tFile:     %s\n", path);
-						    }
-					    }
-				    }
-
-				/* check for processed file */
-				*pstatus = MB_PROCESSED_NONE;
-				pfile[0] = '\0';
-				if (file_ok == MB_YES)
-				    {
-				    mb_pr_get_ofile(verbose, path,
-					    &pfile_specified, pfile, error);
-				    if (strlen(pfile) > 0 && pfile[0] != '/'
-					    && strrchr(path,'/') != NULL
-					    && (len = strrchr(path,'/')
-							- path + 1) > 1)
-					{
-					strcpy(tmpstr,pfile);
-					strncpy(pfile,path,len);
-					pfile[len] = '\0';
-					strcat(pfile,tmpstr);
-					}
-
-				    if (pfile_specified == MB_YES)
-					{
-					if ((fstat = stat(pfile, &file_status)) == 0
-					    && (file_status.st_mode & S_IFMT) != S_IFDIR
-					    && file_status.st_size > 0)
-					    {
-					    strcpy(ppath,pfile);
-					    if (datalist_ptr->look_processed
-						== MB_DATALIST_LOOK_YES)
-						*pstatus = MB_PROCESSED_USE;
-					    else
-						*pstatus = MB_PROCESSED_EXIST;
-					    }
-					}
-
-				    /* apply processed or raw prefixes */
-				    if (*pstatus ==  MB_PROCESSED_EXIST
-				    		&& processedspecified == MB_YES)
-					*pstatus = MB_PROCESSED_USE;
-				    else if (*pstatus ==  MB_PROCESSED_USE
-				    		&& rawspecified == MB_YES)
-					*pstatus = MB_PROCESSED_EXIST;
-				    }
-
-				/* set weight value - recursive weight from above
-				   overrides local weight as long as local_weight == MB_YES */
-				if (nscan >= 2 && file_ok == MB_YES)
-				    {
-				    /* use recursive weight from above unless prohibited */
-				    if (datalist_ptr->weight_set == MB_YES
-				    	&& (datalist_ptr->local_weight == MB_NO
-						|| nscan != 3))
-					*weight = datalist_ptr->weight;
-
-				    /* else if weight not locally specified set to 1.0 */
-				    else if (nscan != 3)
-					    *weight = 1.0;
-				    }
-
-				/* deal with file */
-				if (nscan >= 2 && file_ok == MB_YES && *format >= 0)
-				    {
-				    /* set done */
-				    done = MB_YES;
-				    rdone = MB_YES;
-				    }
-
-				/* deal with recursive datalist */
-				else if (nscan >= 2 && file_ok == MB_YES && *format == -1
-					&& datalist_ptr->recursion < MB_DATALIST_RECURSION_MAX)
-				    {
-				    if ((status = mb_datalist_open(verbose,
-						    (void **)&(datalist_ptr->datalist), path,
-							datalist_ptr->look_processed, error))
-					    == MB_SUCCESS)
-					{
-					datalist2_ptr = (struct mb_datalist_struct *) datalist_ptr->datalist;
-					datalist2_ptr->recursion =
-						datalist_ptr->recursion + 1;
-					datalist2_ptr->local_weight
-					    		= datalist_ptr->local_weight;
-					rdone = MB_YES;
-
-					/* set weight to recursive value if available */
-					if (nscan >= 3
-						&& (datalist_ptr->weight_set == MB_NO
-							|| datalist_ptr->local_weight == MB_YES))
-					    {
-					    datalist2_ptr->weight_set = MB_YES;
-					    datalist2_ptr->weight = *weight;
-					    }
-
-					else if (datalist_ptr->weight_set == MB_YES)
-					    {
-					    datalist2_ptr->weight_set = MB_YES;
-					    datalist2_ptr->weight = datalist_ptr->weight;
-					    }
-
-					/* else set weight to local value if available */
-					/* else do not set weight */
-					else
-					    {
-					    datalist2_ptr->weight_set = MB_NO;
-					    datalist2_ptr->weight = 0.0;
-					    }
-					}
-				    else
-					{
-					status = MB_SUCCESS;
-					*error = MB_ERROR_NO_ERROR;
-					}
-				    }
 				}
-			    }
-			}
 
 		    /* if open read next entry from recursive datalist */
 		    if (done == MB_NO
-			&& datalist_ptr->open == MB_YES
-			&& datalist_ptr->datalist != NULL)
-			{
-			datalist2_ptr = (struct mb_datalist_struct *) datalist_ptr->datalist;
-			if (datalist2_ptr->open == MB_YES)
-			    {
-			    /* recursively call mb_read_datalist */
-			    status = mb_datalist_read2(verbose,
-					    (void *)datalist_ptr->datalist,
-					    pstatus,
-					    path,
-					    ppath,
-					    format,
-					    weight,
-					    error);
-
-			    /* if datalist read fails close it */
-			    if (status == MB_FAILURE)
+			&& datalist->open == MB_YES
+			&& datalist->datalist != NULL)
 				{
-				status = mb_datalist_close(verbose,
-					    (void **)&(datalist_ptr->datalist),
-					    error);
+				datalist2 = (struct mb_datalist_struct *) datalist->datalist;
+				if (datalist2->open == MB_YES)
+					{
+					/* recursively call mb_read_datalist */
+					status = mb_datalist_read2(verbose,
+							(void *)datalist->datalist,
+							pstatus,
+							path,
+							ppath,
+							dpath,
+							format,
+							weight,
+							error);
+	
+					/* if datalist read fails close it */
+					if (status == MB_FAILURE)
+						{
+						status = mb_datalist_close(verbose,
+								(void **)&(datalist->datalist),
+								error);
+						}
+					else
+						{
+						done = MB_YES;
+						}
+					}
 				}
-			    else
-				{
-				done = MB_YES;
-				}
-			    }
-			}
 		    }
 		}
 
@@ -4459,13 +4292,83 @@ int mb_datalist_read2(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
 		fprintf(stderr,"dbg2       pstatus      %d\n",*pstatus);
 		fprintf(stderr,"dbg2       path:        %s\n",path);
 		fprintf(stderr,"dbg2       ppath:       %s\n",ppath);
+		fprintf(stderr,"dbg2       dpath:       %s\n",dpath);
 		fprintf(stderr,"dbg2       format:      %d\n",*format);
 		fprintf(stderr,"dbg2       weight:      %f\n",*weight);
+		fprintf(stderr,"dbg2       error:       %d\n",*error);
+		fprintf(stderr,"dbg2  Return status:\n");
+		fprintf(stderr,"dbg2       status:      %d\n",status);
+		}
+
+	return(status);
+}
+
+/*--------------------------------------------------------------------*/
+int mb_datalist_recursion(int verbose, void *datalist_ptr, int print, int *recursion, int *error)
+{
+	/* local variables */
+	char	*function_name = "mb_datalist_recursion";
+	int	status = MB_SUCCESS;
+	struct mb_datalist_struct *datalist;
+	int start;
+	int i;
+
+	/* print input debug statements */
+	if (verbose >= 2)
+		{
+		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
+		fprintf(stderr,"dbg2  Input arguments:\n");
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
+		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
+		fprintf(stderr,"dbg2       datalist:      %p\n",datalist_ptr);
+		fprintf(stderr,"dbg2       print:         %d\n",print);
+		}
+
+	/* get datalist structure */
+	start = *recursion;
+	if (datalist_ptr != NULL)
+		{
+		datalist = (struct mb_datalist_struct *) datalist_ptr;
+		*recursion = datalist->recursion;
+		if (print == MB_YES && datalist->printed == MB_NO)
+			{
+			fprintf(stderr,"<%2.2d> ", *recursion);
+			for (i=0;i<*recursion;i++)
+				fprintf(stderr,"\t");
+			fprintf(stderr,"%s\n", datalist->path);
+			datalist->printed = MB_YES;
+			}
+	
+		/* descend through the recursive datalist structures to the lowest current
+			level and return that current recursion level */
+		while (datalist->datalist != NULL)
+			{
+			datalist = datalist->datalist;
+			*recursion = datalist->recursion;
+			if (print == MB_YES && datalist->printed == MB_NO)
+				{
+				fprintf(stderr,"<%2.2d> ", *recursion);
+				for (i=0;i<*recursion;i++)
+					fprintf(stderr,"\t");
+				fprintf(stderr,"%s\n", datalist->path);
+				datalist->printed = MB_YES;
+				}
+			}
+		}
+
+	/* print output debug statements */
+	if (verbose >= 2)
+		{
+		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
+		fprintf(stderr,"dbg2  Return values:\n");
+		fprintf(stderr,"dbg2       recursion:   %d\n",*recursion);
 		fprintf(stderr,"dbg2       error:       %d\n",*error);
 		fprintf(stderr,"dbg2  Return status:\n");
 		fprintf(stderr,"dbg2       status:      %d\n",status);
@@ -4513,9 +4416,9 @@ int mb_get_relative_path(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		fprintf(stderr,"dbg2       ipwd:          %s\n",ipwd);
@@ -4658,7 +4561,7 @@ int mb_get_relative_path(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		fprintf(stderr,"dbg2       error:         %d\n",*error);
@@ -4676,8 +4579,8 @@ int mb_get_shortest_path(int verbose,
 	/* local variables */
 	char	*function_name = "mb_get_shortest_path";
 	int	status = MB_SUCCESS;
-	char	tmppath[MB_PATH_MAXLINE];
-	char	lasttoken[MB_PATH_MAXLINE];
+	char	tmppath[MB_PATH_MAXLINE] = {""};
+	char	lasttoken[MB_PATH_MAXLINE] = {""};
 	char	*result;
 	int	lasttokenordinary;
 	int	done, change;
@@ -4686,9 +4589,9 @@ int mb_get_shortest_path(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		}
@@ -4760,7 +4663,7 @@ int mb_get_shortest_path(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		fprintf(stderr,"dbg2       error:         %d\n",*error);
@@ -4779,7 +4682,7 @@ int mb_get_basename(int verbose,
 	/* local variables */
 	char	*function_name = "mb_get_basename";
 	int	status = MB_SUCCESS;
-	char	tmppath[MB_PATH_MAXLINE];
+	char	tmppath[MB_PATH_MAXLINE] = {""};
 	char	*result;
 	int	i;
 
@@ -4787,9 +4690,9 @@ int mb_get_basename(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> called\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Input arguments:\n");
-		fprintf(stderr,"dbg2       rcs_id:        %s\n",rcs_id);
+		fprintf(stderr,"dbg2       svn_id:        %s\n",svn_id);
 		fprintf(stderr,"dbg2       verbose:       %d\n",verbose);
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		}
@@ -4832,7 +4735,7 @@ int mb_get_basename(int verbose,
 	if (verbose >= 2)
 		{
 		fprintf(stderr,"\ndbg2  MBIO function <%s> completed\n",function_name);
-		fprintf(stderr,"dbg2  Revision id: %s\n",rcs_id);
+		fprintf(stderr,"dbg2  Revision id: %s\n",svn_id);
 		fprintf(stderr,"dbg2  Return values:\n");
 		fprintf(stderr,"dbg2       path:          %s\n",path);
 		fprintf(stderr,"dbg2       error:         %d\n",*error);

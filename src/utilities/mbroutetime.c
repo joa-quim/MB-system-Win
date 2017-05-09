@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbroutetime.c	5/4/2009
- *    $Id: mbroutetime.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbroutetime.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2009-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -50,7 +50,7 @@
 #define MBES_ONLINE_THRESHOLD		15.0
 #define MBES_ONLINE_COUNT		30
 
-static char rcs_id[] = "$Id: mbroutetime.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbroutetime.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -90,6 +90,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	char	file[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	int	beams_bath;
 	int	beams_amp;
 	int	pixels_ss;
@@ -397,7 +398,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -551,7 +552,7 @@ int main (int argc, char **argv)
         	if (read_datalist == MB_YES)
                 	{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    file,&format,&file_weight,&error))
+				    file,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
                         	read_data = MB_YES;
                 	else

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbset.c	1/4/2000
- *    $Id: mbset.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbset.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -49,7 +49,7 @@
 #include "mb_process.h"
 #include "mb_swap.h"
 
-static char rcs_id[] = "$Id: mbset.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbset.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -101,6 +101,7 @@ the manual pages for mbprocess and mbset. \n\n";
 	int	fstat;
  	int	format = 0;
 	char	mbp_ifile[MBP_FILENAMESIZE];
+	char	mbp_dfile[MBP_FILENAMESIZE];
 	int	mbp_format;
 	int	write_parameter_file = MB_NO;
 	int	nscan;
@@ -225,7 +226,7 @@ the manual pages for mbprocess and mbset. \n\n";
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    mbp_ifile,&mbp_format,&file_weight,&error))
+			    mbp_ifile,mbp_dfile,&mbp_format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1542,7 +1543,7 @@ the manual pages for mbprocess and mbset. \n\n";
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    mbp_ifile,&format,&file_weight,&error))
+			    mbp_ifile,mbp_dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

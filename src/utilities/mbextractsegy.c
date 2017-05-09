@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbextractsegy.c	4/18/2004
- *    $Id: mbextractsegy.c 2283 2016-10-23 09:33:10Z caress $
+ *    $Id: mbextractsegy.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -48,7 +48,7 @@
 #define MBES_NUM_PLOT_MAX		50
 #define MBES_MAX_SWEEP			1.0
 
-static char rcs_id[] = "$Id: mbextractsegy.c 2283 2016-10-23 09:33:10Z caress $";
+static char rcs_id[] = "$Id: mbextractsegy.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -89,6 +89,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	mb_path	file;
+	mb_path	dfile;
 	int	beams_bath;
 	int	beams_amp;
 	int	pixels_ss;
@@ -655,7 +656,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1407,7 +1408,7 @@ routelon[activewaypoint], navlat, routelat[activewaypoint], oktowrite);*/
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

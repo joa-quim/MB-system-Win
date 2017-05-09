@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbbackangle.c	1/6/95
- *    $Id: mbbackangle.c 2276 2016-06-11 05:17:46Z caress $
+ *    $Id: mbbackangle.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1995-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -83,7 +83,7 @@ int output_model(int verbose, FILE *tfp,
 	int *nmean, double *mean, double *sigma,
 	int *error);
 
-static char rcs_id[] = "$Id: mbbackangle.c 2276 2016-06-11 05:17:46Z caress $";
+static char rcs_id[] = "$Id: mbbackangle.c 2298 2017-04-10 07:57:48Z caress $";
 char program_name[] = "mbbackangle";
 
 /*--------------------------------------------------------------------*/
@@ -130,6 +130,7 @@ by MBprocess.";
 	double	speedmin;
 	double	timegap;
 	char	swathfile[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	char	amptablefile[MB_PATH_MAXLINE];
 	char	sstablefile[MB_PATH_MAXLINE];
 	FILE	*atfp = NULL;
@@ -778,7 +779,7 @@ by MBprocess.";
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1668,7 +1669,7 @@ r[0],r[1],r[2],v1[0],v1[1],v1[2],v2[0],v2[1],v2[2],v[0],v[1],v[2],angle);*/
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

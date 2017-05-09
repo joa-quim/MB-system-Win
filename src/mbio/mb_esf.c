@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_esf.c	4/10/2003
- *    $Id: mb_esf.c 2279 2016-07-08 07:49:17Z caress $
+ *    $Id: mb_esf.c 2300 2017-04-15 08:28:27Z caress $
  *
  *    Copyright (c) 2003-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -44,7 +44,7 @@ void mb_mergesort_setup(mb_u_char *list1, mb_u_char *list2, size_t n, size_t siz
 void mb_mergesort_insertionsort(mb_u_char *a, size_t n, size_t size,
 	int (*cmp)(const void *, const void *));
 
-static char svn_id[]="$Id: mb_esf.c 2279 2016-07-08 07:49:17Z caress $";
+static char svn_id[]="$Id: mb_esf.c 2300 2017-04-15 08:28:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 /* 	function mb_esf_check checks for an existing esf file. */
@@ -647,45 +647,45 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf,
 				if (esf->edit[j].beam == ibeam
 					&& esf->edit[j].use < 100)
 					{
-					/* apply edit */
-					if (esf->edit[j].action == MBP_EDIT_FLAG
-					&& !mb_beam_check_flag_null(beamflag[i]))
+					/* some actions only work on non-null beams */
+					if (!mb_beam_check_flag_unusable(beamflag[i]))
 						{
-//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_FLAG  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
-						beamflag[i] = mb_beam_set_flag_manual(beamflag[i]);
-						esf->edit[j].use++;
-						apply = MB_YES;
-						action = esf->edit[j].action;
-//	fprintf(stderr," %d\n",beamflag[i]);
-						}
-					else if (esf->edit[j].action == MBP_EDIT_FILTER
-					&& !mb_beam_check_flag_null(beamflag[i]))
-						{
-//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_FILTER  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
-						beamflag[i] = mb_beam_set_flag_filter(beamflag[i]);
-						esf->edit[j].use++;
-						apply = MB_YES;
-						action = esf->edit[j].action;
-//	fprintf(stderr," %d\n",beamflag[i]);
-						}
-					else if (esf->edit[j].action == MBP_EDIT_UNFLAG
-					&& !mb_beam_check_flag_null(beamflag[i]))
-						{
-//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_UNFLAG  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
-						beamflag[i] = mb_beam_set_flag_none(beamflag[i]);
-						esf->edit[j].use++;
-						apply = MB_YES;
-						action = esf->edit[j].action;
-//	fprintf(stderr," %d\n",beamflag[i]);
-						}
-					else if (esf->edit[j].action == MBP_EDIT_ZERO)
-						{
-//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_ZERO  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
-						beamflag[i] = mb_beam_set_flag_null(beamflag[i]);
-						esf->edit[j].use++;
-						apply = MB_YES;
-						action = esf->edit[j].action;
-//	fprintf(stderr," %d\n",beamflag[i]);
+						if (esf->edit[j].action == MBP_EDIT_FLAG)
+							{
+	//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_FLAG  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
+							beamflag[i] = mb_beam_set_flag_manual(beamflag[i]);
+							esf->edit[j].use++;
+							apply = MB_YES;
+							action = esf->edit[j].action;
+	//	fprintf(stderr," %d\n",beamflag[i]);
+							}
+						else if (esf->edit[j].action == MBP_EDIT_FILTER)
+							{
+	//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_FILTER  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
+							beamflag[i] = mb_beam_set_flag_filter(beamflag[i]);
+							esf->edit[j].use++;
+							apply = MB_YES;
+							action = esf->edit[j].action;
+	//	fprintf(stderr," %d\n",beamflag[i]);
+							}
+						else if (esf->edit[j].action == MBP_EDIT_UNFLAG)
+							{
+	//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_UNFLAG  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
+							beamflag[i] = mb_beam_set_flag_none(beamflag[i]);
+							esf->edit[j].use++;
+							apply = MB_YES;
+							action = esf->edit[j].action;
+	//	fprintf(stderr," %d\n",beamflag[i]);
+							}
+						else if (esf->edit[j].action == MBP_EDIT_ZERO)
+							{
+	//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_ZERO  flag:%d ",i,j,esf->edit[j].time_d,beamflag[i]);
+							beamflag[i] = mb_beam_set_flag_null(beamflag[i]);
+							esf->edit[j].use++;
+							apply = MB_YES;
+							action = esf->edit[j].action;
+	//	fprintf(stderr," %d\n",beamflag[i]);
+							}
 						}
 					else
 						{
@@ -727,7 +727,6 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf,
 	/* return success */
 	return(status);
 }
-
 
 /*--------------------------------------------------------------------*/
 /* 	function mb_esf_save saves one edit event to an esf file. */
@@ -890,11 +889,8 @@ int mb_esf_close(int verbose, struct mb_esf_struct *esf, int *error)
 		}
 
 	/* deallocate the arrays */
-	if (esf->nedit != 0)
-		{
-		if (esf->edit != NULL)
-			status = mb_freed(verbose,__FILE__, __LINE__,(void **)&(esf->edit), error);
-		}
+	if (esf->edit != NULL)
+		status = mb_freed(verbose,__FILE__, __LINE__,(void **)&(esf->edit), error);
 	esf->nedit = 0;
 
 	/* close the esf file */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_mem.c	3/1/93
- *    $Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $
+ *    $Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -47,7 +47,7 @@ static int	mb_alloc_overflow = MB_NO;
 /* Local debug define */
 /* #define MB_MEM_DEBUG 1 */
 
-static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
+static char svn_id[]="$Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_mem_debug_on(int verbose, int *error)
@@ -384,21 +384,21 @@ int mb_realloc(int verbose, size_t size, void **ptr, int *error)
 	    {
 	    /* if pointer non-NULL update it */
 	    if (size > 0 && *ptr != NULL)
-		{
-		mb_alloc_ptr[iptr] = *ptr;
-		mb_alloc_size[iptr] = size;
-		}
+			{
+			mb_alloc_ptr[iptr] = *ptr;
+			mb_alloc_size[iptr] = size;
+			}
 
 	    /* else remove it from list */
 	    else
-		{
-		for (i=iptr;i<n_mb_alloc-1;i++)
 			{
-			mb_alloc_ptr[i] = mb_alloc_ptr[i+1];
-			mb_alloc_size[i] = mb_alloc_size[i+1];
+			for (i=iptr;i<n_mb_alloc-1;i++)
+				{
+				mb_alloc_ptr[i] = mb_alloc_ptr[i+1];
+				mb_alloc_size[i] = mb_alloc_size[i+1];
+				}
+			n_mb_alloc--;
 			}
-		n_mb_alloc--;
-		}
 	    }
 
 	/* else add to list if possible if size > 0 */
@@ -406,18 +406,18 @@ int mb_realloc(int verbose, size_t size, void **ptr, int *error)
 	    && size > 0)
 	    {
 	    if (n_mb_alloc < MB_MEMORY_HEAP_MAX)
-		{
-		mb_alloc_ptr[n_mb_alloc] = *ptr;
-		mb_alloc_size[n_mb_alloc] = size;
-		n_mb_alloc++;
-		}
+			{
+			mb_alloc_ptr[n_mb_alloc] = *ptr;
+			mb_alloc_size[n_mb_alloc] = size;
+			n_mb_alloc++;
+			}
 	    else
-		{
-		mb_alloc_overflow = MB_YES;
+			{
+			mb_alloc_overflow = MB_YES;
 #ifdef MB_MEM_DEBUG
 		fprintf(stderr,"NOTICE: mbm_mem overflow pointer allocated %p in function %s\n",*ptr, function_name);
 #endif
-		}
+			}
 	    }
 
 	/* print debug statements */
@@ -960,7 +960,7 @@ int mb_memory_list(int verbose, int *error)
 int mb_register_array(int verbose, void *mbio_ptr,
 		int type, size_t size, void **handle, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $";
 	char	*function_name = "mb_register_array";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1065,7 +1065,7 @@ mb_io_ptr->regarray_size[mb_io_ptr->n_regarray-1]);*/
 int mb_update_arrays(int verbose, void *mbio_ptr,
 		int nbath, int namp, int nss, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $";
 	char	*function_name = "mb_update_arrays";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1399,7 +1399,7 @@ int mb_update_arrays(int verbose, void *mbio_ptr,
 int mb_update_arrayptr(int verbose, void *mbio_ptr,
 		void **handle, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $";
 	char	*function_name = "mb_update_arrayptr";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1452,7 +1452,7 @@ fprintf(stderr,"\n");*/
 /*--------------------------------------------------------------------*/
 int mb_list_arrays(int verbose, void *mbio_ptr, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $";
 	char	*function_name = "mb_list_arrays";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;
@@ -1497,7 +1497,7 @@ int mb_list_arrays(int verbose, void *mbio_ptr, int *error)
 /*--------------------------------------------------------------------*/
 int mb_deall_ioarrays(int verbose, void *mbio_ptr, int *error)
 {
-	static char svn_id[]="$Id: mb_mem.c 2291 2017-01-12 09:20:59Z caress $";
+	static char svn_id[]="$Id: mb_mem.c 2300 2017-04-15 08:28:27Z caress $";
 	char	*function_name = "mb_deall_ioarrays";
 	int	status = MB_SUCCESS;
 	struct mb_io_struct *mb_io_ptr;

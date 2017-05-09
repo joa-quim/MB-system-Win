@@ -105,18 +105,30 @@ is specified, the swath file's processing parameter file is modified so that <B>
 applies the tidal model during processing.
 <P>
 <A NAME="lbAF">&nbsp;</A>
-<H2>AUTHORSHIP</H2>
+<H2>MB-SYSTEM AUTHORSHIP</H2>
 
-David W. Caress (<A HREF="mailto:caress@mbari.org">caress@mbari.org</A>)
+David W. Caress
 <BR>
 
 <BR>&nbsp;&nbsp;Monterey&nbsp;Bay&nbsp;Aquarium&nbsp;Research&nbsp;Institute
 <BR>
 
-Dale N. Chayes (<A HREF="mailto:dale@ldeo.columbia.edu">dale@ldeo.columbia.edu</A>)
+Dale N. Chayes
 <BR>
 
-<BR>&nbsp;&nbsp;Lamont-Doherty&nbsp;Earth&nbsp;Observatory
+<BR>&nbsp;&nbsp;Center&nbsp;for&nbsp;Coastal&nbsp;and&nbsp;Ocean&nbsp;Mapping
+<BR>
+
+<BR>&nbsp;&nbsp;University&nbsp;of&nbsp;New&nbsp;Hampshire
+<BR>
+
+Christian do Santos Ferreira
+<BR>
+
+<BR>&nbsp;&nbsp;MARUM&nbsp;-&nbsp;Center&nbsp;for&nbsp;Marine&nbsp;Environmental&nbsp;Sciences
+<BR>
+
+<BR>&nbsp;&nbsp;University&nbsp;of&nbsp;Bremen
 <P>
 <A NAME="lbAG">&nbsp;</A>
 <H2>OPTIONS</H2>
@@ -266,7 +278,7 @@ at 60 second intervals over the day February 21, 2009. The following will suffic
 The shell output looks like:
 <P>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Program&nbsp;mbotps<BR>
-<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Version&nbsp;$Id:&nbsp;mbotps.1&nbsp;2215&nbsp;2014-11-29&nbsp;22:21:19Z&nbsp;caress&nbsp;$<BR>
+<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Version&nbsp;$Id:&nbsp;mbotps.1&nbsp;2300&nbsp;2017-04-15&nbsp;08:28:27Z&nbsp;caress&nbsp;$<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>MB-system&nbsp;Version&nbsp;5.4.2137<BR>
 <P>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Checking&nbsp;for&nbsp;available&nbsp;OTPS&nbsp;tide&nbsp;models<BR>
@@ -297,7 +309,7 @@ The shell output looks like:
 The output tidal model is in the file tide_model.txt, which includes
 data that look like:
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Tide&nbsp;model&nbsp;generated&nbsp;by&nbsp;program&nbsp;mbotps<BR>
-<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Version:&nbsp;$Id:&nbsp;mbotps.1&nbsp;2215&nbsp;2014-11-29&nbsp;22:21:19Z&nbsp;caress&nbsp;$<BR>
+<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Version:&nbsp;$Id:&nbsp;mbotps.1&nbsp;2300&nbsp;2017-04-15&nbsp;08:28:27Z&nbsp;caress&nbsp;$<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;MB-System&nbsp;Version:&nbsp;5.4.2137<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Tide&nbsp;model&nbsp;generated&nbsp;by&nbsp;program&nbsp;mbotps<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;which&nbsp;in&nbsp;turn&nbsp;calls&nbsp;OTPS&nbsp;program&nbsp;predict_tide&nbsp;obtained&nbsp;from:<BR>
@@ -346,7 +358,7 @@ The resulting shell output looks like:
 <BR>
 
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Program&nbsp;mbotps<BR>
-<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Version&nbsp;$Id:&nbsp;mbotps.1&nbsp;2215&nbsp;2014-11-29&nbsp;22:21:19Z&nbsp;caress&nbsp;$<BR>
+<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Version&nbsp;$Id:&nbsp;mbotps.1&nbsp;2300&nbsp;2017-04-15&nbsp;08:28:27Z&nbsp;caress&nbsp;$<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>MB-system&nbsp;Version&nbsp;5.4.2137<BR>
 <P>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>Checking&nbsp;for&nbsp;available&nbsp;OTPS&nbsp;tide&nbsp;models<BR>
@@ -385,7 +397,7 @@ The resulting shell output looks like:
 
 The output tide files have the same structure shown above:
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Tide&nbsp;model&nbsp;generated&nbsp;by&nbsp;program&nbsp;mbotps<BR>
-<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Version:&nbsp;$Id:&nbsp;mbotps.1&nbsp;2215&nbsp;2014-11-29&nbsp;22:21:19Z&nbsp;caress&nbsp;$<BR>
+<BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Version:&nbsp;$Id:&nbsp;mbotps.1&nbsp;2300&nbsp;2017-04-15&nbsp;08:28:27Z&nbsp;caress&nbsp;$<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;MB-System&nbsp;Version:&nbsp;5.4.2137<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;Tide&nbsp;model&nbsp;generated&nbsp;by&nbsp;program&nbsp;mbotps<BR>
 <BR>&nbsp;<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>#&nbsp;which&nbsp;in&nbsp;turn&nbsp;calls&nbsp;OTPS&nbsp;program&nbsp;predict_tide&nbsp;obtained&nbsp;from:<BR>
@@ -436,7 +448,7 @@ easy.
 <DT><A HREF="#lbAC">VERSION</A><DD>
 <DT><A HREF="#lbAD">SYNOPSIS</A><DD>
 <DT><A HREF="#lbAE">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAF">AUTHORSHIP</A><DD>
+<DT><A HREF="#lbAF">MB-SYSTEM AUTHORSHIP</A><DD>
 <DT><A HREF="#lbAG">OPTIONS</A><DD>
 <DT><A HREF="#lbAH">EXAMPLES</A><DD>
 <DT><A HREF="#lbAI">SEE ALSO</A><DD>

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbareaclean.c	2/27/2003
- *    $Id: mbareaclean.c 2266 2016-02-11 19:01:33Z caress $
+ *    $Id: mbareaclean.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2003-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -114,7 +114,7 @@ int getsoundingptr(int verbose, int soundingid,
 int flag_sounding(int verbose, int flag, int output_bad, int output_good,
 		  struct mbareaclean_sndg_struct *sndg, int *error);
 
-static char rcs_id[] = "$Id: mbareaclean.c 2266 2016-02-11 19:01:33Z caress $";
+static char rcs_id[] = "$Id: mbareaclean.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -143,6 +143,7 @@ int main (int argc, char **argv)
 	char	read_file[MB_PATH_MAXLINE];
 	char	swathfile[MB_PATH_MAXLINE];
 	char	swathfileread[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	void	*datalist;
 	int	look_processed = MB_DATALIST_LOOK_UNSET;
 	int	read_data;
@@ -653,7 +654,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1085,7 +1086,7 @@ files[sndg->sndg_file].ping_time_d[sndg->sndg_ping], sndg->sndg_depth);*/
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

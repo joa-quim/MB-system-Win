@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbrolltimelag.c	11/10/2005
  *
- *    $Id: mbrolltimelag.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbrolltimelag.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2005-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -44,7 +44,7 @@
 
 #define	MBRTL_ALLOC_CHUNK	1000
 
-static char rcs_id[] = "$Id: mbrolltimelag.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mbrolltimelag.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -70,6 +70,7 @@ int main (int argc, char **argv)
 	/* Files and formats */
 	char	swathdata[MB_PATH_MAXLINE];
 	char	swathfile[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	char	swathroot[MB_PATH_MAXLINE];
 	char	outroot[MB_PATH_MAXLINE];
 	char	outroot_defined = MB_NO;
@@ -388,7 +389,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -680,7 +681,7 @@ int main (int argc, char **argv)
         	if (read_datalist == MB_YES)
                 	{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    swathfile,&format,&file_weight,&error))
+				    swathfile,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
                         	read_data = MB_YES;
                 	else

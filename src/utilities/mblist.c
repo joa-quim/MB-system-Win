@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mblist.c	2/1/93
- *    $Id: mblist.c 2293 2017-03-06 20:21:22Z caress $
+ *    $Id: mblist.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -61,6 +61,10 @@
 #define	MBLIST_SET_ON	1
 #define	MBLIST_SET_ALL	2
 #define MBLIST_SET_EXCLUDE_OUTER 3
+#define MBLIST_SEGMENT_MODE_NONE		0
+#define MBLIST_SEGMENT_MODE_TAG			1
+#define MBLIST_SEGMENT_MODE_SWATHFILE	2
+#define MBLIST_SEGMENT_MODE_DATALIST	3
 
 /* function prototypes */
 int set_output(	int	verbose,
@@ -173,7 +177,7 @@ int mb_get_raw_simrad3(int verbose, void *mbio_ptr,
 /* NaN value */
 double	NaN;
 
-static char rcs_id[] = "$Id: mblist.c 2293 2017-03-06 20:21:22Z caress $";
+static char rcs_id[] = "$Id: mblist.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -213,6 +217,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	char	file[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	int	beams_bath;
 	int	beams_amp;
 	int	pixels_ss;
@@ -264,8 +269,9 @@ int main (int argc, char **argv)
 	int	netcdf = MB_NO;
 	int	netcdf_cdl = MB_YES;
 	int	segment = MB_NO;
-	char	segment_tag[MB_PATH_MAXLINE];
-	char	delimiter[MB_PATH_MAXLINE];
+	int segment_mode = MBLIST_SEGMENT_MODE_NONE;
+	char segment_tag[MB_PATH_MAXLINE];
+	char delimiter[MB_PATH_MAXLINE];
 
 	/* MBIO read values */
 	void	*mbio_ptr = NULL;
@@ -606,6 +612,12 @@ int main (int argc, char **argv)
 		case 'z':
 			segment = MB_YES;
 			sscanf (optarg,"%s", segment_tag);
+			if (strcmp(segment_tag, "swathfile") == 0)
+				segment_mode = MBLIST_SEGMENT_MODE_SWATHFILE;
+			else if (strcmp(segment_tag, "datalist") == 0)
+				segment_mode = MBLIST_SEGMENT_MODE_DATALIST;
+			else
+				segment_mode = MBLIST_SEGMENT_MODE_TAG;
 			flag++;
 			break;
 		case '?':
@@ -669,6 +681,7 @@ int main (int argc, char **argv)
 		fprintf(stderr,"dbg2       netcdf:         %d\n",netcdf);
 		fprintf(stderr,"dbg2       netcdf_cdl:     %d\n",netcdf_cdl);
 		fprintf(stderr,"dbg2       segment:        %d\n",segment);
+		fprintf(stderr,"dbg2       segment_mode:   %d\n",segment_mode);
 		fprintf(stderr,"dbg2       segment_tag:    %s\n",segment_tag);
 		fprintf(stderr,"dbg2       delimiter:      %s\n",delimiter);
 		fprintf(stderr,"dbg2       beam_set:       %d\n",beam_set);
@@ -725,7 +738,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -2337,7 +2350,12 @@ int main (int argc, char **argv)
 	/* output separator for GMT style segment file output */
 	if (segment == MB_YES && ascii == MB_YES && netcdf == MB_NO)
 		{
-		fprintf(output[0],"%s\n", segment_tag);
+		if (segment_mode == MBLIST_SEGMENT_MODE_TAG)
+			fprintf(output[0],"%s\n", segment_tag);
+		else if (segment_mode == MBLIST_SEGMENT_MODE_SWATHFILE)
+			fprintf(output[0],"# %s\n", file);
+		else if (segment_mode == MBLIST_SEGMENT_MODE_DATALIST)
+			fprintf(output[0],"# %s\n", dfile);
 		}
 
 	/* read and print data */
@@ -2940,7 +2958,7 @@ int main (int argc, char **argv)
                                                 fprintf(output[i],"%u",beamflag[k]);
 					    else
                                                 {
-                                                if (mb_beam_check_flag_null(beamflag[k]))
+                                                if (mb_beam_check_flag_unusable(beamflag[k]))
                                                     fprintf(output[i],"-");
                                                else if (mb_beam_ok(beamflag[k]))
                                                     fprintf(output[i],"G");
@@ -2953,8 +2971,6 @@ int main (int argc, char **argv)
                                                else if (mb_beam_check_flag_gt_1x_iho(beamflag[k]))
                                                     fprintf(output[i],"F");
                                                else if (mb_beam_check_flag_gt_2x_iho(beamflag[k]))
-                                                    fprintf(output[i],"F");
-                                               else if (mb_beam_check_flag_footprint(beamflag[k]))
                                                     fprintf(output[i],"F");
                                                else if (mb_beam_check_flag_sonar(beamflag[k]))
                                                     fprintf(output[i],"S");
@@ -4758,7 +4774,7 @@ int main (int argc, char **argv)
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

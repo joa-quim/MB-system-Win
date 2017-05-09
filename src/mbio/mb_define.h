@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_define.h	4/21/96
- *    $Id: mb_define.h 2295 2017-03-27 07:28:28Z caress $
+ *    $Id: mb_define.h 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1996-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -73,7 +73,7 @@
 /* MB-system version id */
 #define	MB_VERSION	VERSION
 #define	MB_BUILD_DATE	VERSION_DATE
-#define	MB_SVN		"$Id: mb_define.h 2295 2017-03-27 07:28:28Z caress $"
+#define	MB_SVN		"$Id: mb_define.h 2298 2017-04-10 07:57:48Z caress $"
 
 /* type definitions of signed and unsigned char */
 typedef unsigned char	mb_u_char;
@@ -244,7 +244,8 @@ int mb_format_info(int verbose, int *format, int *system,
 		char *format_name, char *system_name, char *format_description,
 		int *numfile, int *filetype, int *variable_beams,
 		int *traveltime, int *beam_flagging,
-		int *platform_source, int *nav_source, int *heading_source, int *vru_source, int *svp_source,
+		int *platform_source, int *nav_source, int *sonardepth_source,
+        int *heading_source, int *attitude_source, int *svp_source,
 		double *beamwidth_xtrack, double *beamwidth_ltrack,
 		int *error);
 int mb_format(int verbose, int *format, int *error);
@@ -258,8 +259,8 @@ int mb_format_flags(int verbose, int *format,
 		int *variable_beams, int *traveltime, int *beam_flagging,
 		int *error);
 int mb_format_source(int verbose, int *format,
-		int *platform_source, int *nav_source, int *heading_source,
-		int *vru_source, int *svp_source,
+		int *platform_source, int *nav_source, int *sonardepth_source,
+        int *heading_source, int *attitude_source, int *svp_source,
 		int *error);
 int mb_format_beamwidth(int verbose, int *format,
 		double *beamwidth_xtrack, double *beamwidth_ltrack,
@@ -267,20 +268,25 @@ int mb_format_beamwidth(int verbose, int *format,
 int mb_get_format(int verbose, char *filename, char *fileroot,
 		    int *format, int *error);
 int mb_datalist_open(int verbose,
-		void **datalist,
+		void **datalist_ptr,
 		char *path,
 		int look_processed,
 		int *error);
 int mb_datalist_read(int verbose,
-		void *datalist,
-		char *path, int *format, double *weight,
+		void *datalist_ptr,
+		char *path, char *dpath, int *format, double *weight,
 		int *error);
 int mb_datalist_read2(int verbose,
-		void *datalist,
-		int *pstatus, char *path, char *ppath, int *format, double *weight,
+		void *datalist_ptr,
+		int *pstatus, char *path, char *ppath, char *dpath, int *format, double *weight,
+		int *error);
+int mb_datalist_recursion(int verbose,
+		void *datalist_ptr,
+        int print,
+		int *recursion,
 		int *error);
 int mb_datalist_close(int verbose,
-		void **datalist, int *error);
+		void **datalist_ptr, int *error);
 int mb_get_relative_path(int verbose,
 		char *path,
 		char *pwd,

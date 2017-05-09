@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_hsunknwn.c	10/13/2008
- *	$Id: mbr_hsunknwn.c 2291 2017-01-12 09:20:59Z caress $
+ *	$Id: mbr_hsunknwn.c 2297 2017-04-05 19:46:49Z caress $
  *
  *    Copyright (c) 2008-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -94,8 +94,9 @@ int mbr_info_hsunknwn(int verbose,
 			int *beam_flagging,
 			int *platform_source,
 			int *nav_source,
+			int *sensordepth_source,
 			int *heading_source,
-			int *vru_source,
+			int *attitude_source,
 			int *svp_source,
 			double *beamwidth_xtrack,
 			double *beamwidth_ltrack,
@@ -105,7 +106,7 @@ int mbr_dem_hsunknwn(int verbose, void *mbio_ptr, int *error);
 int mbr_rt_hsunknwn(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_hsunknwn(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 
-static char rcs_id[]="$Id: mbr_hsunknwn.c 2291 2017-01-12 09:20:59Z caress $";
+static char rcs_id[]="$Id: mbr_hsunknwn.c 2297 2017-04-05 19:46:49Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_hsunknwn(int verbose, void *mbio_ptr, int *error)
@@ -142,8 +143,9 @@ int mbr_register_hsunknwn(int verbose, void *mbio_ptr, int *error)
 			&mb_io_ptr->beam_flagging,
 			&mb_io_ptr->platform_source,
 			&mb_io_ptr->nav_source,
+			&mb_io_ptr->sensordepth_source,
 			&mb_io_ptr->heading_source,
-			&mb_io_ptr->vru_source,
+			&mb_io_ptr->attitude_source,
 			&mb_io_ptr->svp_source,
 			&mb_io_ptr->beamwidth_xtrack,
 			&mb_io_ptr->beamwidth_ltrack,
@@ -190,8 +192,9 @@ int mbr_register_hsunknwn(int verbose, void *mbio_ptr, int *error)
 		fprintf(stderr,"dbg2       beam_flagging:      %d\n",mb_io_ptr->beam_flagging);
 		fprintf(stderr,"dbg2       platform_source:    %d\n",mb_io_ptr->platform_source);
 		fprintf(stderr,"dbg2       nav_source:         %d\n",mb_io_ptr->nav_source);
+		fprintf(stderr,"dbg2       sensordepth_source: %d\n",mb_io_ptr->nav_source);
 		fprintf(stderr,"dbg2       heading_source:     %d\n",mb_io_ptr->heading_source);
-		fprintf(stderr,"dbg2       vru_source:         %d\n",mb_io_ptr->vru_source);
+		fprintf(stderr,"dbg2       attitude_source:    %d\n",mb_io_ptr->attitude_source);
 		fprintf(stderr,"dbg2       svp_source:         %d\n",mb_io_ptr->svp_source);
 		fprintf(stderr,"dbg2       beamwidth_xtrack:   %f\n",mb_io_ptr->beamwidth_xtrack);
 		fprintf(stderr,"dbg2       beamwidth_ltrack:   %f\n",mb_io_ptr->beamwidth_ltrack);
@@ -239,8 +242,9 @@ int mbr_info_hsunknwn(int verbose,
 			int *beam_flagging,
 			int *platform_source,
 			int *nav_source,
+			int *sensordepth_source,
 			int *heading_source,
-			int *vru_source,
+			int *attitude_source,
 			int *svp_source,
 			double *beamwidth_xtrack,
 			double *beamwidth_ltrack,
@@ -275,8 +279,9 @@ int mbr_info_hsunknwn(int verbose,
 	*beam_flagging = MB_YES;
 	*platform_source = MB_DATA_NONE;
 	*nav_source = MB_DATA_DATA;
+	*sensordepth_source = MB_DATA_DATA;
 	*heading_source = MB_DATA_DATA;
-	*vru_source = MB_DATA_DATA;
+	*attitude_source = MB_DATA_DATA;
 	*svp_source = MB_DATA_NONE;
 	*beamwidth_xtrack = 2.0;
 	*beamwidth_ltrack = 2.0;
@@ -300,8 +305,9 @@ int mbr_info_hsunknwn(int verbose,
 		fprintf(stderr,"dbg2       beam_flagging:      %d\n",*beam_flagging);
 		fprintf(stderr,"dbg2       platform_source:    %d\n",*platform_source);
 		fprintf(stderr,"dbg2       nav_source:         %d\n",*nav_source);
+		fprintf(stderr,"dbg2       sensordepth_source: %d\n",*sensordepth_source);
 		fprintf(stderr,"dbg2       heading_source:     %d\n",*heading_source);
-		fprintf(stderr,"dbg2       vru_source:         %d\n",*vru_source);
+		fprintf(stderr,"dbg2       attitude_source:      %d\n",*attitude_source);
 		fprintf(stderr,"dbg2       svp_source:         %d\n",*svp_source);
 		fprintf(stderr,"dbg2       beamwidth_xtrack:   %f\n",*beamwidth_xtrack);
 		fprintf(stderr,"dbg2       beamwidth_ltrack:   %f\n",*beamwidth_ltrack);

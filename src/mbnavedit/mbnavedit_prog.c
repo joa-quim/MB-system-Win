@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavedit_prog.c	6/23/95
- *    $Id: mbnavedit_prog.c 2291 2017-01-12 09:20:59Z caress $
+ *    $Id: mbnavedit_prog.c 2297 2017-04-05 19:46:49Z caress $
  *
  *    Copyright (c) 1995-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -123,7 +123,7 @@ struct mbnavedit_plot_struct
 	};
 
 /* id variables */
-static char rcs_id[] = "$Id: mbnavedit_prog.c 2291 2017-01-12 09:20:59Z caress $";
+static char rcs_id[] = "$Id: mbnavedit_prog.c 2297 2017-04-05 19:46:49Z caress $";
 static char program_name[] = "MBNAVEDIT";
 static char help_message[] =  "MBNAVEDIT is an interactive navigation editor for swath sonar data.\n\tIt can work with any data format supported by the MBIO library.\n";
 static char usage_message[] = "mbnavedit [-Byr/mo/da/hr/mn/sc -D  -Eyr/mo/da/hr/mn/sc \n\t-Fformat -Ifile -Ooutfile -X -V -H]";
@@ -136,8 +136,9 @@ static char	*message = NULL;
 /* MBIO control parameters */
 static int  platform_source;
 static int	nav_source;
+static int	sensordepth_source;
 static int	heading_source;
-static int	vru_source;
+static int	attitude_source;
 static int	svp_source;
 static int	pings;
 static int	lonflip;
@@ -757,8 +758,8 @@ int mbnavedit_open_file(int useprevious)
 
 		/* initialize reading the input multibeam file */
 		status = mb_format_source(verbose, &format_use,
-				&platform_source, &nav_source, &heading_source,
-				&vru_source, &svp_source,
+				&platform_source, &nav_source, &sensordepth_source,
+				&heading_source, &attitude_source, &svp_source,
 				&error);
 		if ((status = mb_read_init(
 			verbose,ifile_use,format_use,pings,lonflip,bounds,

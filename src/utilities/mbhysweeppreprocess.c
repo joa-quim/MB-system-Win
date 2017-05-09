@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbhysweeppreprocess.c	1/1/2012
- *    $Id: mbhysweeppreprocess.c 2276 2016-06-11 05:17:46Z caress $
+ *    $Id: mbhysweeppreprocess.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2013-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -60,7 +60,7 @@
 #define MBHYSWEEPPREPROCESS_NAVFORMAT_NONE	0
 #define MBHYSWEEPPREPROCESS_NAVFORMAT_OFG	1
 
-static char rcs_id[] = "$Id: mbhysweeppreprocess.c 2276 2016-06-11 05:17:46Z caress $";
+static char rcs_id[] = "$Id: mbhysweeppreprocess.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -98,6 +98,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	char	ifile[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	char	ofile[MB_PATH_MAXLINE];
 	int	ofile_set = MB_NO;
 	int	beams_bath;
@@ -111,7 +112,8 @@ int main (int argc, char **argv)
 	int platform_source;
 	int	nav_source;
 	int	heading_source;
-	int	vru_source;
+	int sensordepth_source;
+	int	attitude_source;
 	int	svp_source;
 
 	/* platform definition file */
@@ -1031,7 +1033,7 @@ int main (int argc, char **argv)
 			exit(error);
 			}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    ifile,&format,&file_weight,&error))
+			    ifile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 			read_data = MB_YES;
 	    else
@@ -1070,8 +1072,8 @@ int main (int argc, char **argv)
 	
 		/* check format and get data sources */
 		if ((status = mb_format_source(verbose, &format,
-				&platform_source, &nav_source, &heading_source,
-				&vru_source, &svp_source,
+				&platform_source, &nav_source, &sensordepth_source, &heading_source,
+				&attitude_source, &svp_source,
 				&error)) == MB_FAILURE)
 			{
 			mb_error(verbose,error,&message);
@@ -1481,7 +1483,7 @@ int main (int argc, char **argv)
 			if (read_datalist == MB_YES)
 					{
 			if ((status = mb_datalist_read(verbose,datalist,
-					ifile,&format,&file_weight,&error))
+					ifile,dfile,&format,&file_weight,&error))
 					== MB_SUCCESS)
 							read_data = MB_YES;
 					else
@@ -1795,7 +1797,7 @@ fprintf(stderr,"Applying timelag to %d sonardepth nav data\n", nsonardepth);
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    ifile,&format,&file_weight,&error))
+			    ifile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -2723,7 +2725,7 @@ fprintf(stderr,"Applying timelag to %d sonardepth nav data\n", nsonardepth);
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    ifile,&format,&file_weight,&error))
+			    ifile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

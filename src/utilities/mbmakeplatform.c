@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbmakeplatform.c	9/5/2015
- *    $Id: mbmakeplatform.c 2276 2016-06-11 05:17:46Z caress $
+ *    $Id: mbmakeplatform.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2015-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -22,7 +22,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbmakeplatform.c 2276 2016-06-11 05:17:46Z caress $";
+static char version_id[] = "$Id: mbmakeplatform.c 2298 2017-04-10 07:57:48Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -226,6 +226,7 @@ int main (int argc, char **argv)
 	/* MBIO read control parameters */
 	int		read_datalist = MB_NO;
 	mb_path	swath_file;
+	mb_path	dfile;
 	void	*datalist;
 	int		look_processed = MB_DATALIST_LOOK_UNSET;
 	int		read_data;
@@ -253,7 +254,8 @@ int main (int argc, char **argv)
 	int platform_source;
 	int	nav_source;
 	int	heading_source;
-	int	vru_source;
+	int sensordepth_source;
+	int	attitude_source;
 	int	svp_source;
 	
 	/* platform */
@@ -794,7 +796,7 @@ int main (int argc, char **argv)
 							program_name);
 						exit(error);
 						}
-					if ((status = mb_datalist_read(verbose, datalist, swath_file,
+					if ((status = mb_datalist_read(verbose, datalist, swath_file, dfile, 
 												   &input_swath_format, &file_weight, &error))
 							== MB_SUCCESS)
 						read_data = MB_YES;
@@ -813,8 +815,8 @@ int main (int argc, char **argv)
 					{
 					/* check format and get data sources */
 					if ((status = mb_format_source(verbose, &input_swath_format,
-							&platform_source, &nav_source, &heading_source,
-							&vru_source, &svp_source,
+							&platform_source, &nav_source, &sensordepth_source,
+							&heading_source, &attitude_source, &svp_source,
 							&error)) == MB_FAILURE)
 						{
 						mb_error(verbose,error,&message);
@@ -844,6 +846,8 @@ int main (int argc, char **argv)
 					store_ptr = (void *) mb_io_ptr->store_data;
 								
 					/* read data */
+//fprintf(stderr,"Look for platform data in file? error:%d input_swath_platform_defined:%d\n",
+//error,input_swath_platform_defined);
 					while (error <= MB_ERROR_NO_ERROR
 						   && input_swath_platform_defined == MB_NO)
 						{
@@ -851,6 +855,9 @@ int main (int argc, char **argv)
 									&kind, &error);
 				
 						/* if platform_source kind then extract platform definition */
+//fprintf(stderr,"error:%d kind:%d platform_source:%d YES/NO:%d\n",
+//error,kind,platform_source,
+//(error <= MB_ERROR_NO_ERROR && kind == platform_source && platform_source != MB_DATA_NONE));
 						if (error <= MB_ERROR_NO_ERROR
 							&& kind == platform_source
 							&& platform_source != MB_DATA_NONE)
@@ -876,7 +883,7 @@ int main (int argc, char **argv)
 					if (read_datalist == MB_YES)
 						{
 						if ((status = mb_datalist_read(verbose,datalist,
-								swath_file, &input_swath_format, &file_weight,
+								swath_file, dfile, &input_swath_format, &file_weight,
 								&error))
 								== MB_SUCCESS)
 							read_data = MB_YES;

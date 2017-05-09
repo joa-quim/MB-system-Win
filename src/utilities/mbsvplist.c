@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsvplist.c	1/3/2001
- *    $Id: mbsvplist.c 2286 2016-11-09 01:33:41Z caress $
+ *    $Id: mbsvplist.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2001-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -74,7 +74,7 @@ struct mbsvplist_svp_struct {
 	double	velocity[MB_SVP_MAX];
 };
 
-static char svn_id[] = "$Id: mbsvplist.c 2286 2016-11-09 01:33:41Z caress $";
+static char svn_id[] = "$Id: mbsvplist.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -112,6 +112,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	char	file[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	int	beams_bath;
 	int	beams_amp;
 	int	pixels_ss;
@@ -147,8 +148,9 @@ int main (int argc, char **argv)
 	/* data record source types */
 	int platform_source;
 	int	nav_source;
+	int sensordepth_source;
 	int	heading_source;
-	int	vru_source;
+	int	attitude_source;
 	int	svp_source;
 
 	/* output mode settings */
@@ -392,7 +394,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -410,8 +412,8 @@ int main (int argc, char **argv)
 	{
 	/* check format and get data sources */
 	if ((status = mb_format_source(verbose, &format,
-			&platform_source, &nav_source, &heading_source,
-			&vru_source, &svp_source,
+			&platform_source, &nav_source, &sensordepth_source,
+			&heading_source, &attitude_source, &svp_source,
 			&error)) == MB_FAILURE)
 		{
 		mb_error(verbose,error,&message);
@@ -865,7 +867,7 @@ int main (int argc, char **argv)
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-				    file,&format,&file_weight,&error))
+				    file,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

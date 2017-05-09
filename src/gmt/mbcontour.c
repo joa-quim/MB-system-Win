@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbcontour.c	5/30/93
- *    $Id: mbcontour.c 2268 2016-03-15 02:11:26Z caress $
+ *    $Id: mbcontour.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -226,7 +226,7 @@ void mbcontour_newpen(int ipen);
 void mbcontour_justify_string(double height, char *string, double *s);
 void mbcontour_plot_string(double x, double y, double hgt, double angle, char *label);
 
-static char svn_id[] = "$Id: mbcontour.c 2268 2016-03-15 02:11:26Z caress $";
+static char svn_id[] = "$Id: mbcontour.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -582,6 +582,7 @@ int GMT_mbcontour (void *V_API, int mode, void *args)
 	double	speedmin;
 	double	timegap;
 	mb_path	file;
+	mb_path	dfile;
 	int	file_in_bounds = MB_NO;
 	int	beams_bath;
 	int	beams_amp;
@@ -987,7 +988,7 @@ int GMT_mbcontour (void *V_API, int mode, void *args)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1328,7 +1329,7 @@ int GMT_mbcontour (void *V_API, int mode, void *args)
 	    if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

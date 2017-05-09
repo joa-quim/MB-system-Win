@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb7k2ss.c		8/15/2007
- *    $Id: mb7k2ss.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb7k2ss.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2007-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -76,7 +76,7 @@ int mb7k2ss_get_flatbottom_table(int verbose, int nangle, double angle_min, doub
 					double *table_altitude, double *table_range,
 					int *error);
 
-static char rcs_id[] = "$Id: mb7k2ss.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[] = "$Id: mb7k2ss.c 2298 2017-04-10 07:57:48Z caress $";
 char program_name[] = "mb7k2ss";
 
 /*--------------------------------------------------------------------*/
@@ -118,6 +118,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	mb_path	file;
+	mb_path	dfile;
 	int	beams_bath;
 	int	beams_amp;
 	int	pixels_ss;
@@ -857,7 +858,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1051,7 +1052,7 @@ int main (int argc, char **argv)
 		if (read_datalist == MB_YES)
 			{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    file,&format,&file_weight,&error))
+				    file,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
 				read_data = MB_YES;
 			else
@@ -1086,7 +1087,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -2346,7 +2347,7 @@ fprintf(stderr,"III j:%d x:%7.2f l:%7.2f s:%6.2f\n",j,ossacrosstrack[j],ossalong
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

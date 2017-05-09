@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbotps.c	7/30/2009
- *    $Id: mbotps.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbotps.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2009-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -79,7 +79,7 @@ char	*getenv();
 
 int main (int argc, char **argv)
 {
-	static char rcs_id[] = "$Id: mbotps.c 2261 2016-01-07 01:49:22Z caress $";
+	static char rcs_id[] = "$Id: mbotps.c 2298 2017-04-10 07:57:48Z caress $";
 	static char program_name[] = "mbotps";
 	static char help_message[] =  "MBotps predicts tides using methods and data derived from the OSU Tidal Prediction Software (OTPS) distributions.";
 	static char usage_message[] = "mbotps [-Atideformat -Byear/month/day/hour/minute/second -Dinterval\n\t-Eyear/month/day/hour/minute/second -Fformat\n"
@@ -104,6 +104,7 @@ int main (int argc, char **argv)
 	double	file_weight;
 	mb_path	swath_file;
 	mb_path	file;
+	mb_path	dfile;
 	int	format;
 	int	pings;
 	int	lonflip;
@@ -610,7 +611,7 @@ int main (int argc, char **argv)
 			exit(error);
 			}
 		    if ((status = mb_datalist_read(verbose,datalist,
-				    file,&format,&file_weight,&error))
+				    file,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
 			read_data = MB_YES;
 		    else
@@ -874,7 +875,7 @@ int main (int argc, char **argv)
         		if (read_datalist == MB_YES)
                 		{
 				if ((status = mb_datalist_read(verbose,datalist,
-					    file,&format,&file_weight,&error))
+					    file,dfile,&format,&file_weight,&error))
 					    == MB_SUCCESS)
                         		read_data = MB_YES;
                 		else

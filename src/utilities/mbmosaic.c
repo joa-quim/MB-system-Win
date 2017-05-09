@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbmosaic.c	2/10/97
- *    $Id: mbmosaic.c 2290 2017-01-02 21:02:49Z caress $
+ *    $Id: mbmosaic.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1997-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -239,7 +239,7 @@ int mbmosaic_get_footprint(
 int double_compare(double *a, double *b);
 
 /* program identifiers */
-static char rcs_id[] = "$Id: mbmosaic.c 2290 2017-01-02 21:02:49Z caress $";
+static char rcs_id[] = "$Id: mbmosaic.c 2298 2017-04-10 07:57:48Z caress $";
 char program_name[] = "mbmosaic";
 char help_message[] =  "mbmosaic is an utility used to mosaic amplitude or \nsidescan data contained in a set of swath sonar data files.  \nThis program uses one of four algorithms (gaussian weighted mean, \nmedian filter, minimum filter, maximum filter) to grid regions \ncovered by multibeam swaths and then fills in gaps between \nthe swaths (to the degree specified by the user) using a minimum\ncurvature algorithm.";
 char usage_message[] = "mbmosaic -Ifilelist -Oroot \
@@ -334,6 +334,7 @@ int main (int argc, char **argv)
 	int	pstatus;
 	char	path[MB_PATH_MAXLINE];
 	char	ppath[MB_PATH_MAXLINE];
+	char	dpath[MB_PATH_MAXLINE];
 	char	ifile[MB_PATH_MAXLINE];
 	char	ofile[MB_PATH_MAXLINE];
 	char	dfile[MB_PATH_MAXLINE];
@@ -1621,7 +1622,7 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;
@@ -2258,7 +2259,7 @@ gbnd[0], gbnd[1], gbnd[2], gbnd[3]);
 		exit(error);
 		}
 	while ((status = mb_datalist_read2(verbose,datalist,
-			&pstatus,path,ppath,&format,&file_weight,&error))
+			&pstatus,path,ppath,dpath,&format,&file_weight,&error))
 			== MB_SUCCESS)
 		{
 		ndatafile = 0;

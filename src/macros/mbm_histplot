@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_histplot.perl	3/20/2006
-#    $Id: mbm_histplot 2295 2017-03-27 07:28:28Z caress $
+#    $Id: mbm_histplot 2302 2017-04-21 01:52:19Z caress $
 #
 #    Copyright (c) 2006-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -46,7 +46,7 @@
 #   March 20, 2006
 #
 # Version:
-#   $Id: mbm_histplot 2295 2017-03-27 07:28:28Z caress $
+#   $Id: mbm_histplot 2302 2017-04-21 01:52:19Z caress $
 #
 #
 #
@@ -165,7 +165,7 @@ $execute = 		($opt_X || $opt_x);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_histplot 2295 2017-03-27 07:28:28Z caress $\n";
+	print "\nVersion: $Id: mbm_histplot 2302 2017-04-21 01:52:19Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which, \n";
 	print "when executed, will generate a Postscript histogram plot\n";
 	print "of a set of data values.\n";
@@ -691,9 +691,9 @@ elsif ($use_width)
 	}
 
 # place the origin so plot is more or less centered
-$xoffset = ($width - $plot_width
+$xoffset = ($width - abs($plot_width)
 	- $space_left - $space_right) / 2 + $space_left;
-$yoffset = ($height - $plot_height
+$yoffset = ($height - abs($plot_height)
 	- $space_bottom - $space_top) / 2 + $space_bottom;
 
 # if length scale bar requested check to see if map center needs to be defined

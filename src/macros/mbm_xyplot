@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_xyplot.perl	8/6/95
-#    $Id: mbm_xyplot 2295 2017-03-27 07:28:28Z caress $
+#    $Id: mbm_xyplot 2302 2017-04-21 01:52:19Z caress $
 #
 #    Copyright (c) 1993-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -54,7 +54,7 @@
 #   August 9, 1995
 #
 # Version:
-#   $Id: mbm_xyplot 2295 2017-03-27 07:28:28Z caress $
+#   $Id: mbm_xyplot 2302 2017-04-21 01:52:19Z caress $
 #
 #
 $program_name = "mbm_xyplot";
@@ -173,7 +173,7 @@ $delete_temp_files = 	($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_xyplot 2295 2017-03-27 07:28:28Z caress $\n";
+	print "\nVersion: $Id: mbm_xyplot 2302 2017-04-21 01:52:19Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which,  \n";
 	print "when executed, will generate a Postscript plot of xy data. \n";
 	print "Axes may be linear, log,  or any of several geographic  \n";
@@ -1019,9 +1019,9 @@ elsif ($use_width)
 	}
 
 # place the origin so plot is more or less centered
-$xoffset = ($width - $plot_width
+$xoffset = ($width - abs($plot_width)
 	- $space_left - $space_right) / 2 + $space_left;
-$yoffset = ($height - $plot_height
+$yoffset = ($height - abs($plot_height)
 	- $space_bottom - $space_top) / 2 + $space_bottom;
 
 # get plot degree annotation for geographic maps

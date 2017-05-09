@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbinfo.c	2/1/93
- *    $Id: mbinfo.c 2290 2017-01-02 21:02:49Z caress $
+ *    $Id: mbinfo.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -59,7 +59,7 @@ struct ping
 #define XML			2
 #define MAX_OUTPUT_FORMAT 2
 
-static char rcs_id[] = "$Id: mbinfo.c 2290 2017-01-02 21:02:49Z caress $";
+static char rcs_id[] = "$Id: mbinfo.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -105,6 +105,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	char	file[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	int	pings_get = 1;
 	int	pings_read = 1;
 	int	beams_bath_alloc = 0;
@@ -602,7 +603,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -2103,7 +2104,7 @@ int main (int argc, char **argv)
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    file,&format,&file_weight,&error))
+			    file,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgetesf.c	6/15/93
- *    $Id: mbgetesf.c 2265 2016-02-11 08:10:42Z caress $
+ *    $Id: mbgetesf.c 2297 2017-04-05 19:46:49Z caress $
  *
  *    Copyright (c) 2001-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -47,7 +47,7 @@
 
 int mbgetesf_save_edit(int verbose, FILE *sofp, double time_d, int beam, int action, int *error);
 
-static char rcs_id[] = "$Id: mbgetesf.c 2265 2016-02-11 08:10:42Z caress $";
+static char rcs_id[] = "$Id: mbgetesf.c 2297 2017-04-05 19:46:49Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -460,7 +460,7 @@ int main (int argc, char **argv)
 						beam_ok_write++;
 						}
 					}
-				else if (mb_beam_check_flag_null(beamflag[i]))
+				else if (mb_beam_check_flag_unusable(beamflag[i]))
 					{
 					beam_null++;
 					if (mode == MBGETESF_FLAGNULL || mode == MBGETESF_ALL)

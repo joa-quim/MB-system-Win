@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbswath.c	5/30/93
- *    $Id: mbswath.c 2272 2016-05-05 01:14:09Z caress $
+ *    $Id: mbswath.c 2303 2017-04-28 14:39:51Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -152,7 +152,7 @@ struct ping
 	double	*ss;
 	double	*sslon;
 	double	*sslat;
-	char	comment[256];
+	char	comment[MB_COMMENT_MAXLINE];
 	double	lonaft;
 	double	lataft;
 	double	lonfor;
@@ -685,6 +685,7 @@ int GMT_mbswath (void *V_API, int mode, void *args)
 	char	*message = NULL;
 
 	mb_path file;
+	mb_path dfile;
 	int     format;
 	int     file_in_bounds;
 	int     read_data;
@@ -836,7 +837,7 @@ int GMT_mbswath (void *V_API, int mode, void *args)
 			exit(error);
 			}
 	    if ((status = mb_datalist_read(verbose, Ctrl->datalist,
-			     file, &format, &Ctrl->file_weight, &error))
+			     file, dfile, &format, &Ctrl->file_weight, &error))
 			    == MB_SUCCESS)
 			read_data = MB_YES;
 	    else
@@ -930,6 +931,7 @@ int GMT_mbswath (void *V_API, int mode, void *args)
 		/* allocate memory for data arrays */
 		status = mb_mallocd(verbose, __FILE__, __LINE__, sizeof(struct swath),
 				(void **)&Ctrl->swath_plot, &error);
+		memset(Ctrl->swath_plot, 0, sizeof(struct swath));
 		npings = &Ctrl->swath_plot->npings;
 		Ctrl->swath_plot->beams_bath = Ctrl->beams_bath_max;
 		Ctrl->swath_plot->beams_amp = Ctrl->beams_amp_max;
@@ -1236,7 +1238,7 @@ int GMT_mbswath (void *V_API, int mode, void *args)
 	    /* figure out whether and what to read next */
 	    if (Ctrl->read_datalist == MB_YES)
                 {
-		if ((status = mb_datalist_read(verbose, Ctrl->datalist, file, &format, &Ctrl->file_weight, &error))
+		if ((status = mb_datalist_read(verbose, Ctrl->datalist, file, dfile, &format, &Ctrl->file_weight, &error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else
@@ -2723,7 +2725,7 @@ int mbswath_ping_copy(int verbose, int one, int two, struct swath *swath, int *e
 	ping1->distance = ping2->distance;
 	ping1->altitude = ping2->altitude;
 	ping1->sonardepth = ping2->sonardepth;
-	strcpy(ping1->comment,ping2->comment);
+	strncpy(ping1->comment,ping2->comment,MB_COMMENT_MAXLINE-1);
 	ping1->beams_bath = ping2->beams_bath;
 	ping1->beams_amp = ping2->beams_amp;
 	ping1->pixels_ss = ping2->pixels_ss;

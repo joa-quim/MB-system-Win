@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavedit_callbacks.c	6/24/95
- *    $Id: mbnavedit_callbacks.c 2291 2017-01-12 09:20:59Z caress $
+ *    $Id: mbnavedit_callbacks.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1995-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -94,7 +94,7 @@ WidgetList	BxWidgetIdsFromNames PROTOTYPE((Widget, char*, char*));
 /*--------------------------------------------------------------------*/
 
 /* id variables */
-static char svn_id[] = "$Id: mbnavedit_callbacks.c 2291 2017-01-12 09:20:59Z caress $";
+static char svn_id[] = "$Id: mbnavedit_callbacks.c 2298 2017-04-10 07:57:48Z caress $";
 static char program_name[] = "MBnavedit";
 
 #define xgfont "-*-"FIXED"-bold-r-normal-*-13-*-75-75-c-70-iso8859-1"
@@ -627,6 +627,7 @@ do_parse_datalist( char *file, int form)
 	int     fileformat;
 	char    fileraw[MB_PATH_MAXLINE];
 	char    fileprocessed[MB_PATH_MAXLINE];
+	char    dfile[MB_PATH_MAXLINE];
 	int     datalist_status = MB_SUCCESS;
 	int	error = MB_ERROR_NO_ERROR;
 	int	format;
@@ -659,7 +660,7 @@ fprintf(stderr,"Called do_parse_datalist:%s %d\n",file,form);
 			while (done == MB_NO)
 				{
 				if ((datalist_status = mb_datalist_read2(verbose, datalist,
-						&filestatus, fileraw, fileprocessed, &fileformat, &weight, &error))
+						&filestatus, fileraw, fileprocessed, dfile, &fileformat, &weight, &error))
 						== MB_SUCCESS)
 					{
 					if (numfiles < NUM_FILES_MAX)

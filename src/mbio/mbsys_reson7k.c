@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson7k.c	3.00	3/23/2004
- *	$Id: mbsys_reson7k.c 2295 2017-03-27 07:28:28Z caress $
+ *	$Id: mbsys_reson7k.c 2301 2017-04-17 08:07:30Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -46,7 +46,7 @@
 /* turn on debug statements here */
 /* #define MSYS_RESON7KR_DEBUG 1 */
 
-static char svn_id[]="$Id: mbsys_reson7k.c 2295 2017-03-27 07:28:28Z caress $";
+static char svn_id[]="$Id: mbsys_reson7k.c 2301 2017-04-17 08:07:30Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_reson7k_zero7kheader(int verbose, s7k_header	*header,
@@ -1210,6 +1210,7 @@ int mbsys_reson7k_deall(int verbose, void *mbio_ptr, void **store_ptr,
 	s7kr_v2firmwarehardwareconfiguration	*v2firmwarehardwareconfiguration;
 	s7kr_backscatter	*backscatter;
 	s7kr_beam		*beam;
+	s7kr_tvg		*tvg;
 	s7kr_image		*image;
 	s7kr_v2pingmotion	*v2pingmotion;
 	s7kr_v2amplitudephase	*amplitudephase;
@@ -1385,6 +1386,18 @@ int mbsys_reson7k_deall(int verbose, void *mbio_ptr, void **store_ptr,
 		if (beam->snippets[i].phase != NULL)
 			status = mb_freed(verbose,__FILE__,__LINE__,(void **)&(beam->snippets[i].phase),error);
 		}
+
+	/* Reson 7k tvg data (record 7010) */
+	tvg = &store->tvg;
+	tvg->serial_number = 0;
+	tvg->ping_number = 0;
+	tvg->multi_ping = 0;
+	tvg->n = 0;
+	for (i=0;i<8;i++)
+		tvg->reserved[i] = 0;
+	tvg->nalloc = 0;
+	if (tvg->tvg != NULL)
+		status = mb_freed(verbose,__FILE__,__LINE__,(void **)&(tvg->tvg),error);
 
 	/* Reson 7k image data (record 7011) */
 	image = &store->image;
@@ -5825,7 +5838,22 @@ int mbsys_reson7k_preprocess
 		fprintf(stderr,"dbg2       multibeam_sidescan_source:  %d\n", pars->multibeam_sidescan_source);
 		fprintf(stderr,"dbg2       n_kluge:                    %d\n", pars->n_kluge);
 		for (i=0;i<pars->n_kluge;i++)
+			{
 			fprintf(stderr,"dbg2       kluge_id[%d]:                    %d\n", i, pars->kluge_id[i]);
+			if (pars->kluge_id[i] == MB_PR_KLUGE_BEAMTWEAK)
+				{
+				fprintf(stderr,"dbg2       kluge_beampatternsnell:        %d\n", kluge_beampatternsnell);
+				fprintf(stderr,"dbg2       kluge_beampatternsnellfactor:  %f\n", kluge_beampatternsnellfactor);
+				}
+			else if (pars->kluge_id[i] == MB_PR_KLUGE_ZEROATTITUDECORRECTION)
+				{
+				fprintf(stderr,"dbg2       kluge_zeroattitudecorrection:  %d\n", kluge_zeroattitudecorrection);
+				}
+			else if (pars->kluge_id[i] == MB_PR_KLUGE_ZEROALONGTRACKANGLES)
+				{
+				fprintf(stderr,"dbg2       kluge_zeroalongtrackangles:    %d\n", kluge_zeroalongtrackangles);
+				}
+			}
 		}
 	
 	/* deal with a survey record */
@@ -6390,8 +6418,7 @@ int mbsys_reson7k_preprocess
 					}
 					
 				/* if requested apply kluge scaling of rx beam angles */
-				if (kluge_beampatternsnell == MB_YES)
-					{
+				if (kluge_beampatternsnell == MB_YES) {
 					/*
 					 * v2rawdetection record
 					 */

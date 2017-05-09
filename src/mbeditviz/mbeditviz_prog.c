@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbeditviz_prog.c		5/1/2007
- *    $Id: mbeditviz_prog.c 2279 2016-07-08 07:49:17Z caress $
+ *    $Id: mbeditviz_prog.c 2303 2017-04-28 14:39:51Z caress $
  *
  *    Copyright (c) 2007-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -52,7 +52,7 @@
 #include "mbeditviz.h"
 
 /* id variables */
-static char rcs_id[] = "$Id: mbeditviz_prog.c 2279 2016-07-08 07:49:17Z caress $";
+static char rcs_id[] = "$Id: mbeditviz_prog.c 2303 2017-04-28 14:39:51Z caress $";
 static char program_name[] = "MBeditviz";
 static char help_message[] = "MBeditviz is a bathymetry editor and patch test tool.";
 static char usage_message[] = "mbeditviz [-H -T -V]";
@@ -343,6 +343,7 @@ int mbeditviz_open_data(char *path, int format)
 	int	filestatus;
 	char	fileraw[MB_PATH_MAXLINE];
 	char	fileprocessed[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 
 	/* print input debug statements */
 	if (mbev_verbose >= 2)
@@ -375,7 +376,7 @@ int mbeditviz_open_data(char *path, int format)
 				while (done == MB_NO)
 					{
 					if ((mbev_status = mb_datalist_read2(mbev_verbose,datalist,
-							&filestatus,fileraw,fileprocessed,&format,&weight,&mbev_error))
+							&filestatus,fileraw,fileprocessed,dfile,&format,&weight,&mbev_error))
 							== MB_SUCCESS)
 						{
 						mbev_status = mbeditviz_import_file(fileraw,format);
@@ -589,6 +590,10 @@ int mbeditviz_load_file(int ifile)
 	double	centerdistance, portdistance, stbddistance;
 	int	iping, ibeam, iedit;
 	int	shellstatus;
+	float value_float;
+	int read_size;
+	int index;
+	int i;
 
 	/* print input debug statements */
 	if (mbev_verbose >= 2)
@@ -967,7 +972,7 @@ fprintf(stderr,"MEMORY FAILURE in mbeditviz_load_file\n");
 						ping->beamflag[ibeam] = beamflag[ibeam];
 						ping->beamflagorg[ibeam] = beamflag[ibeam];
 						ping->beamcolor[ibeam] = MBV_COLOR_BLACK;
-						if (!mb_beam_check_flag_null(ping->beamflag[ibeam])
+						if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam])
 							&& (isnan(bath[ibeam]) || isnan(bathacrosstrack[ibeam]) || isnan(bathalongtrack[ibeam])))
 							
 {							ping->beamflag[ibeam] = MB_FLAG_NULL;
@@ -976,7 +981,7 @@ fprintf(stderr,"     Ping time: %4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d.%6.6d\n",
 	ping->time_i[0],ping->time_i[1],ping->time_i[2],ping->time_i[3],ping->time_i[4],ping->time_i[5],ping->time_i[6]);
 fprintf(stderr,"     Beam bathymetry: %d %f %f %f\n",ibeam,ping->bath[ibeam],ping->bathacrosstrack[ibeam],ping->bathalongtrack[ibeam]);
 							}
-						if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+						if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 							{
 							/* copy bath */
 							ping->bath[ibeam] = bath[ibeam];
@@ -1045,7 +1050,7 @@ fprintf(stderr,"     Beam bathymetry: %d %f %f %f\n",ibeam,ping->bath[ibeam],pin
 						stbddistance = 0.0;
 						for (ibeam=0;ibeam<beams_bath;ibeam++)
 							{
-							if (!mb_beam_check_flag_null(beamflag[ibeam]))
+							if (!mb_beam_check_flag_unusable(beamflag[ibeam]))
 								{
 								if (icenter == -1
 									|| fabs(bathacrosstrack[ibeam]) < centerdistance)
@@ -1154,6 +1159,7 @@ fprintf(stderr,"     Beam bathymetry: %d %f %f %f\n",ibeam,ping->bath[ibeam],pin
 				if (mbev_status == MB_SUCCESS)
 					{
 					file->esf_open = MB_YES;
+if (mbev_verbose > 0)
 fprintf(stderr,"%d global beam states read from %s...\n",file->esf.nedit,geffile);
 					}
 				else
@@ -1166,6 +1172,7 @@ fprintf(stderr,"%d global beam states read from %s...\n",file->esf.nedit,geffile
 					{
 					/* loop over pings applying edits */
 					do_mbeditviz_message_on("MBeditviz is applying original beam states...");
+if (mbev_verbose > 0)
 fprintf(stderr,"MBeditviz is applying %d original beam states\n",file->esf.nedit);
 					for (iping=0;iping<file->num_pings;iping++)
 						{
@@ -1196,10 +1203,6 @@ fprintf(stderr,"MBeditviz is applying %d original beam states\n",file->esf.nedit
 					}
 				}
 
-if (mbev_verbose > 0)
-fprintf(stderr,"loaded swathfile:%s file->processed_info_loaded:%d file->process.mbp_edit_mode:%d\n",
-swathfile,file->processed_info_loaded,file->process.mbp_edit_mode);
-
 			/* attempt to load bathymetry edits */
 			mbev_status = mb_esf_load(mbev_verbose, program_name, file->path,
 									  MB_YES, MBP_ESF_NOWRITE,
@@ -1217,6 +1220,7 @@ swathfile,file->processed_info_loaded,file->process.mbp_edit_mode);
 			if (file->esf_open == MB_YES)
 				{
 				/* loop over pings applying edits */
+if (mbev_verbose > 0)
 fprintf(stderr,"MBeditviz is applying %d saved edits from version %d esf file %s\n",file->esf.nedit,file->esf.version,file->path);
 				do_mbeditviz_message_on("MBeditviz is applying saved edits...");
 				for (iping=0;iping<file->num_pings;iping++)
@@ -1253,7 +1257,8 @@ fprintf(stderr,"MBeditviz is applying %d saved edits from version %d esf file %s
 										file->esf.edit[iedit].beam, file->esf.edit[iedit].action);
 						}
 					}
-fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unused);
+if (mbev_verbose > 0)
+fprintf(stderr, "Total unused beam edits for file %s: %d\n", swathfile, n_unused);
 
 				/* close the esf */
 				if (file->esf_open == MB_YES)
@@ -1267,58 +1272,106 @@ fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unus
 		/* load asynchronous data if available */
 		if (mbev_status == MB_SUCCESS)
 			{
-			/* try to load heading data from file */
+			/* try to load asynchronous heading data from .bah file */
 			strcpy(asyncfile, file->path);
-			strcat(asyncfile, ".ath");
+			strcat(asyncfile, ".bah");
 			if ((fstatus = stat(asyncfile, &file_status)) == 0
-				&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+				&& (file_status.st_mode & S_IFMT) != S_IFDIR
+				&& file_status.st_size > 0)
 				{
-				/* count the asynchronous heading data */
-				file->n_async_heading = 0;
-				file->n_async_heading_alloc = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
-					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
-						if (buffer[0] != '#')
-						    file->n_async_heading++;
-					fclose(afp);
-					}
-
 				/* allocate space for asynchronous heading */
+				file->n_async_heading = file_status.st_size / (sizeof(double) + sizeof(float));
+				file->n_async_heading_alloc = 0;
 				if (file->n_async_heading > 0)
 					{
-					if ((file->async_heading_time_d = (double *) malloc(sizeof(double) * (file->n_async_heading))) != NULL)
+					if ((file->async_heading_time_d = (double *) malloc(sizeof(double) * (file->n_async_heading))) != NULL
+						&& (file->async_heading_heading = (double *) malloc(sizeof(double) * (file->n_async_heading))) != NULL)
 						{
-						if ((file->async_heading_heading = (double *) malloc(sizeof(double) * (file->n_async_heading))) != NULL)
-							{
-							file->n_async_heading_alloc = file->n_async_heading;
-							}
-						else if (file->async_heading_time_d != NULL)
-							{
-							free(file->async_heading_time_d);
-							file->async_heading_time_d = NULL;
-							}
+						file->n_async_heading_alloc = file->n_async_heading;
+						}
+					else if (file->async_heading_time_d != NULL)
+						{
+						free(file->async_heading_time_d);
+						file->async_heading_time_d = NULL;
 						}
 					}
+				file->n_async_heading = file->n_async_heading_alloc;
 
 				/* read the asynchronous heading data */
-				file->n_async_heading = 0;
 				if ((afp = fopen(asyncfile, "r")) != NULL)
 					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+					read_size = sizeof(double) + sizeof(float);
+					for (i=0;i<file->n_async_heading;i++)
 						{
-						if (buffer[0] != '#')
-		    					{
-							nread = sscanf(buffer,"%lf %lf",
-									&(file->async_heading_time_d[file->n_async_heading]),
-						    			&(file->async_heading_heading[file->n_async_heading]));
-							if (nread == 2)
-						    	    file->n_async_heading++;
-							}
+						nread = fread(buffer, read_size, 1, afp);
+						index = 0;
+						mb_get_binary_double(MB_YES, &buffer[index], &file->async_heading_time_d[i]); index += 8;
+						mb_get_binary_float(MB_YES, &buffer[index], &value_float); index += 4;
+							file->async_heading_heading[i] = value_float;
 						}
 					fclose(afp);
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d heading data from file %s\n",file->n_async_heading,asyncfile);
+				}
 
+			/* if necessary try to load heading data from ath file */
+			if (file->n_async_heading <= 0)
+				{
+				strcpy(asyncfile, file->path);
+				strcat(asyncfile, ".ath");
+				if ((fstatus = stat(asyncfile, &file_status)) == 0
+					&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+					{
+					/* count the asynchronous heading data */
+					file->n_async_heading = 0;
+					file->n_async_heading_alloc = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							if (buffer[0] != '#')
+								file->n_async_heading++;
+						fclose(afp);
+						}
+	
+					/* allocate space for asynchronous heading */
+					if (file->n_async_heading > 0)
+						{
+						if ((file->async_heading_time_d = (double *) malloc(sizeof(double) * (file->n_async_heading))) != NULL)
+							{
+							if ((file->async_heading_heading = (double *) malloc(sizeof(double) * (file->n_async_heading))) != NULL)
+								{
+								file->n_async_heading_alloc = file->n_async_heading;
+								}
+							else if (file->async_heading_time_d != NULL)
+								{
+								free(file->async_heading_time_d);
+								file->async_heading_time_d = NULL;
+								}
+							}
+						}
+	
+					/* read the asynchronous heading data */
+					file->n_async_heading = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							{
+							if (buffer[0] != '#')
+								{
+								nread = sscanf(buffer,"%lf %lf",
+											&(file->async_heading_time_d[file->n_async_heading]),
+											&(file->async_heading_heading[file->n_async_heading]));
+								if (nread == 2)
+									file->n_async_heading++;
+								}
+							}
+						fclose(afp);
+						}
+	
+					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d heading data from file %s\n",file->n_async_heading,asyncfile);
 				}
 
 			/* if heading data not loaded from file extract from ping data */
@@ -1346,60 +1399,109 @@ fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unus
 						file->async_heading_heading[iping] = ping->heading;
 						}
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d heading data from ping data of file %s\n",file->n_async_heading,file->path);
 				}
-
-			/* try to load sonardepth data */
+				
+			/* try to load asynchronous sonardepth data from .bas file */
 			strcpy(asyncfile, file->path);
-			strcat(asyncfile, ".ats");
+			strcat(asyncfile, ".bas");
 			if ((fstatus = stat(asyncfile, &file_status)) == 0
-				&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+				&& (file_status.st_mode & S_IFMT) != S_IFDIR
+				&& file_status.st_size > 0)
 				{
-				/* count the asynchronous sonardepth data */
-				file->n_async_sonardepth = 0;
-				file->n_async_sonardepth_alloc = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
-					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
-						if (buffer[0] != '#')
-						    file->n_async_sonardepth++;
-					fclose(afp);
-					}
-
 				/* allocate space for asynchronous sonardepth */
+				file->n_async_sonardepth = file_status.st_size / (sizeof(double) + sizeof(float));
+				file->n_async_sonardepth_alloc = 0;
 				if (file->n_async_sonardepth > 0)
 					{
-					if ((file->async_sonardepth_time_d = (double *) malloc(sizeof(double) * (file->n_async_sonardepth))) != NULL)
+					if ((file->async_sonardepth_time_d = (double *) malloc(sizeof(double) * (file->n_async_sonardepth))) != NULL
+						&& (file->async_sonardepth_sonardepth = (double *) malloc(sizeof(double) * (file->n_async_sonardepth))) != NULL)
 						{
-						if ((file->async_sonardepth_sonardepth = (double *) malloc(sizeof(double) * (file->n_async_sonardepth))) != NULL)
-							{
-							file->n_async_sonardepth_alloc = file->n_async_sonardepth;
-							}
-						else if (file->async_sonardepth_time_d != NULL)
-							{
-							free(file->async_sonardepth_time_d);
-							file->async_sonardepth_time_d = NULL;
-							}
+						file->n_async_sonardepth_alloc = file->n_async_sonardepth;
+						}
+					else if (file->async_sonardepth_time_d != NULL)
+						{
+						free(file->async_sonardepth_time_d);
+						file->async_sonardepth_time_d = NULL;
 						}
 					}
+				file->n_async_sonardepth = file->n_async_sonardepth_alloc;
 
 				/* read the asynchronous sonardepth data */
-				file->n_async_sonardepth = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
+				if ((afp = fopen(asyncfile, "rb")) != NULL)
 					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+					read_size = sizeof(double) + sizeof(float);
+					for (i=0;i<file->n_async_sonardepth;i++)
 						{
-						if (buffer[0] != '#')
-		    					{
-							nread = sscanf(buffer,"%lf %lf",
-									&(file->async_sonardepth_time_d[file->n_async_sonardepth]),
-						    			&(file->async_sonardepth_sonardepth[file->n_async_sonardepth]));
-							if (nread == 2)
-						    	    file->n_async_sonardepth++;
-							}
+						nread = fread(buffer, read_size, 1, afp);
+						index = 0;
+						mb_get_binary_double(MB_YES, &buffer[index], &file->async_sonardepth_time_d[i]); index += 8;
+						mb_get_binary_float(MB_YES, &buffer[index], &value_float); index += 4;
+							file->async_sonardepth_sonardepth[i] = value_float;
 						}
 					fclose(afp);
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d sonardepth data from file %s\n",file->n_async_sonardepth,asyncfile);
+				}
 
+			/* if necessary try to load sonardepth data from ats file */
+			if (file->n_async_heading <= 0)
+				{
+				strcpy(asyncfile, file->path);
+				strcat(asyncfile, ".ats");
+				if ((fstatus = stat(asyncfile, &file_status)) == 0
+					&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+					{
+					/* count the asynchronous sonardepth data */
+					file->n_async_sonardepth = 0;
+					file->n_async_sonardepth_alloc = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							if (buffer[0] != '#')
+								file->n_async_sonardepth++;
+						fclose(afp);
+						}
+	
+					/* allocate space for asynchronous sonardepth */
+					if (file->n_async_sonardepth > 0)
+						{
+						if ((file->async_sonardepth_time_d = (double *) malloc(sizeof(double) * (file->n_async_sonardepth))) != NULL)
+							{
+							if ((file->async_sonardepth_sonardepth = (double *) malloc(sizeof(double) * (file->n_async_sonardepth))) != NULL)
+								{
+								file->n_async_sonardepth_alloc = file->n_async_sonardepth;
+								}
+							else if (file->async_sonardepth_time_d != NULL)
+								{
+								free(file->async_sonardepth_time_d);
+								file->async_sonardepth_time_d = NULL;
+								}
+							}
+						}
+	
+					/* read the asynchronous sonardepth data */
+					file->n_async_sonardepth = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							{
+							if (buffer[0] != '#')
+								{
+								nread = sscanf(buffer,"%lf %lf",
+											&(file->async_sonardepth_time_d[file->n_async_sonardepth]),
+											&(file->async_sonardepth_sonardepth[file->n_async_sonardepth]));
+								if (nread == 2)
+									file->n_async_sonardepth++;
+								}
+							}
+						fclose(afp);
+						}
+					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d sonardepth data from file %s\n",file->n_async_sonardepth,asyncfile);
 				}
 
 			/* if sonardepth data not loaded from file extract from ping data */
@@ -1427,76 +1529,140 @@ fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unus
 						file->async_sonardepth_sonardepth[iping] = ping->sonardepth;
 						}
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d sonardepth data from ping data of file %s\n",file->n_async_sonardepth,file->path);
 				}
 
-			/* try to load asynchronous attitude data */
+			/* try to load asynchronous attitude data from .baa file */
 			strcpy(asyncfile, file->path);
-			strcat(asyncfile, ".ata");
+			strcat(asyncfile, ".baa");
 			if ((fstatus = stat(asyncfile, &file_status)) == 0
-				&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+				&& (file_status.st_mode & S_IFMT) != S_IFDIR
+				&& file_status.st_size > 0)
 				{
-				/* count the asynchronous attitude data */
-				file->n_async_attitude = 0;
-				file->n_async_attitude_alloc = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
-					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
-						if (buffer[0] != '#')
-						    file->n_async_attitude++;
-					fclose(afp);
-					}
-
 				/* allocate space for asynchronous attitude */
+				file->n_async_attitude = file_status.st_size / (sizeof(double) + 2 * sizeof(float));
+				file->n_async_attitude_alloc = 0;
 				if (file->n_async_attitude > 0)
 					{
-					if ((file->async_attitude_time_d = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
+					if ((file->async_attitude_time_d = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL
+						&& (file->async_attitude_roll = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL
+						&& (file->async_attitude_pitch = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
 						{
-						if ((file->async_attitude_roll = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
-							{
-							if ((file->async_attitude_pitch = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
-								{
-								file->n_async_attitude_alloc = file->n_async_attitude;
-								}
-							else
-								{
-								if (file->async_attitude_time_d != NULL)
-									{
-									free(file->async_attitude_time_d);
-									file->async_attitude_time_d = NULL;
-									}
-								if (file->async_attitude_roll != NULL)
-									{
-									free(file->async_attitude_roll);
-									file->async_attitude_roll = NULL;
-									}
-								}
-							}
-						else if (file->async_attitude_time_d != NULL)
+						file->n_async_attitude_alloc = file->n_async_attitude;
+						}
+					else
+						{
+						if (file->async_attitude_time_d != NULL)
 							{
 							free(file->async_attitude_time_d);
 							file->async_attitude_time_d = NULL;
 							}
+						if (file->async_attitude_roll != NULL)
+							{
+							free(file->async_attitude_roll);
+							file->async_attitude_roll = NULL;
+							}
 						}
 					}
+				file->n_async_attitude = file->n_async_attitude_alloc;
 
 				/* read the asynchronous attitude data */
-				file->n_async_attitude = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
+				if ((afp = fopen(asyncfile, "rb")) != NULL)
 					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+					read_size = sizeof(double) + 2 * sizeof(float);
+					for (i=0;i<file->n_async_attitude;i++)
 						{
-						if (buffer[0] != '#')
-		    					{
-							nread = sscanf(buffer,"%lf %lf %lf",
-									&(file->async_attitude_time_d[file->n_async_attitude]),
-						    			&(file->async_attitude_roll[file->n_async_attitude]),
-						    			&(file->async_attitude_pitch[file->n_async_attitude]));
-							if (nread == 3)
-						    	    file->n_async_attitude++;
+						if ((nread = fread(buffer, read_size, 1, afp)) == 1)
+							{
+							index = 0;
+							mb_get_binary_double(MB_YES, &buffer[index], &file->async_attitude_time_d[i]); index += 8;
+							mb_get_binary_float(MB_YES, &buffer[index], &value_float); index += 4;
+								file->async_attitude_roll[i] = value_float;
+							mb_get_binary_float(MB_YES, &buffer[index], &value_float); index += 4;
+								file->async_attitude_pitch[i] = value_float;
 							}
+//fprintf(stderr,"Attitude: %d  %.6f %.3f %.3f\n",i,file->async_attitude_time_d[i],file->async_attitude_roll[i],file->async_attitude_pitch[i]);
 						}
 					fclose(afp);
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d attitude data from file %s\n",file->n_async_attitude,asyncfile);
+				}
+
+			/* if necessary try to load asynchronous attitude data from ata file */
+			if (file->n_async_attitude <= 0)
+				{
+				strcpy(asyncfile, file->path);
+				strcat(asyncfile, ".ata");
+				if ((fstatus = stat(asyncfile, &file_status)) == 0
+					&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+					{
+					/* count the asynchronous attitude data */
+					file->n_async_attitude = 0;
+					file->n_async_attitude_alloc = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							if (buffer[0] != '#')
+								file->n_async_attitude++;
+						fclose(afp);
+						}
+	
+					/* allocate space for asynchronous attitude */
+					if (file->n_async_attitude > 0)
+						{
+						if ((file->async_attitude_time_d = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
+							{
+							if ((file->async_attitude_roll = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
+								{
+								if ((file->async_attitude_pitch = (double *) malloc(sizeof(double) * (file->n_async_attitude))) != NULL)
+									{
+									file->n_async_attitude_alloc = file->n_async_attitude;
+									}
+								else
+									{
+									if (file->async_attitude_time_d != NULL)
+										{
+										free(file->async_attitude_time_d);
+										file->async_attitude_time_d = NULL;
+										}
+									if (file->async_attitude_roll != NULL)
+										{
+										free(file->async_attitude_roll);
+										file->async_attitude_roll = NULL;
+										}
+									}
+								}
+							else if (file->async_attitude_time_d != NULL)
+								{
+								free(file->async_attitude_time_d);
+								file->async_attitude_time_d = NULL;
+								}
+							}
+						}
+	
+					/* read the asynchronous attitude data */
+					file->n_async_attitude = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							{
+							if (buffer[0] != '#')
+								{
+								nread = sscanf(buffer,"%lf %lf %lf",
+											&(file->async_attitude_time_d[file->n_async_attitude]),
+											&(file->async_attitude_roll[file->n_async_attitude]),
+											&(file->async_attitude_pitch[file->n_async_attitude]));
+								if (nread == 3)
+									file->n_async_attitude++;
+								}
+							}
+						fclose(afp);
+						}
+					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d attitude data from file %s\n",file->n_async_attitude,asyncfile);
 				}
 
 			/* if attitude data not loaded from file extract from ping data */
@@ -1506,7 +1672,7 @@ fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unus
 					{
 					if ((file->async_attitude_time_d = (double *) malloc(sizeof(double) * (file->num_pings))) != NULL)
 						{
-						if ((file->async_attitude_roll = (double *) malloc(sizeof(double) * (file->num_pings))) != NULL)
+						if ((file->async_attitude_roll = (double *) malloc(sizeof	(double) * (file->num_pings))) != NULL)
 							{
 							if ((file->async_attitude_pitch = (double *) malloc(sizeof(double) * (file->num_pings))) != NULL)
 								{
@@ -1541,76 +1707,139 @@ fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unus
 						file->async_attitude_pitch[iping] = ping->pitch;
 						}
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d attitude data from ping data of file %s\n",file->n_async_attitude,file->path);
 				}
 
-			/* try to load synchronous attitude data */
+			/* try to load synchronous attitude data from .bsa file */
 			strcpy(asyncfile, file->path);
-			strcat(asyncfile, ".sta");
+			strcat(asyncfile, ".bsa");
 			if ((fstatus = stat(asyncfile, &file_status)) == 0
-				&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+				&& (file_status.st_mode & S_IFMT) != S_IFDIR
+				&& file_status.st_size > 0)
 				{
-				/* count the synchronous attitude data */
-				file->n_sync_attitude = 0;
-				file->n_sync_attitude_alloc = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
-					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
-						if (buffer[0] != '#')
-						    file->n_sync_attitude++;
-					fclose(afp);
-					}
-
 				/* allocate space for synchronous attitude */
+				file->n_sync_attitude = file_status.st_size / (sizeof(double) + 2 * sizeof(float));
+				file->n_sync_attitude_alloc = 0;
 				if (file->n_sync_attitude > 0)
 					{
-					if ((file->sync_attitude_time_d = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
+					if ((file->sync_attitude_time_d = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL
+						&& (file->sync_attitude_roll = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL
+						&& (file->sync_attitude_pitch = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
 						{
-						if ((file->sync_attitude_roll = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
-							{
-							if ((file->sync_attitude_pitch = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
-								{
-								file->n_sync_attitude_alloc = file->n_sync_attitude;
-								}
-							else
-								{
-								if (file->sync_attitude_time_d != NULL)
-									{
-									free(file->sync_attitude_time_d);
-									file->sync_attitude_time_d = NULL;
-									}
-								if (file->sync_attitude_roll != NULL)
-									{
-									free(file->sync_attitude_roll);
-									file->sync_attitude_roll = NULL;
-									}
-								}
-							}
-						else if (file->sync_attitude_time_d != NULL)
+						file->n_sync_attitude_alloc = file->n_sync_attitude;
+						}
+					else
+						{
+						if (file->sync_attitude_time_d != NULL)
 							{
 							free(file->sync_attitude_time_d);
 							file->sync_attitude_time_d = NULL;
 							}
+						if (file->sync_attitude_roll != NULL)
+							{
+							free(file->sync_attitude_roll);
+							file->sync_attitude_roll = NULL;
+							}
 						}
 					}
+				file->n_sync_attitude = file->n_sync_attitude_alloc;
 
 				/* read the synchronous attitude data */
-				file->n_sync_attitude = 0;
-				if ((afp = fopen(asyncfile, "r")) != NULL)
+				if ((afp = fopen(asyncfile, "rb")) != NULL)
 					{
-					while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+					read_size = sizeof(double) + 2 * sizeof(float);
+					for (i=0;i<file->n_sync_attitude;i++)
 						{
-						if (buffer[0] != '#')
-		    					{
-							nread = sscanf(buffer,"%lf %lf %lf",
-									&(file->sync_attitude_time_d[file->n_sync_attitude]),
-						    			&(file->sync_attitude_roll[file->n_sync_attitude]),
-						    			&(file->sync_attitude_pitch[file->n_sync_attitude]));
-							if (nread == 3)
-						    	    file->n_sync_attitude++;
+						if ((nread = fread(buffer, read_size, 1, afp)) == 1)
+							{
+							index = 0;
+							mb_get_binary_double(MB_YES, &buffer[index], &file->sync_attitude_time_d[i]); index += 8;
+							mb_get_binary_float(MB_YES, &buffer[index], &value_float); index += 4;
+								file->sync_attitude_roll[i] = value_float;
+							mb_get_binary_float(MB_YES, &buffer[index], &value_float); index += 4;
+								file->sync_attitude_pitch[i] = value_float;
 							}
 						}
 					fclose(afp);
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d attitude data from file %s\n",file->n_sync_attitude,asyncfile);
+				}
+
+			/* if necessary try to load synchronous attitude data from sta file */
+			if (file->n_sync_attitude <= 0)
+				{
+				strcpy(asyncfile, file->path);
+				strcat(asyncfile, ".sta");
+				if ((fstatus = stat(asyncfile, &file_status)) == 0
+					&& (file_status.st_mode & S_IFMT) != S_IFDIR)
+					{
+					/* count the synchronous attitude data */
+					file->n_sync_attitude = 0;
+					file->n_sync_attitude_alloc = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							if (buffer[0] != '#')
+								file->n_sync_attitude++;
+						fclose(afp);
+						}
+	
+					/* allocate space for synchronous attitude */
+					if (file->n_sync_attitude > 0)
+						{
+						if ((file->sync_attitude_time_d = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
+							{
+							if ((file->sync_attitude_roll = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
+								{
+								if ((file->sync_attitude_pitch = (double *) malloc(sizeof(double) * (file->n_sync_attitude))) != NULL)
+									{
+									file->n_sync_attitude_alloc = file->n_sync_attitude;
+									}
+								else
+									{
+									if (file->sync_attitude_time_d != NULL)
+										{
+										free(file->sync_attitude_time_d);
+										file->sync_attitude_time_d = NULL;
+										}
+									if (file->sync_attitude_roll != NULL)
+										{
+										free(file->sync_attitude_roll);
+										file->sync_attitude_roll = NULL;
+										}
+									}
+								}
+							else if (file->sync_attitude_time_d != NULL)
+								{
+								free(file->sync_attitude_time_d);
+								file->sync_attitude_time_d = NULL;
+								}
+							}
+						}
+	
+					/* read the synchronous attitude data */
+					file->n_sync_attitude = 0;
+					if ((afp = fopen(asyncfile, "r")) != NULL)
+						{
+						while ((result = fgets(buffer,MBP_FILENAMESIZE,afp)) == buffer)
+							{
+							if (buffer[0] != '#')
+								{
+								nread = sscanf(buffer,"%lf %lf %lf",
+											&(file->sync_attitude_time_d[file->n_sync_attitude]),
+											&(file->sync_attitude_roll[file->n_sync_attitude]),
+											&(file->sync_attitude_pitch[file->n_sync_attitude]));
+								if (nread == 3)
+									file->n_sync_attitude++;
+								}
+							}
+						fclose(afp);
+						}
+					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d attitude data from file %s\n",file->n_sync_attitude,asyncfile);
 				}
 
 			/* if attitude data not loaded from file extract from ping data */
@@ -1655,8 +1884,16 @@ fprintf(stderr, "Total unused beam edits for file %s: %d\n\n", swathfile, n_unus
 						file->sync_attitude_pitch[iping] = ping->pitch;
 						}
 					}
+if (mbev_verbose > 0)
+fprintf(stderr,"Loaded %d attitude data from ping data of file %s\n",file->n_sync_attitude,file->path);
 				}
 			}
+
+if (mbev_verbose > 0)
+fprintf(stderr,"loaded swathfile:%s file->processed_info_loaded:%d file->process.mbp_edit_mode:%d\n\n",
+swathfile,file->processed_info_loaded,file->process.mbp_edit_mode);
+else
+fprintf(stderr,"loaded swathfile:%s\n",swathfile);
 
 		/* set the load status */
 		if (mbev_status == MB_SUCCESS)
@@ -2414,7 +2651,7 @@ info->lon_min,info->lon_max,info->lat_min,info->lat_max);*/
 //mbev_grid_boundsutm[0],mbev_grid_boundsutm[1],mbev_grid_boundsutm[2],mbev_grid_boundsutm[3]);
 
 		/* get grid spacing */
-fprintf(stderr,"altitude: %f %f\n", altitude_min, altitude_max);
+//fprintf(stderr,"altitude: %f %f\n", altitude_min, altitude_max);
 		if (altitude_max > 0.0)
 			mbev_grid_cellsize = 0.02 * altitude_max;
 		else if (depth_max > 0.0)
@@ -2427,11 +2664,12 @@ fprintf(stderr,"altitude: %f %f\n", altitude_min, altitude_max);
 		mbev_grid_ny = (mbev_grid_boundsutm[3] - mbev_grid_boundsutm[2]) / mbev_grid_cellsize + 1;
 		mbev_grid_boundsutm[1] = mbev_grid_boundsutm[0] + (mbev_grid_nx - 1) * mbev_grid_cellsize;
 		mbev_grid_boundsutm[3] = mbev_grid_boundsutm[2] + (mbev_grid_ny - 1) * mbev_grid_cellsize;
-fprintf(stderr,"Grid bounds: %f %f %f %f    %f %f %f %f\n",
-mbev_grid_bounds[0],mbev_grid_bounds[1],mbev_grid_bounds[2],mbev_grid_bounds[3],
+fprintf(stderr,"\nGrid bounds (longitude latitude): %.7f %.7f %.7f %.7f\n",
+mbev_grid_bounds[0],mbev_grid_bounds[1],mbev_grid_bounds[2],mbev_grid_bounds[3]);
+fprintf(stderr,"Grid bounds (eastings northings): %.3f %.3f %.3f %.3f\n",
 mbev_grid_boundsutm[0],mbev_grid_boundsutm[1],mbev_grid_boundsutm[2],mbev_grid_boundsutm[3]);
-fprintf(stderr,"cell size:%f dimensions: %d %d\n",
-mbev_grid_cellsize,mbev_grid_nx,mbev_grid_ny);
+fprintf(stderr,"Altitude range: %.3f %.3f\n", altitude_min, altitude_max);
+fprintf(stderr,"Cell size:%.3f\nGrid Dimensions: %d %d\n\n",mbev_grid_cellsize,mbev_grid_nx,mbev_grid_ny);
 
 		/* release projection */
 		mb_proj_free(mbev_verbose, &(pjptr), &mbev_error);
@@ -2646,7 +2884,7 @@ int mbeditviz_project_soundings()
 							&mbev_error);
 					for (ibeam=0;ibeam<ping->beams_bath;ibeam++)
 						{
-						if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+						if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 							{
 							mb_proj_forward(mbev_verbose, mbev_grid.pjptr,
 									ping->bathlon[ibeam], ping->bathlat[ibeam],
@@ -3240,7 +3478,7 @@ mbev_grid.dx,mbev_grid.dy,mbev_grid.nx,mbev_grid.ny);
 					ping = &(file->pings[iping]);
 					for (ibeam=0;ibeam<ping->beams_bath;ibeam++)
 						{
-						if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+						if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 							{
 							mb_proj_forward(mbev_verbose, mbev_grid.pjptr,
 									ping->bathlon[ibeam], ping->bathlat[ibeam],
@@ -3356,7 +3594,7 @@ ifile,file->load_status,file->esf_open);
 							action = MBP_EDIT_FILTER;
 						else if (mb_beam_check_flag_filter(ping->beamflag[ibeam]))
 							action = MBP_EDIT_FILTER;
-						else if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+						else if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 							action = MBP_EDIT_FLAG;
 						else
 							action = MBP_EDIT_ZERO;
@@ -3529,7 +3767,7 @@ region->cornerpoints[3].xgrid,region->cornerpoints[3].ygrid);
 					mb_coor_scale(mbev_verbose,ping->navlat,&mtodeglon,&mtodeglat);
 					for (ibeam=0;ibeam<ping->beams_bath;ibeam++)
 						{
-						if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+						if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 							{
 							if (ping->bathx[ibeam] >= xmin
 								&& ping->bathx[ibeam] <= xmax
@@ -3710,7 +3948,7 @@ area->cornerpoints[3].xgrid,area->cornerpoints[3].ygrid);
 					mb_coor_scale(mbev_verbose,ping->navlat,&mtodeglon,&mtodeglat);
 					for (ibeam=0;ibeam<ping->beams_bath;ibeam++)
 						{
-						if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+						if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 							{
 							x = ping->bathx[ibeam] - mbev_selected.xorigin;
 							y = ping->bathy[ibeam] - mbev_selected.yorigin;
@@ -3879,7 +4117,7 @@ fprintf(stderr,"mbeditviz_selectnav: \n");
 						mb_coor_scale(mbev_verbose,ping->navlat,&mtodeglon,&mtodeglat);
 						for (ibeam=0;ibeam<ping->beams_bath;ibeam++)
 							{
-							if (!mb_beam_check_flag_null(ping->beamflag[ibeam]))
+							if (!mb_beam_check_flag_unusable(ping->beamflag[ibeam]))
 								{
 								/* allocate memory if needed */
 								if (mbev_selected.num_soundings
@@ -4113,7 +4351,7 @@ ifile, iping, ibeam, beamflag, flush); */
 					action = MBP_EDIT_FILTER;
 				else if (mb_beam_check_flag_filter(beamflag))
 					action = MBP_EDIT_FILTER;
-				else if (!mb_beam_check_flag_null(beamflag))
+				else if (!mb_beam_check_flag_unusable(beamflag))
 					action = MBP_EDIT_FLAG;
 				else
 					action = MBP_EDIT_ZERO;

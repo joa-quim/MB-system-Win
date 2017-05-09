@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_prog.c	3/23/00
- *    $Id: mbnavadjust_prog.c 2295 2017-03-27 07:28:28Z caress $
+ *    $Id: mbnavadjust_prog.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -81,7 +81,7 @@ struct swathraw
 	};
 
 /* id variables */
-static char rcs_id[] = "$Id: mbnavadjust_prog.c 2295 2017-03-27 07:28:28Z caress $";
+static char rcs_id[] = "$Id: mbnavadjust_prog.c 2298 2017-04-10 07:57:48Z caress $";
 static char program_name[] = "mbnavadjust";
 static char help_message[] =  "mbnavadjust is an interactive navigation adjustment package for swath sonar data.\n";
 static char usage_message[] = "mbnavadjust [-Iproject -V -H]";
@@ -966,6 +966,7 @@ int mbnavadjust_import_data(char *path, int iformat)
 	struct mbna_section *section;
 	int	done;
 	char	filename[STRING_MAX];
+	char	dfile[STRING_MAX];
 	double	weight;
 	int	form;
 	int	firstfile;
@@ -999,7 +1000,7 @@ int mbnavadjust_import_data(char *path, int iformat)
 				while (done == MB_NO)
 					{
 					if ((status = mb_datalist_read(mbna_verbose,datalist,
-							filename,&form,&weight,&error))
+							filename,dfile,&form,&weight,&error))
 							== MB_SUCCESS)
 						{
 						status = mbnavadjust_import_file(filename,form,firstfile);

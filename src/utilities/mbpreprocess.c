@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbpreprocess.c	1/8/2014
- *    $Id: mbpreprocess.c 2295 2017-03-27 07:28:28Z caress $
+ *    $Id: mbpreprocess.c 2303 2017-04-28 14:39:51Z caress $
  *
  *    Copyright (c) 2014-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -26,7 +26,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbpreprocess.c 2295 2017-03-27 07:28:28Z caress $";
+static char version_id[] = "$Id: mbpreprocess.c 2303 2017-04-28 14:39:51Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -53,12 +53,17 @@ static char version_id[] = "$Id: mbpreprocess.c 2295 2017-03-27 07:28:28Z caress
 #define MBPREPROCESS_MERGE_FILE 	1
 #define MBPREPROCESS_MERGE_ASYNC 	2
 
-#define MBPREPROCESS_TIME_LATENCY_APPLY_NONE			0x00
+#define MBPREPROCESS_TIME_LATENCY_OFF 					0
+#define MBPREPROCESS_TIME_LATENCY_FILE 					1
+#define MBPREPROCESS_TIME_LATENCY_CONSTANT 				2
+#define MBPREPROCESS_TIME_LATENCY_APPLY_NONE				0x00
 #define MBPREPROCESS_TIME_LATENCY_APPLY_NAV				0x01
 #define MBPREPROCESS_TIME_LATENCY_APPLY_SENSORDEPTH		0x02
-#define MBPREPROCESS_TIME_LATENCY_APPLY_HEADING			0x04
-#define MBPREPROCESS_TIME_LATENCY_APPLY_ALTITUDE		0x08
-#define MBPREPROCESS_TIME_LATENCY_APPLY_ATTITUDE		0x10
+#define MBPREPROCESS_TIME_LATENCY_APPLY_ALTITUDE			0x04
+#define MBPREPROCESS_TIME_LATENCY_APPLY_HEADING			0x08
+#define MBPREPROCESS_TIME_LATENCY_APPLY_ATTITUDE			0x10
+#define MBPREPROCESS_TIME_LATENCY_APPLY_SOUNDSPEED		0x20
+#define MBPREPROCESS_TIME_LATENCY_APPLY_UNUSED			0x40
 #define MBPREPROCESS_TIME_LATENCY_APPLY_ALL_ANCILLIARY	0x7F
 #define MBPREPROCESS_TIME_LATENCY_APPLY_SURVEY			0x80
 #define MBPREPROCESS_TIME_LATENCY_APPLY_ALL				0xFF
@@ -83,23 +88,32 @@ int main (int argc, char **argv)
 	char	*message;
 
 	/* command line option definitions */
-	/* mbpreprocess --verbose
+	/* mbpreprocess
+	 * 		--verbose
 	 * 		--help
+	 * 		
 	 * 		--input=datalist
 	 * 		--format=format_id
+	 * 		
+	 * 		--platform-file=platform_file
+	 * 		--platform-target-sensor=sensor_id
+
 	 * 		--nav-file=file
 	 * 		--nav-file-format=format_id
 	 * 		--output-sensor-fnv
 	 * 		--nav-async=record_kind
 	 * 		--nav-sensor=sensor_id
+	 * 		
 	 * 		--sensordepth-file=file
 	 * 		--sensordepth-file-format=format_id
 	 * 		--sensordepth-async=record_kind
 	 * 		--sensordepth-sensor=sensor_id
+	 * 		
 	 * 		--heading-file=file
 	 * 		--heading-file-format=format_id
 	 * 		--heading-async=record_kind
 	 * 		--heading-sensor=sensor_id
+	 * 		
 	 * 		--altitude-file=file
 	 * 		--altitude-file-format=format_id
 	 * 		--altitude-async=record_kind
@@ -108,6 +122,7 @@ int main (int argc, char **argv)
 	 * 		--attitude-file-format=format_id
 	 * 		--attitude-async=record_kind
 	 * 		--attitude-sensor=sensor_id
+	 * 		
 	 * 		--time-latency-file=file
 	 * 		--time-latency-file-format=format_id
 	 * 		--time-latency-constant=value
@@ -118,16 +133,18 @@ int main (int argc, char **argv)
 	 * 		--time-latency-apply-all-ancilliary
 	 * 		--time-latency-apply-survey
 	 * 		--time-latency-apply-all
+	 * 		
 	 * 		--filter=value
 	 * 		--filter-apply-nav
 	 * 		--filter-apply-sensordepth
 	 * 		--filter-apply-heading
 	 * 		--filter-apply-attitude
 	 * 		--filter-apply-all-ancilliary
-	 * 		--platform-file=platform_file
-	 * 		--platform-target-sensor=sensor_id
+	 * 		
 	 * 		--no-change-survey
-	 * 		--kluge-time-jumps
+	 * 		--multibeam-sidescan-source=recordid
+	 * 		
+	 * 		--kluge-time-jumps=threshold
 	 *      --kluge-beam-tweak=factor
 	 *      --kluge-zero-attitude-correction
 	 *      --kluge-zero-alongtrack-angles
@@ -136,9 +153,10 @@ int main (int argc, char **argv)
 		{
 		{"verbose",							no_argument, 		NULL, 		0},
 		{"help",							no_argument, 		NULL, 		0},
-		{"verbose",							no_argument, 		NULL, 		0},
 		{"input",							required_argument, 	NULL, 		0},
 		{"format",							required_argument, 	NULL, 		0},
+		{"platform-file",					required_argument, 	NULL, 		0},
+		{"platform-target-sensor",			required_argument, 	NULL, 		0},
 		{"output-sensor-fnv",				no_argument, 		NULL, 		0},
 		{"nav-file",						required_argument, 	NULL, 		0},
 		{"nav-file-format",					required_argument, 	NULL, 		0},
@@ -176,10 +194,8 @@ int main (int argc, char **argv)
 		{"filter-apply-heading",			no_argument, 		NULL, 		0},
 		{"filter-apply-attitude",			no_argument, 		NULL, 		0},
 		{"filter-apply-all-ancilliary",		no_argument, 		NULL, 		0},
-		{"platform-file",					required_argument, 	NULL, 		0},
-		{"platform-target-sensor",			required_argument, 	NULL, 		0},
 		{"no-change-survey",				no_argument,		NULL,		0},
-		{"multibeam-sidescan-source",		no_argument,		NULL,		0},
+		{"multibeam-sidescan-source",		required_argument,	NULL,		0},
 		{"kluge-time-jumps",				required_argument, 	NULL, 		0},
 		{"kluge-beam-tweak",				required_argument, 	NULL, 		0},
 		{"kluge-zero-attitude-correction",	no_argument, 		NULL, 		0},
@@ -270,6 +286,7 @@ int main (int argc, char **argv)
 	struct mb_sensor_struct *sensor_target = NULL;
 	int target_sensor = -1;
 	
+	/* output fnv files for each sensor */
 	int output_sensor_fnv = MB_NO;
 		
 	/* kluge various data fixes */
@@ -313,6 +330,7 @@ int main (int argc, char **argv)
 	double	speedmin;
 	double	timegap;
 	mb_path	ifile;
+	mb_path	dfile;
 	mb_path	ofile;
 	mb_path	fileroot;
 	int	beams_bath;
@@ -434,6 +452,8 @@ int main (int argc, char **argv)
 	int	jaltitude = 0;
 	int	jattitude = 0;
 	double *dptr = NULL;
+	int index;
+	char buffer[16];
 	int	i, n;
 
 	/* get current default values */
@@ -453,6 +473,7 @@ int main (int argc, char **argv)
 	memset(platform_file, 0, sizeof(mb_path));
 	memset(read_file, 0, sizeof(mb_path));
 	memset(ifile, 0, sizeof(mb_path));
+	memset(dfile, 0, sizeof(mb_path));
 	memset(ofile, 0, sizeof(mb_path));
 	memset(fileroot, 0, sizeof(mb_path));
 	memset(afile, 0, sizeof(mb_path));
@@ -491,6 +512,26 @@ int main (int argc, char **argv)
 				{
 				n = sscanf(optarg, "%d", &format);
 				}
+
+			/*-------------------------------------------------------
+			 * Set platform file */
+			
+			/* platform-file */
+			else if (strcmp("platform-file", options[option_index].name) == 0)
+				{
+				n = sscanf (optarg,"%s", platform_file);
+				if (n == 1)
+					use_platform_file = MB_YES;
+				}
+			
+			/* platform-target-sensor */
+			else if (strcmp("platform-target-sensor", options[option_index].name) == 0)
+				{
+				n = sscanf (optarg,"%d", &target_sensor);
+				}
+
+			/*-------------------------------------------------------
+			 * Output fnv files for each sensor */
 			
 			/* output-sensor-fnv */
 			else if (strcmp("output-sensor-fnv", options[option_index].name) == 0)
@@ -775,23 +816,6 @@ int main (int argc, char **argv)
 				}
 
 			/*-------------------------------------------------------
-			 * Set platform file */
-			
-			/* platform-file */
-			else if (strcmp("platform-file", options[option_index].name) == 0)
-				{
-				n = sscanf (optarg,"%s", platform_file);
-				if (n == 1)
-					use_platform_file = MB_YES;
-				}
-			
-			/* platform-target-sensor */
-			else if (strcmp("platform-target-sensor", options[option_index].name) == 0)
-				{
-				n = sscanf (optarg,"%d", &target_sensor);
-				}
-
-			/*-------------------------------------------------------
 			 * Miscellaneous commands */
 						
 			/* no-change-survey */
@@ -833,6 +857,7 @@ int main (int argc, char **argv)
 					dptr = (double *)&preprocess_pars.kluge_pars[preprocess_pars.n_kluge * MB_PR_KLUGE_PAR_SIZE];
 					*dptr = kluge_beamtweak_factor;
 					preprocess_pars.n_kluge++;
+					preprocess_pars.recalculate_bathymetry = MB_YES;
 					}
 				}
 			
@@ -889,7 +914,7 @@ int main (int argc, char **argv)
 		fprintf(stderr,"\ndbg2  Program <%s>\n",program_name);
 		fprintf(stderr,"dbg2  Version %s\n",version_id);
 		fprintf(stderr,"dbg2  MB-system Version %s\n",MB_VERSION);
-		fprintf(stderr,"dbg2  Control Parameters:\n");
+		fprintf(stderr,"dbg2  Default MB-System Parameters:\n");
 		fprintf(stderr,"dbg2       verbose:                    %d\n",verbose);
 		fprintf(stderr,"dbg2       help:                       %d\n",help);
 		fprintf(stderr,"dbg2       format:                     %d\n",format);
@@ -915,48 +940,64 @@ int main (int argc, char **argv)
 		fprintf(stderr,"dbg2       etime_i[6]:                 %d\n",etime_i[6]);
 		fprintf(stderr,"dbg2       speedmin:                   %f\n",speedmin);
 		fprintf(stderr,"dbg2       timegap:                    %f\n",timegap);
+		fprintf(stderr,"dbg2  Input survey data to be preprocessed:\n");
 		fprintf(stderr,"dbg2       read_file:                  %s\n",read_file);
-		fprintf(stderr,"dbg2       output_sensor_fnv:          %d\n",output_sensor_fnv);
+		fprintf(stderr,"dbg2       format:                     %d\n",format);
+		fprintf(stderr,"dbg2  Source of platform model:\n");
+		if (use_platform_file == MB_YES)
+			fprintf(stderr,"dbg2       platform_file:              %s\n",platform_file);
+		else
+			fprintf(stderr,"dbg2       platform_file:              not specified\n");
+		fprintf(stderr,"dbg2       target_sensor:              %d\n",target_sensor);
+		fprintf(stderr,"dbg2  Source of navigation data:\n");
 		fprintf(stderr,"dbg2       nav_mode:                   %d\n",nav_mode);
 		fprintf(stderr,"dbg2       nav_file:                   %s\n",nav_file);
 		fprintf(stderr,"dbg2       nav_file_format:            %d\n",nav_file_format);
 		fprintf(stderr,"dbg2       nav_async:                  %d\n",nav_async);
 		fprintf(stderr,"dbg2       nav_sensor:                 %d\n",nav_sensor);
+		fprintf(stderr,"dbg2  Source of navigation data:\n");
 		fprintf(stderr,"dbg2       sensordepth_mode:           %d\n",sensordepth_mode);
 		fprintf(stderr,"dbg2       sensordepth_file:           %s\n",sensordepth_file);
 		fprintf(stderr,"dbg2       sensordepth_file_format:    %d\n",sensordepth_file_format);
 		fprintf(stderr,"dbg2       sensordepth_async:          %d\n",sensordepth_async);
 		fprintf(stderr,"dbg2       sensordepth_sensor:         %d\n",sensordepth_sensor);
+		fprintf(stderr,"dbg2  Source of heading data:\n");
 		fprintf(stderr,"dbg2       heading_mode:               %d\n",heading_mode);
 		fprintf(stderr,"dbg2       heading_file:               %s\n",heading_file);
 		fprintf(stderr,"dbg2       heading_file_format:        %d\n",heading_file_format);
 		fprintf(stderr,"dbg2       heading_async:              %d\n",heading_async);
 		fprintf(stderr,"dbg2       heading_sensor:             %d\n",heading_sensor);
+		fprintf(stderr,"dbg2  Source of altitude data:\n");
 		fprintf(stderr,"dbg2       altitude_mode:              %d\n",altitude_mode);
 		fprintf(stderr,"dbg2       altitude_file:              %s\n",altitude_file);
 		fprintf(stderr,"dbg2       altitude_file_format:       %d\n",altitude_file_format);
 		fprintf(stderr,"dbg2       altitude_async:             %d\n",altitude_async);
 		fprintf(stderr,"dbg2       altitude_sensor:            %d\n",altitude_sensor);
+		fprintf(stderr,"dbg2  Source of attitude data:\n");
 		fprintf(stderr,"dbg2       attitude_mode:              %d\n",attitude_mode);
 		fprintf(stderr,"dbg2       attitude_file:              %s\n",attitude_file);
 		fprintf(stderr,"dbg2       attitude_file_format:       %d\n",attitude_file_format);
 		fprintf(stderr,"dbg2       attitude_async:             %d\n",attitude_async);
 		fprintf(stderr,"dbg2       attitude_sensor:            %d\n",attitude_sensor);
+		fprintf(stderr,"dbg2  Time latency correction:\n");
 		fprintf(stderr,"dbg2       time_latency_mode:          %d\n",time_latency_mode);
 		fprintf(stderr,"dbg2       time_latency_file:          %s\n",time_latency_file);
 		fprintf(stderr,"dbg2       time_latency_format:        %d\n",time_latency_format);
 		fprintf(stderr,"dbg2       time_latency_apply:         %x\n",time_latency_apply);
+		fprintf(stderr,"dbg2  Time domain filtering:\n");
 		fprintf(stderr,"dbg2       filter_length:              %f\n",filter_length);
 		fprintf(stderr,"dbg2       filter_apply:               %x\n",filter_apply);
-		fprintf(stderr,"dbg2       use_platform_file:          %d\n",use_platform_file);
-		fprintf(stderr,"dbg2       platform_file:              %s\n",platform_file);
-		fprintf(stderr,"dbg2       target_sensor:              %d\n",target_sensor);
+		fprintf(stderr,"dbg2  Miscellaneous controls:\n");
 		fprintf(stderr,"dbg2       no_change_survey:           %d\n",preprocess_pars.no_change_survey);
 		fprintf(stderr,"dbg2       multibeam_sidescan_source:  %d\n",preprocess_pars.multibeam_sidescan_source);
+		fprintf(stderr,"dbg2       recalculate_bathymetry:     %d\n",preprocess_pars.recalculate_bathymetry);
+		fprintf(stderr,"dbg2  Various data fixes (kluges):\n");
 		fprintf(stderr,"dbg2       kluge_timejumps:            %d\n",kluge_timejumps);
 		fprintf(stderr,"dbg2       kluge_timejumps_threshold:  %f\n",kluge_timejumps_threshold);
 		fprintf(stderr,"dbg2       kluge_beamtweak:            %d\n",kluge_beamtweak);
 		fprintf(stderr,"dbg2       kluge_beamtweak_factor:     %f\n",kluge_beamtweak_factor);
+		fprintf(stderr,"dbg2  Additional output:\n");
+		fprintf(stderr,"dbg2       output_sensor_fnv:          %d\n",output_sensor_fnv);
 		}
 
 	/* print starting verbose */
@@ -1015,9 +1056,12 @@ int main (int argc, char **argv)
 		fprintf(stderr,"Miscellaneous controls:\n");
 		fprintf(stderr,"     no_change_survey:           %d\n",preprocess_pars.no_change_survey);
 		fprintf(stderr,"     multibeam_sidescan_source:  %d\n",preprocess_pars.multibeam_sidescan_source);
+		fprintf(stderr,"     recalculate_bathymetry:     %d\n",preprocess_pars.recalculate_bathymetry);
 		fprintf(stderr,"Various data fixes (kluges):\n");
 		fprintf(stderr,"     kluge_timejumps:            %d\n",kluge_timejumps);
 		fprintf(stderr,"     kluge_timejumps_threshold:  %f\n",kluge_timejumps_threshold);
+		fprintf(stderr,"     kluge_beamtweak:            %d\n",kluge_beamtweak);
+		fprintf(stderr,"     kluge_beamtweak_factor:     %f\n",kluge_beamtweak_factor);
 		fprintf(stderr,"Additional output:\n");
 		fprintf(stderr,"     output_sensor_fnv:          %d\n",output_sensor_fnv);
 		}
@@ -1164,7 +1208,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    ifile,&iformat,&file_weight,&error))
+			    ifile,dfile,&iformat,&file_weight,&error))
 			    == MB_SUCCESS)
 			read_data = MB_YES;
 	    else
@@ -1181,6 +1225,61 @@ int main (int argc, char **argv)
 	/* loop over all files to be read */
 	while (read_data == MB_YES)
 		{
+		/* if origin of the ancilliary data has not been specified, figure out
+		   defaults based on the first file's format */
+		if (nav_mode == MBPREPROCESS_MERGE_OFF)
+			{
+			if  (iformat == MBF_EMOLDRAW
+				|| iformat == MBF_EM300RAW
+				|| iformat == MBF_EM710RAW)
+				{
+				nav_mode = MBPREPROCESS_MERGE_ASYNC;
+				nav_async = MB_DATA_NAV;
+				}
+			else if (iformat == MBF_RESON7KR)
+				{
+				nav_mode = MBPREPROCESS_MERGE_ASYNC;
+				nav_async = MB_DATA_NAV1;
+				}
+			}
+		if (sensordepth_mode == MBPREPROCESS_MERGE_OFF)
+			{
+			if  (iformat == MBF_EMOLDRAW
+				|| iformat == MBF_EM300RAW
+				|| iformat == MBF_EM710RAW
+				|| iformat == MBF_RESON7KR)
+				{
+				sensordepth_mode = MBPREPROCESS_MERGE_ASYNC;
+				sensordepth_async = MB_DATA_HEIGHT;
+				}
+			}
+		if (heading_mode == MBPREPROCESS_MERGE_OFF)
+			{
+			if  (iformat == MBF_EMOLDRAW
+				|| iformat == MBF_EM300RAW
+				|| iformat == MBF_EM710RAW)
+				{
+				heading_mode = MBPREPROCESS_MERGE_ASYNC;
+				heading_async = MB_DATA_NAV;
+				}
+			else if  (iformat == MBF_RESON7KR)
+				{
+				heading_mode = MBPREPROCESS_MERGE_ASYNC;
+				heading_async = MB_DATA_HEADING;
+				}
+			}
+		if (attitude_mode == MBPREPROCESS_MERGE_OFF)
+			{
+			if  (iformat == MBF_EMOLDRAW
+				|| iformat == MBF_EM300RAW
+				|| iformat == MBF_EM710RAW
+				|| iformat == MBF_RESON7KR)
+				{
+				attitude_mode = MBPREPROCESS_MERGE_ASYNC;
+				attitude_async = MB_DATA_ATTITUDE;
+				}
+			}
+
 		if (verbose > 0)
 			fprintf(stderr,"\nPass 1: Opening file %s %d\n", ifile, iformat);
 			
@@ -1591,7 +1690,7 @@ int main (int argc, char **argv)
 		if (read_datalist == MB_YES)
 			{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    ifile,&iformat,&file_weight,&error))
+				    ifile,dfile,&iformat,&file_weight,&error))
 				    == MB_SUCCESS)
 				read_data = MB_YES;
 			else
@@ -1751,7 +1850,6 @@ int main (int argc, char **argv)
 			}
 		}
 
-	
 	/* altitude */
 	if (n_altitude > 0 && n_altitude_alloc >= n_altitude)
 		{
@@ -1772,7 +1870,6 @@ int main (int argc, char **argv)
 			}
 		}
 
-	
 	/* attitude */
 	if (n_attitude > 0 && n_attitude_alloc >= n_attitude)
 		{
@@ -1933,18 +2030,21 @@ int main (int argc, char **argv)
 	n_wt_att3 = 0;
 	
 	/* if requested to output integrated nav for all survey sensors, open files */
-fprintf(stderr,"Checking to see if sensor fnv files to be output:%d\n",output_sensor_fnv);
 	if (output_sensor_fnv == MB_YES && platform != NULL)
 		{
+		if (verbose > 0)
+			fprintf(stderr,"\nOutputting fnv files for survey sensors\n");
 		for (isensor=0; isensor < platform->num_sensors; isensor++)
 			{
-fprintf(stderr,"Checking sensor %d: %d\n",isensor,platform->sensors[isensor].capability2);
 			if (platform->sensors[isensor].capability2 != 0)
 				{
+				if (verbose > 0)
+					fprintf(stderr,"Outputting sensor %d with capability %d\n",isensor,platform->sensors[isensor].capability2);
 				for (ioffset = 0; ioffset < platform->sensors[isensor].num_offsets; ioffset++)
 					{
-fprintf(stderr,"Outputting sensor %d offset %d\n",isensor,ioffset);
 					sprintf(fnvfile, "sensor_%2.2d_%2.2d_%2.2d.fnv", isensor, ioffset, platform->sensors[isensor].type);
+					if (verbose > 0)
+						fprintf(stderr,"Outputting sensor %d offset %d in fnv file:%s\n",isensor,ioffset,fnvfile);
 					if ((platform->sensors[isensor].offsets[ioffset].ofp = fopen(fnvfile, "w")) == NULL)
 						{
 						error = MB_ERROR_OPEN_FAIL;
@@ -1963,16 +2063,16 @@ fprintf(stderr,"Outputting sensor %d offset %d\n",isensor,ioffset);
 	    {
 	    if ((status = mb_datalist_open(verbose,&datalist,
 					    read_file,look_processed,&error)) != MB_SUCCESS)
-		{
-		error = MB_ERROR_OPEN_FAIL;
-		fprintf(stderr,"\nUnable to open data list file: %s\n",
-			read_file);
-		fprintf(stderr,"\nProgram <%s> Terminated\n",
-			program_name);
-		exit(error);
-		}
+			{
+			error = MB_ERROR_OPEN_FAIL;
+			fprintf(stderr,"\nUnable to open data list file: %s\n",
+				read_file);
+			fprintf(stderr,"\nProgram <%s> Terminated\n",
+				program_name);
+			exit(error);
+			}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    ifile,&iformat,&file_weight,&error))
+			    ifile,dfile,&iformat,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -2089,8 +2189,8 @@ fprintf(stderr,"Outputting sensor %d offset %d\n",isensor,ioffset);
 			}
 			
 		/* open synchronous attitude file */
-		sprintf(afile,"%s.sta",ofile);
-		if ((afp = fopen(afile, "w")) == NULL)
+		sprintf(afile,"%s.bsa",ofile);
+		if ((afp = fopen(afile, "wb")) == NULL)
 			{
 			error = MB_ERROR_OPEN_FAIL;
 			fprintf(stderr,"\nUnable to open synchronous attitude data file <%s> for writing\n",afile);
@@ -2236,7 +2336,6 @@ fprintf(stderr,"Outputting sensor %d offset %d\n",isensor,ioffset);
 					if (n_rf_data == 1)
 						start_time_d = time_d;
 					end_time_d = time_d;
-fprintf(stderr,"KLUGE_TIMEJUMPS: %d time_d:%f last_time_d:%f ", n_rf_data, time_d, last_time_d);
 					if (n_rf_data > 2)
 						{
 						dtime_d_expect = (last_time_d - start_time_d) / (n_rf_data - 1);
@@ -2246,9 +2345,7 @@ fprintf(stderr,"KLUGE_TIMEJUMPS: %d time_d:%f last_time_d:%f ", n_rf_data, time_
 							time_d = last_time_d + dtime_d_expect;
 							timestamp_changed = MB_YES;
 							}
-fprintf(stderr,"dt: %f %f   time_d:%f", dtime_d, dtime_d_expect, time_d);
 						}
-fprintf(stderr,"\n");
 					last_time_d = time_d;					
 					}
 					
@@ -2530,7 +2627,14 @@ fprintf(stderr,"\n");
 					
 				/* output synchronous attitude */
 				if (kind == MB_DATA_DATA)
-					fprintf(afp, "%0.6f\t%0.3f\t%0.3f\n", time_d, roll, pitch);
+					{
+					index = 0;
+					mb_put_binary_double(MB_YES, time_d, &buffer[index]); index += 8;
+					mb_put_binary_float(MB_YES, (float)roll, &buffer[index]); index += 4;
+					mb_put_binary_float(MB_YES, (float)pitch, &buffer[index]); index += 4;
+					fwrite(buffer, (size_t)index, 1, afp);
+					//fprintf(afp, "%0.6f\t%0.3f\t%0.3f\n", time_d, roll, pitch);
+					}
 
 				/* count records */
 				if (kind == MB_DATA_DATA)
@@ -2686,8 +2790,8 @@ fprintf(stderr,"\n");
 				}
 			if (iend > istart)
 				{
-				sprintf(afile,"%s.ath",ofile);
-				if ((afp = fopen(afile, "w")) == NULL)
+				sprintf(afile,"%s.bah",ofile);
+				if ((afp = fopen(afile, "wb")) == NULL)
 					{
 					error = MB_ERROR_OPEN_FAIL;
 					fprintf(stderr,"\nUnable to open asynchronous heading data file <%s> for writing\n",afile);
@@ -2695,10 +2799,14 @@ fprintf(stderr,"\n");
 						program_name);
 					exit(error);
 					}
-				fprintf(stderr, "Generating ath file for %s\n", ofile);
+				fprintf(stderr, "Generating bah file for %s\n", ofile);
 				for (i=0;i<n_heading;i++)
 					{
-					fprintf(afp, "%0.6f\t%7.3f\n", heading_time_d[i], heading_heading[i]);
+					index = 0;
+					mb_put_binary_double(MB_YES, heading_time_d[i], &buffer[index]); index += 8;
+					mb_put_binary_float(MB_YES, (float)heading_heading[i], &buffer[index]); index += 4;
+					fwrite(buffer, (size_t)index, 1, afp);
+					//fprintf(afp, "%0.6f\t%7.3f\n", heading_time_d[i], heading_heading[i]);
 					}
 				fclose(afp);
 				}
@@ -2718,8 +2826,8 @@ fprintf(stderr,"\n");
 				}
 			if (iend > istart)
 				{
-				sprintf(afile,"%s.ats",ofile);
-				if ((afp = fopen(afile, "w")) == NULL)
+				sprintf(afile,"%s.bas",ofile);
+				if ((afp = fopen(afile, "wb")) == NULL)
 					{
 					error = MB_ERROR_OPEN_FAIL;
 					fprintf(stderr,"\nUnable to open asynchronous sensordepth data file <%s> for writing\n",afile);
@@ -2727,10 +2835,14 @@ fprintf(stderr,"\n");
 						program_name);
 					exit(error);
 					}
-				fprintf(stderr, "Generating ats file for %s\n", ofile);
+				fprintf(stderr, "Generating bas file for %s\n", ofile);
 				for (i=0;i<n_sensordepth;i++)
 					{
-					fprintf(afp, "%0.6f\t%7.3f\n", sensordepth_time_d[i], sensordepth_sensordepth[i]);
+					index = 0;
+					mb_put_binary_double(MB_YES, sensordepth_time_d[i], &buffer[index]); index += 8;
+					mb_put_binary_float(MB_YES, (float)sensordepth_sensordepth[i], &buffer[index]); index += 4;
+					fwrite(buffer, (size_t)index, 1, afp);
+					//fprintf(afp, "%0.6f\t%7.3f\n", sensordepth_time_d[i], sensordepth_sensordepth[i]);
 					}
 				fclose(afp);
 				}
@@ -2750,8 +2862,8 @@ fprintf(stderr,"\n");
 				}
 			if (iend > istart)
 				{
-				sprintf(afile,"%s.ata",ofile);
-				if ((afp = fopen(afile, "w")) == NULL)
+				sprintf(afile,"%s.baa",ofile);
+				if ((afp = fopen(afile, "wb")) == NULL)
 					{
 					error = MB_ERROR_OPEN_FAIL;
 					fprintf(stderr,"\nUnable to open asynchronous attitude data file <%s> for writing\n",afile);
@@ -2759,10 +2871,15 @@ fprintf(stderr,"\n");
 						program_name);
 					exit(error);
 					}
-				fprintf(stderr, "Generating ata file for %s\n", ofile);
+				fprintf(stderr, "Generating baa file for %s\n", ofile);
 				for (i=0;i<n_attitude;i++)
 					{
-					fprintf(afp, "%0.6f\t%0.3f\t%0.3f\n", attitude_time_d[i], attitude_roll[i], attitude_pitch[i]);
+					index = 0;
+					mb_put_binary_double(MB_YES, attitude_time_d[i], &buffer[index]); index += 8;
+					mb_put_binary_float(MB_YES, (float)attitude_roll[i], &buffer[index]); index += 4;
+					mb_put_binary_float(MB_YES, (float)attitude_pitch[i], &buffer[index]); index += 4;
+					fwrite(buffer, (size_t)index, 1, afp);
+					//fprintf(afp, "%0.6f\t%0.3f\t%0.3f\n", attitude_time_d[i], attitude_roll[i], attitude_pitch[i]);
 					}
 				fclose(afp);
 				}
@@ -2772,7 +2889,7 @@ fprintf(stderr,"\n");
 		if (read_datalist == MB_YES)
 			{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    ifile,&format,&file_weight,&error))
+				    ifile,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
 				read_data = MB_YES;
 			else

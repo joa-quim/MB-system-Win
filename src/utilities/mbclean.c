@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbclean.c	2/26/93
- *    $Id: mbclean.c 2280 2016-08-07 03:48:42Z caress $
+ *    $Id: mbclean.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -117,7 +117,7 @@ struct bad_struct
 int mbclean_save_edit(int verbose, FILE *sofp, double time_d, int beam,
 			int action, int *error);
 
-static char rcs_id[] = "$Id: mbclean.c 2280 2016-08-07 03:48:42Z caress $";
+static char rcs_id[] = "$Id: mbclean.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -157,6 +157,7 @@ int main (int argc, char **argv)
 	char	read_file[MB_PATH_MAXLINE];
 	char	swathfile[MB_PATH_MAXLINE];
 	char	swathfileread[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	void	*datalist;
 	int	look_processed = MB_DATALIST_LOOK_UNSET;
 	int	oktoprocess;
@@ -668,7 +669,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -2027,7 +2028,7 @@ i,esf.edit_time_d[i],esf.edit_beam[i],esf.edit_action[i],esf.edit_use[i]);
         	if (read_datalist == MB_YES)
                 	{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    swathfile,&format,&file_weight,&error))
+				    swathfile,dfile,&format,&file_weight,&error))
 				    == MB_SUCCESS)
                         	read_data = MB_YES;
                 	else

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_simrad3.c	3.00	2/22/2008
- *	$Id: mbsys_simrad3.c 2295 2017-03-27 07:28:28Z caress $
+ *	$Id: mbsys_simrad3.c 2302 2017-04-21 01:52:19Z caress $
  *
  *    Copyright (c) 2008-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -51,7 +51,7 @@
 #include "mb_process.h"
 #include "mbsys_simrad3.h"
 
-static char svn_id[]="$Id: mbsys_simrad3.c 2295 2017-03-27 07:28:28Z caress $";
+static char svn_id[]="$Id: mbsys_simrad3.c 2302 2017-04-21 01:52:19Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_simrad3_alloc(int verbose, void *mbio_ptr, void **store_ptr,
@@ -695,6 +695,7 @@ int mbsys_simrad3_deall(int verbose, void *mbio_ptr, void **store_ptr,
 	char	*function_name = "mbsys_simrad3_deall";
 	int	status = MB_SUCCESS;
 	struct mbsys_simrad3_struct *store;
+	struct mbsys_simrad3_extraparameters_struct *extraparameters;
 
 	/* print input debug statements */
 	if (verbose >= 2)
@@ -713,8 +714,9 @@ int mbsys_simrad3_deall(int verbose, void *mbio_ptr, void **store_ptr,
 	/* deallocate memory for extraparameters data structure */
 	if (store->extraparameters != NULL)
 		{
-		if (store->extraparameters->xtr_data != NULL)
-			status = mb_freed(verbose,__FILE__, __LINE__, (void **)&(store->extraparameters->xtr_data),error);
+		extraparameters = (struct mbsys_simrad3_extraparameters_struct *) store->extraparameters;
+		if (extraparameters->xtr_data != NULL)
+			status = mb_freed(verbose,__FILE__, __LINE__, (void **)&(extraparameters->xtr_data),error);
 		status = mb_freed(verbose,__FILE__, __LINE__, (void **)&(store->extraparameters),error);
 		}
 
@@ -1179,7 +1181,9 @@ int mbsys_simrad3_preprocess
 	if (store->kind == MB_DATA_DATA)
 		{
 		/*--------------------------------------------------------------*/
-		/* get depth sensor mode from the start record */
+		/* get depth sensor mode from the start record
+			NI => Use heave
+			IN => Depth sensor */
 		/*--------------------------------------------------------------*/
 		if (store->par_dsh[0] == 'I')
 			depthsensor_mode = MBSYS_SIMRAD3_ZMODE_USE_SENSORDEPTH_ONLY;
@@ -1251,10 +1255,6 @@ int mbsys_simrad3_preprocess
 					pars->sensordepth_time_d-1, pars->sensordepth_sensordepth-1,
 					pars->n_sensordepth, time_d, &sensordepth, &jsensordepth,
 					error);
-		if (depthsensor_mode == MBSYS_SIMRAD3_ZMODE_USE_HEAVE_ONLY)
-			{
-			sensordepth = 0.0;
-			}
 		
 		/* interpolate heading */
 		interp_status = mb_linear_interp_heading(verbose,
@@ -1285,17 +1285,10 @@ int mbsys_simrad3_preprocess
 					pars->attitude_time_d-1, pars->attitude_heave-1,
 					pars->n_attitude, time_d, &heave, &jattitude,
 					error);
-		if (depthsensor_mode == MBSYS_SIMRAD3_ZMODE_USE_SENSORDEPTH_ONLY)
-			{
-			heave = 0.0;
-			}
 
 		/* insert navigation */
 		ping->png_longitude = 10000000 * navlon;
 		ping->png_latitude = 20000000 * navlat;
-		
-		/* insert sonardepth */
-		ping->png_xducer_depth = sensordepth;
 
 		/* insert heading */
 		if (heading < 0.0)
@@ -1432,6 +1425,18 @@ int mbsys_simrad3_preprocess
 			rx_r = store->par_s3r;
 			rx_p = store->par_s3p;
 			}
+//fprintf(stderr,"Sensordepth values:  txz:%f rxz:%f wlz:%f heave:%f height:%f  ping->png_xducer_depth:%f\n",
+//tx_z, rx_z, store->par_wlz, heave, sensordepth, ping->png_xducer_depth);
+		
+		/* insert sonardepth if requested */
+		if (depthsensor_mode == MBSYS_SIMRAD3_ZMODE_USE_SENSORDEPTH_ONLY)
+			{
+			//ping->png_xducer_depth = sensordepth;
+			}
+		else
+			{
+			//ping->png_xducer_depth = 0.5 * (tx_z + rx_z) - store->par_wlz + heave;
+			}
 
 		/*--------------------------------------------------------------*/
 		/* calculate corrected ranges, angles, and bathymetry for each beam */
@@ -1467,12 +1472,12 @@ int mbsys_simrad3_preprocess
 						error);
 			if (interp_status == MB_SUCCESS)
 			interp_status = mb_linear_interp(verbose,
-						pars->attitude_time_d-1, pars->attitude_roll-1,
+						pars->attitude_time_d-1, pars->attitude_pitch-1,
 						pars->n_attitude, transmit_time_d, &transmit_pitch, &jattitude,
 						error);
 			if (interp_status == MB_SUCCESS)
 			interp_status = mb_linear_interp(verbose,
-						pars->attitude_time_d-1, pars->attitude_roll-1,
+						pars->attitude_time_d-1, pars->attitude_heave-1,
 						pars->n_attitude, transmit_time_d, &transmit_heave, &jattitude,
 						error);
 			interp_status = mb_linear_interp(verbose,
@@ -1481,12 +1486,12 @@ int mbsys_simrad3_preprocess
 						error);
 			if (interp_status == MB_SUCCESS)
 			interp_status = mb_linear_interp(verbose,
-						pars->attitude_time_d-1, pars->attitude_roll-1,
+						pars->attitude_time_d-1, pars->attitude_pitch-1,
 						pars->n_attitude, receive_time_d, &receive_pitch, &jattitude,
 						error);
 			if (interp_status == MB_SUCCESS)
 			interp_status = mb_linear_interp(verbose,
-						pars->attitude_time_d-1, pars->attitude_roll-1,
+						pars->attitude_time_d-1, pars->attitude_heave-1,
 						pars->n_attitude, receive_time_d, &receive_heave, &jattitude,
 						error);
 				
@@ -1512,8 +1517,8 @@ int mbsys_simrad3_preprocess
 			/* ping->png_bheave[i] is the difference between the heave at the ping timestamp time that is factored
 			 * into the ping->png_xducer_depth value and the average heave at the sector transmit time and the beam receive time */
 			ping->png_bheave[i] = 0.5 *(receive_heave + transmit_heave) - heave;
-/* fprintf(stderr,"AAA png_count:%d beam:%d heave_ping:%f i:%d transmit_heave:%f receive_heave:%f bheave:%f\n",
-ping->png_count,i,heave_ping,i,transmit_heave,receive_heave,ping->png_bheave[i]); */
+//fprintf(stderr,"AAA png_count:%d beam:%d times: %f %f %f   heave:%f %f transmit_heave:%f receive_heave:%f bheave:%f\n",
+//ping->png_count,i,time_d,transmit_time_d,receive_time_d,0.01 * ping->png_heave,heave,transmit_heave,receive_heave,ping->png_bheave[i]);
 				
 			/* calculate beam angles for raytracing using Jon Beaudoin's code based on:
 				Beaudoin, J., Hughes Clarke, J., and Bartlett, J. Application of
@@ -1594,17 +1599,28 @@ i,beamDepression,beamAzimuth,ping->png_depression[i],ping->png_azimuth[i]);*/
 				ping->png_beamflag[i] = MB_FLAG_NULL;
 				ping->png_raw_rxdetection[i] = ping->png_raw_rxdetection[i] | 128;
 				}
-			else if ((detection_mask & 128) == 128 && (detection_mask & 112) != 0)
-				{
-				ping->png_beamflag[i] = MB_FLAG_NULL;
-/* fprintf(stderr,"beam i:%d detection_mask:%d %d quality:%u beamflag:%u\n",
-i,ping->png_raw_rxdetection[i],detection_mask,(mb_u_char)ping->png_raw_rxquality[i],(mb_u_char)ping->png_beamflag[i]);*/
-				}
 			else if ((detection_mask & 128) == 128)
 				{
-				ping->png_beamflag[i] = MB_FLAG_FLAG + MB_FLAG_SONAR;
-/*fprintf(stderr,"beam i:%d detection_mask:%d %d quality:%u beamflag:%u\n",
-i,ping->png_raw_rxdetection[i],detection_mask,(mb_u_char)ping->png_raw_rxquality[i],(mb_u_char)ping->png_beamflag[i]);*/
+				if ((detection_mask & 15) == 0)
+					{
+					ping->png_beamflag[i] = MB_FLAG_FLAG + MB_FLAG_SONAR;
+					}
+				else if ((detection_mask & 15) == 1)
+					{
+					ping->png_beamflag[i] = MB_FLAG_FLAG + MB_FLAG_INTERPOLATE;
+					}
+				else if ((detection_mask & 15) == 2)
+					{
+					ping->png_beamflag[i] = MB_FLAG_FLAG + MB_FLAG_INTERPOLATE;
+					}
+				else if ((detection_mask & 15) == 3)
+					{
+					ping->png_beamflag[i] = MB_FLAG_FLAG + MB_FLAG_SONAR;;
+					}
+				else if ((detection_mask & 15) == 4)
+					{
+					ping->png_beamflag[i] = MB_FLAG_NULL;
+					}
 				}
 			else if (ping->png_clean[i] != 0)
 				{
@@ -1745,6 +1761,9 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 				case MBSYS_SIMRAD3_EM710:
 					strcpy(multibeam_model, "EM710");
 					break;
+				case MBSYS_SIMRAD3_EM712:
+					strcpy(multibeam_model, "EM712");
+					break;
 				case MBSYS_SIMRAD3_EM850:
 					strcpy(multibeam_model, "EM850");
 					break;
@@ -1812,7 +1831,7 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 					strcpy(multibeam_model, "EM1000");
 					break;
 				default:
-					strcpy(multibeam_model, "Unknown");
+					sprintf(multibeam_model, "Unknown sonar model %d", store->sonar);
 				}
 			sprintf(multibeam_serial, "%d", store->par_serial_1);
 			capability1 = MB_SENSOR_CAPABILITY1_NONE;
@@ -2073,7 +2092,14 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 				}
 			}
 		
-		/* set position sensor 1, add it if necessary */
+		/* set position sensor 1, add it if necessary
+		   - note that sometimes the start datagrams may have the active position
+		     sensor set == 0 (which means position system 1 is active) while
+		     having the position system 1 quality flag set to off  - in this case
+		     force the position system 1 quality flag to on so that the sensor
+		     structure is created */
+		if (store->par_aps == 0 && store->par_p1q == 0)
+			store->par_p1q = 1;
 		if (platform->source_position1 < 0 && store->par_p1q)
 			{
 			/* set sensor 1 (position) */
@@ -2161,7 +2187,14 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 				}
 			}
 		
-		/* set position sensor 2, add it if necessary */
+		/* set position sensor 2, add it if necessary 
+		   - note that sometimes the start datagrams may have the active position
+		     sensor set == 1 (which means position system 2 is active) while
+		     having the position system 2 quality flag set to off  - in this case
+		     force the position system 2 quality flag to on so that the sensor
+		     structure is created */
+		if (store->par_aps == 1 && store->par_p2q == 0)
+			store->par_p2q = 1;
 		if (platform->source_position2 < 0 && store->par_p2q)
 			{
 			/* set sensor 2 (position) */
@@ -2249,7 +2282,14 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 				}
 			}
 		
-		/* set position sensor 3, add it if necessary */
+		/* set position sensor 3, add it if necessary 
+		   - note that sometimes the start datagrams may have the active position
+		     sensor set == 2 (which means position system 3 is active) while
+		     having the position system 3 quality flag set to off  - in this case
+		     force the position system 3 quality flag to on so that the sensor
+		     structure is created */
+		if (store->par_aps == 2 && store->par_p3q == 0)
+			store->par_p3q = 1;
 		if (platform->source_position3 < 0 && store->par_p3q)
 			{
 			/* set sensor 3 (position) */
@@ -2338,7 +2378,7 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 			}
 			
 		/* add depth sensor if needed */
-		if (platform->source_depth1 < 0 && store->par_dsh[0] == 'I' && store->par_dsh[0] == 'N')
+		if (platform->source_depth1 < 0 && store->par_dsh[0] == 'I' && store->par_dsh[1] == 'N')
 			{
 			capability1 = MB_SENSOR_CAPABILITY1_DEPTH;
 			capability2 = MB_SENSOR_CAPABILITY2_NONE;
@@ -2567,7 +2607,7 @@ int mbsys_simrad3_extract_platform(int verbose, void *mbio_ptr, void *store_ptr,
 			platform->source_rollpitch = platform->source_rollpitch2;
 		else
 			platform->source_rollpitch = platform->source_rollpitch1;
-		if (store->par_dsh[0] == 'I' && store->par_dsh[0] == 'N')
+		if (store->par_dsh[0] == 'I' && store->par_dsh[1] == 'N')
 			platform->source_depth = platform->source_depth1;
 		if (store->par_ahe == 2 || store->par_ahe == 8)
 			platform->source_heave = platform->source_rollpitch1;
@@ -3091,24 +3131,24 @@ int mbsys_simrad3_insert(int verbose, void *mbio_ptr, void *store_ptr,
 			for (i=0;i<nbath;i++)
 			    {
 			    if (beamflag[i] != MB_FLAG_NULL)
-				{
-				ping->png_depth[i] = bath[i] - ping->png_xducer_depth;
-				ping->png_beamflag[i] = beamflag[i];
-				ping->png_acrosstrack[i] = bathacrosstrack[i];
-				ping->png_alongtrack[i] = bathalongtrack[i];
-				ping->png_amp[i] = (int) rint(amp[i] / reflscale);
-				ping->png_nbeams++;
-				ping->png_nbeams_valid++;
-				}
+					{
+					ping->png_depth[i] = bath[i] - ping->png_xducer_depth;
+					ping->png_beamflag[i] = beamflag[i];
+					ping->png_acrosstrack[i] = bathacrosstrack[i];
+					ping->png_alongtrack[i] = bathalongtrack[i];
+					ping->png_amp[i] = (int) rint(amp[i] / reflscale);
+					ping->png_nbeams++;
+					ping->png_nbeams_valid++;
+					}
 			    else
-				{
-				ping->png_depth[i] = 0.0;
-				ping->png_beamflag[i] = MB_FLAG_NULL;
-				ping->png_acrosstrack[i] = 0.0;
-				ping->png_alongtrack[i] = 0.0;
-				ping->png_amp[i] = 0;
-				ping->png_nbeams++;
-				}
+					{
+					ping->png_depth[i] = 0.0;
+					ping->png_beamflag[i] = MB_FLAG_NULL;
+					ping->png_acrosstrack[i] = 0.0;
+					ping->png_alongtrack[i] = 0.0;
+					ping->png_amp[i] = 0;
+					ping->png_nbeams++;
+					}
 			    }
 			ping->png_nbeams = nbath;
 			}
@@ -3396,7 +3436,7 @@ int mbsys_simrad3_detects(int verbose, void *mbio_ptr, void *store_ptr,
 	struct mb_io_struct *mb_io_ptr;
 	struct mbsys_simrad3_struct *store;
 	struct mbsys_simrad3_ping_struct *ping;
-	int	i, j;
+	int	i;
 
 	/* print input debug statements */
 	if (verbose >= 2)
@@ -3426,16 +3466,19 @@ int mbsys_simrad3_detects(int verbose, void *mbio_ptr, void *store_ptr,
 		ping = (struct mbsys_simrad3_ping_struct *) &(store->pings[store->ping_index]);
 
 		*nbeams = ping->png_nbeams;
-		for (j=0;j<ping->png_nbeams;j++)
-			{
-			detects[j] = MB_DETECT_UNKNOWN;
-			}
 		for (i=0;i<ping->png_nbeams;i++)
 			{
-			if (ping->png_detection[i] & 1)
-				detects[i] = MB_DETECT_PHASE;
+			if (ping->png_detection[i] & 128)
+				{
+				detects[i] = MB_DETECT_UNKNOWN;
+				}
 			else
-				detects[i] = MB_DETECT_AMPLITUDE;
+				{
+				if (ping->png_detection[i] & 1)
+					detects[i] = MB_DETECT_PHASE;
+				else
+					detects[i] = MB_DETECT_AMPLITUDE;
+				}
 			}
 
 		/* set status */

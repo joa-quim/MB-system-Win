@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb7kpreprocess.c	10/12/2005
- *    $Id: mb7kpreprocess.c 2293 2017-03-06 20:21:22Z caress $
+ *    $Id: mb7kpreprocess.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2005-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -64,7 +64,7 @@
 #define	MB7KPREPROCESS_KLUGE_FIXTIMEJUMPBEAMEDITS	7
 #define	MB7KPREPROCESS_KLUGE_DONOTRECALCULATEBATHY	8
 #define	MB7KPREPROCESS_KLUGE_BEAMPATTERNSNELLTWEAK	9
-static char	rcs_id[] = "$Id: mb7kpreprocess.c 2293 2017-03-06 20:21:22Z caress $";
+static char	rcs_id[] = "$Id: mb7kpreprocess.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -103,6 +103,7 @@ main(int argc, char **argv)
 	double		speedmin;
 	double		timegap;
 	char		ifile     [MB_PATH_MAXLINE];
+	char		dfile     [MB_PATH_MAXLINE];
 	char		ofile     [MB_PATH_MAXLINE];
 	char		ctdfile   [MB_PATH_MAXLINE];
 	int		ofile_set = MB_NO;
@@ -1876,7 +1877,7 @@ main(int argc, char **argv)
 			exit(error);
 		}
 		if ((status = mb_datalist_read(verbose, datalist,
-				      ifile, &format, &file_weight, &error))
+				      ifile, dfile, &format, &file_weight, &error))
 		    == MB_SUCCESS)
 			read_data = MB_YES;
 		else
@@ -3659,7 +3660,7 @@ main(int argc, char **argv)
 		/* figure out whether and what to read next */
 		if (read_datalist == MB_YES) {
 			if ((status = mb_datalist_read(verbose, datalist,
-				      ifile, &format, &file_weight, &error))
+				      ifile, dfile, &format, &file_weight, &error))
 			    == MB_SUCCESS)
 				read_data = MB_YES;
 			else
@@ -4442,7 +4443,7 @@ main(int argc, char **argv)
 				exit(error);
 			}
 			if ((status = mb_datalist_read(verbose, datalist,
-				      ifile, &format, &file_weight, &error))
+				      ifile, dfile, &format, &file_weight, &error))
 			    == MB_SUCCESS)
 				read_data = MB_YES;
 			else
@@ -7917,7 +7918,7 @@ main(int argc, char **argv)
 			/* figure out whether and what to read next */
 			if (read_datalist == MB_YES) {
 				if ((status = mb_datalist_read(verbose, datalist,
-				      ifile, &format, &file_weight, &error))
+				      ifile, dfile, &format, &file_weight, &error))
 				    == MB_SUCCESS)
 					read_data = MB_YES;
 				else

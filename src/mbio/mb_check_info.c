@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_check_info.c	1/25/93
- *    $Id: mb_check_info.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mb_check_info.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -42,7 +42,7 @@
 #include "mb_format.h"
 #include "mb_info.h"
 
-static char rcs_id[]="$Id: mb_check_info.c 2261 2016-01-07 01:49:22Z caress $";
+static char rcs_id[]="$Id: mb_check_info.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_check_info(int verbose, char *file, int lonflip, double bounds[4], int *file_in_bounds, int *error)
@@ -1141,7 +1141,7 @@ int mb_swathbounds(int verbose, int checkgood,
 	found = MB_NO;
 	for (i=0;i<nbath;i++)
 		{
-		if ((checkgood && mb_beam_ok(beamflag[i])) || !mb_beam_check_flag_null(beamflag[i]))
+		if ((checkgood && mb_beam_ok(beamflag[i])) || !mb_beam_check_flag_unusable(beamflag[i]))
 			{
 			if (found == MB_NO)
 				{
@@ -1348,6 +1348,7 @@ int mb_get_info_datalist(int verbose, char *read_file, int *format,
 	char	*function_name = "mb_get_info_datalist";
 	int	status = MB_SUCCESS;
 	char	swathfile[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	struct mb_info_struct mb_info_file;
 	int	read_datalist = MB_NO;
 	void	*datalist;
@@ -1395,7 +1396,7 @@ int mb_get_info_datalist(int verbose, char *read_file, int *format,
 		exit(status);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,format,&file_weight,error))
+			    swathfile,dfile,format,&file_weight,error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -1529,7 +1530,7 @@ int mb_get_info_datalist(int verbose, char *read_file, int *format,
         	if (read_datalist == MB_YES)
                 	{
 			if ((status = mb_datalist_read(verbose,datalist,
-				    swathfile,format,&file_weight,error))
+				    swathfile,dfile,format,&file_weight,error))
 				    == MB_SUCCESS)
                         	read_data = MB_YES;
                 	else

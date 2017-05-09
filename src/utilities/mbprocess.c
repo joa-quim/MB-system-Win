@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbprocess.c	3/31/93
- *    $Id: mbprocess.c 2293 2017-03-06 20:21:22Z caress $
+ *    $Id: mbprocess.c 2302 2017-04-21 01:52:19Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -107,7 +107,7 @@ int get_anglecorr(int verbose,
 	int nangle, double *angles, double *corrs,
 	double angle, double *corr, int *error);
 
-static char rcs_id[] = "$Id: mbprocess.c 2293 2017-03-06 20:21:22Z caress $";
+static char rcs_id[] = "$Id: mbprocess.c 2302 2017-04-21 01:52:19Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -166,8 +166,9 @@ and mbedit edit save files.\n";
 	void	*ombio_ptr = NULL;
 	int		platform_source;
     int     nav_source;
+	int		sensordepth_source;
     int     heading_source;
-	int     vru_source;
+	int     attitude_source;
     int     svp_source;
 
 	/* mbio read and write values */
@@ -262,6 +263,7 @@ and mbedit edit save files.\n";
 	int	mbp_ifile_specified;
 	char	mbp_ifile[MBP_FILENAMESIZE];
 	char	mbp_pfile[MBP_FILENAMESIZE];
+	char	mbp_dfile[MBP_FILENAMESIZE];
 	int	mbp_ofile_specified;
 	char	mbp_ofile[MBP_FILENAMESIZE];
 	int	mbp_format_specified;
@@ -584,7 +586,7 @@ and mbedit edit save files.\n";
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    mbp_ifile,&mbp_format,&file_weight,&error))
+			    mbp_ifile,mbp_dfile,&mbp_format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -3496,9 +3498,9 @@ and mbedit edit save files.\n";
 
 	/* get data kind sources for input format */
 	mb_format_source(verbose, &(process.mbp_format),
-	&platform_source, &nav_source, &heading_source,
-	&vru_source, &svp_source,
-	&error);
+				&platform_source, &nav_source, &sensordepth_source,
+				&heading_source, &attitude_source, &svp_source,
+				&error);
 
 	/*--------------------------------------------
 	  read the input file to get first ssv if necessary
@@ -5648,38 +5650,38 @@ bath[i]-zz); */
 			    {
 			    /* get draft change */
 			    depth_offset_change = draft - draft_org + lever_heave;
-/* fprintf(stderr, "time:%f  drafts:%f %f  lever:%f  depth_offset_change:%f\n",
-time_d, draft, draft_org, lever_heave, depth_offset_change); */
+//fprintf(stderr, "time:%f  drafts:%f %f  lever:%f  tide:%f depth_offset_change:%f\n",
+//time_d, draft, draft_org, lever_heave, tideval, depth_offset_change);
 
 			    /* loop over the beams */
 			    for (i=0;i<nbath;i++)
-			      {
-			      if (beamflag[i] != MB_FLAG_NULL)
-				{
-				/* apply transducer depth change to depths */
-				bath[i] += depth_offset_change;
+					{
+					if (beamflag[i] != MB_FLAG_NULL)
+						{
+						/* apply transducer depth change to depths */
+						bath[i] += depth_offset_change;
 /* fprintf(stderr,"depth_offset_change:%f bath[%d]:%f\n",depth_offset_change,i,bath[i]);*/
 
-				/* output some debug values */
-				if (verbose >= 5)
-				    fprintf(stderr,"dbg5       %3d %3d %8.2f %8.2f %8.2f\n",
-					idata, i,
-					bathacrosstrack[i],
-					bathalongtrack[i],
-					bath[i]);
-
-				/* output some debug messages */
-				if (verbose >= 5)
-				    {
-				    fprintf(stderr,"\ndbg5  Depth value calculated in program <%s>:\n",program_name);
-				    fprintf(stderr,"dbg5       kind:  %d\n",kind);
-				    fprintf(stderr,"dbg5       beam:  %d\n",i);
-				    fprintf(stderr,"dbg5       xtrack: %f\n",bathacrosstrack[i]);
-				    fprintf(stderr,"dbg5       ltrack: %f\n",bathalongtrack[i]);
-				    fprintf(stderr,"dbg5       depth:  %f\n",bath[i]);
-				    }
-				}
-			      }
+						/* output some debug values */
+						if (verbose >= 5)
+							fprintf(stderr,"dbg5       %3d %3d %8.2f %8.2f %8.2f\n",
+							idata, i,
+							bathacrosstrack[i],
+							bathalongtrack[i],
+							bath[i]);
+		
+						/* output some debug messages */
+						if (verbose >= 5)
+							{
+							fprintf(stderr,"\ndbg5  Depth value calculated in program <%s>:\n",program_name);
+							fprintf(stderr,"dbg5       kind:  %d\n",kind);
+							fprintf(stderr,"dbg5       beam:  %d\n",i);
+							fprintf(stderr,"dbg5       xtrack: %f\n",bathacrosstrack[i]);
+							fprintf(stderr,"dbg5       ltrack: %f\n",bathalongtrack[i]);
+							fprintf(stderr,"dbg5       depth:  %f\n",bath[i]);
+							}
+						}
+					}
 /*fprintf(stderr, "time:%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d.%6.6d draft:%f depth_offset_change:%f\n",
 time_i[0], time_i[1], time_i[2], time_i[3],
 time_i[4], time_i[5], time_i[6], draft, depth_offset_change);*/
@@ -5857,49 +5859,49 @@ time_i[4], time_i[5], time_i[6], draft, depth_offset_change);*/
 		    && kind == MB_DATA_DATA)
 		    {
 		    for (icut=0;icut<process.mbp_cut_num;icut++)
-			{
-			/* flag data according to beam number range */
-			if (process.mbp_cut_kind[icut] == MBP_CUT_DATA_BATH
-			    && process.mbp_cut_mode[icut] == MBP_CUT_MODE_NUMBER)
-			    {
-			    istart = MAX((int)process.mbp_cut_min[icut], 0);
-			    iend = MIN((int)process.mbp_cut_max[icut], nbath - 1);
-			    for (i=istart;i<=iend;i++)
 				{
-				if (mb_beam_ok(beamflag[i]))
-					beamflag[i]= MB_FLAG_FLAG + MB_FLAG_MANUAL;
+				/* flag data according to beam number range */
+				if (process.mbp_cut_kind[icut] == MBP_CUT_DATA_BATH
+					&& process.mbp_cut_mode[icut] == MBP_CUT_MODE_NUMBER)
+					{
+					istart = MAX((int)process.mbp_cut_min[icut], 0);
+					iend = MIN((int)process.mbp_cut_max[icut], nbath - 1);
+					for (i=istart;i<=iend;i++)
+						{
+						if (mb_beam_ok(beamflag[i]))
+							beamflag[i]= MB_FLAG_FLAG + MB_FLAG_MANUAL;
+						}
+					}
+	
+				/* flag data according to beam
+					acrosstrack distance */
+				else if (process.mbp_cut_kind[icut] == MBP_CUT_DATA_BATH
+					&& process.mbp_cut_mode[icut] == MBP_CUT_MODE_DISTANCE)
+					{
+					for (i=0;i<nbath;i++)
+						{
+						if (mb_beam_ok(beamflag[i])
+							&& bathacrosstrack[i] >= process.mbp_cut_min[icut]
+							&& bathacrosstrack[i] <= process.mbp_cut_max[icut])
+							beamflag[i]= MB_FLAG_FLAG + MB_FLAG_MANUAL;
+						}
+					}
+	
+				/* flag data according to speed */
+				else if (process.mbp_cut_kind[icut] == MBP_CUT_DATA_BATH
+					&& process.mbp_cut_mode[icut] == MBP_CUT_MODE_SPEED)
+					{
+					if (speed < process.mbp_cut_min[icut]
+						|| speed > process.mbp_cut_max[icut])
+						{
+						for (i=0;i<nbath;i++)
+							{
+							if (mb_beam_ok(beamflag[i]))
+								beamflag[i]= MB_FLAG_FLAG + MB_FLAG_MANUAL;
+							}
+						}
+					}
 				}
-			    }
-
-			/* flag data according to beam
-				acrosstrack distance */
-			else if (process.mbp_cut_kind[icut] == MBP_CUT_DATA_BATH
-			    && process.mbp_cut_mode[icut] == MBP_CUT_MODE_DISTANCE)
-			    {
-			    for (i=0;i<nbath;i++)
-				{
-				if (mb_beam_ok(beamflag[i])
-				    && bathacrosstrack[i] >= process.mbp_cut_min[icut]
-				    && bathacrosstrack[i] <= process.mbp_cut_max[icut])
-					beamflag[i]= MB_FLAG_FLAG + MB_FLAG_MANUAL;
-				}
-			    }
-
-			/* flag data according to speed */
-			else if (process.mbp_cut_kind[icut] == MBP_CUT_DATA_BATH
-			    && process.mbp_cut_mode[icut] == MBP_CUT_MODE_SPEED)
-			    {
-			    if (speed < process.mbp_cut_min[icut]
-				|| speed > process.mbp_cut_max[icut])
-				{
-				for (i=0;i<nbath;i++)
-				    {
-				    if (mb_beam_ok(beamflag[i]))
-					    beamflag[i]= MB_FLAG_FLAG + MB_FLAG_MANUAL;
-				    }
-				}
-			    }
-			}
 		    }
 
 	/*--------------------------------------------
@@ -5934,36 +5936,36 @@ time_i[4], time_i[5], time_i[6], draft, depth_offset_change);*/
 					beamflag,bath,amp,bathacrosstrack,bathalongtrack,
 					ss,ssacrosstrack,ssalongtrack,
 					comment,&error);
-                        if (process.mbp_format == MBF_EM300MBA)
-			status = mbsys_simrad2_makess(verbose,
-					imbio_ptr,store_ptr,
-					pixel_size_set,&pixel_size,
-					swath_width_set,&swath_width,
-					pixel_int,
-					&error);
-                        else if (process.mbp_format == MBF_EM710MBA)
-			status = mbsys_simrad3_makess(verbose,
-					imbio_ptr,store_ptr,
-					pixel_size_set,&pixel_size,
-					swath_width_set,&swath_width,
-					pixel_int,
-					&error);
-                        else if (process.mbp_format == MBF_RESON7KR)
-			status = mbsys_reson7k_makess(verbose,
-					imbio_ptr,store_ptr,
-					R7KRECID_7kV2SnippetData,
-                                        pixel_size_set,&pixel_size,
-					swath_width_set,&swath_width,
-					pixel_int,
-					&error);
+			if (process.mbp_format == MBF_EM300MBA)
+				status = mbsys_simrad2_makess(verbose,
+						imbio_ptr,store_ptr,
+						pixel_size_set,&pixel_size,
+						swath_width_set,&swath_width,
+						pixel_int,
+						&error);
+			else if (process.mbp_format == MBF_EM710MBA)
+				status = mbsys_simrad3_makess(verbose,
+						imbio_ptr,store_ptr,
+						pixel_size_set,&pixel_size,
+						swath_width_set,&swath_width,
+						pixel_int,
+						&error);
+			else if (process.mbp_format == MBF_RESON7KR)
+				status = mbsys_reson7k_makess(verbose,
+						imbio_ptr,store_ptr,
+						R7KRECID_7kV2SnippetData,
+											pixel_size_set,&pixel_size,
+						swath_width_set,&swath_width,
+						pixel_int,
+						&error);
 			status = mb_extract(verbose,imbio_ptr,store_ptr,&kind,
-					time_i,&time_d,&navlon,&navlat,
-					&speed,&heading,
-					&nbath,&namp,&nss,
-					beamflag,bath,amp,
-					bathacrosstrack,bathalongtrack,
-					ss,ssacrosstrack,ssalongtrack,
-					comment,&error);
+						time_i,&time_d,&navlon,&navlat,
+						&speed,&heading,
+						&nbath,&namp,&nss,
+						beamflag,bath,amp,
+						bathacrosstrack,bathalongtrack,
+						ss,ssacrosstrack,ssalongtrack,
+						comment,&error);
 			}
 
 	/*--------------------------------------------
@@ -6843,7 +6845,7 @@ i,sscorrtableuse.angle[i],sscorrtableuse.amplitude[i],sscorrtableuse.sigma[i]); 
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    mbp_ifile,&format,&file_weight,&error))
+			    mbp_ifile,mbp_dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

@@ -23,6 +23,7 @@ EXPORTS
      mb_datalist_open
      mb_datalist_read
      mb_datalist_read2
+	mb_datalist_recursion
      mb_datalist_close
      mb_get_relative_path
      mb_get_shortest_path

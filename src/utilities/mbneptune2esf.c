@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbneptune2esf.c	2004/11/11
- *    $Id: mbneptune2esf.c 2266 2016-02-11 19:01:33Z caress $
+ *    $Id: mbneptune2esf.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    Gordon Keith
@@ -127,7 +127,7 @@ int line_array(struct neptune_line_tree *line, struct neptune_line_tree ***array
 int print_pings(FILE *output, struct neptune_ping_tree *node);
 int free_pings(int verbose, struct neptune_ping_tree **node, int *error);
 
-static char rcs_id[] = "$Id: mbneptune2esf.c 2266 2016-02-11 19:01:33Z caress $";
+static char rcs_id[] = "$Id: mbneptune2esf.c 2298 2017-04-10 07:57:48Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -152,6 +152,7 @@ int main (int argc, char **argv)
 	int	read_datalist = MB_NO;
 	char	read_file[MB_PATH_MAXLINE];
 	char	swathfile[MB_PATH_MAXLINE];
+	char	dfile[MB_PATH_MAXLINE];
 	void	*datalist;
 	int	look_processed = MB_DATALIST_LOOK_UNSET;
 	double	file_weight;
@@ -577,7 +578,7 @@ int main (int argc, char **argv)
 		exit(error);
 		}
 	    if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
 		read_data = MB_YES;
 	    else
@@ -961,7 +962,7 @@ int main (int argc, char **argv)
         if (read_datalist == MB_YES)
                 {
 		if ((status = mb_datalist_read(verbose,datalist,
-			    swathfile,&format,&file_weight,&error))
+			    swathfile,dfile,&format,&file_weight,&error))
 			    == MB_SUCCESS)
                         read_data = MB_YES;
                 else

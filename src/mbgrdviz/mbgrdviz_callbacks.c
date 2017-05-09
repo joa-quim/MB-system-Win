@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgrdviz_callbacks.c		10/9/2002
- *    $Id: mbgrdviz_callbacks.c 2295 2017-03-27 07:28:28Z caress $
+ *    $Id: mbgrdviz_callbacks.c 2298 2017-04-10 07:57:48Z caress $
  *
  *    Copyright (c) 2002-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -118,7 +118,7 @@ static int	survey_color = MBV_COLOR_BLACK;
 static char	survey_name[MB_PATH_MAXLINE];
 
 /* id variables */
-static char rcs_id[] = "$Id: mbgrdviz_callbacks.c 2295 2017-03-27 07:28:28Z caress $";
+static char rcs_id[] = "$Id: mbgrdviz_callbacks.c 2298 2017-04-10 07:57:48Z caress $";
 static char program_name[] = "MBgrdviz";
 
 /* status variables */
@@ -4448,6 +4448,7 @@ int do_mbgrdviz_opennav(size_t instance, int swathbounds, char *input_file_ptr)
 	int	swathfilestatus;
 	mb_path	swathfileraw;
 	mb_path	swathfileprocessed;
+    mb_path dfile;
 	int	format;
 	int	formatorg;
 	double	weight;
@@ -4480,7 +4481,7 @@ int do_mbgrdviz_opennav(size_t instance, int swathbounds, char *input_file_ptr)
 			while (done == MB_NO)
 				{
 				if ((status = mb_datalist_read2(verbose,datalist,
-						&swathfilestatus,swathfileraw,swathfileprocessed,
+						&swathfilestatus,swathfileraw,swathfileprocessed,dfile,
 						&format,&weight,&error))
 						== MB_SUCCESS)
 					{
