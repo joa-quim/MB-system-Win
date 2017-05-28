@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_reson7kr.c	4/4/2004
- *	$Id: mbr_reson7kr.c 2300 2017-04-15 08:28:27Z caress $
+ *	$Id: mbr_reson7kr.c 2305 2017-05-13 15:28:27Z caress $
  *
  *    Copyright (c) 2004-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -206,7 +206,7 @@ int mbr_reson7kr_wr_soundvelocity(int verbose, int *bufferalloc, char **bufferpt
 int mbr_reson7kr_wr_absorptionloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 int mbr_reson7kr_wr_spreadingloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 
-static char rcs_id[]="$Id: mbr_reson7kr.c 2300 2017-04-15 08:28:27Z caress $";
+static char rcs_id[]="$Id: mbr_reson7kr.c 2305 2017-05-13 15:28:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_reson7kr(int verbose, void *mbio_ptr, int *error)
@@ -1475,6 +1475,18 @@ skip, *recordid, *recordid,
 				/* check for ping number */
 				ping_record = MB_YES;
 				mbr_reson7kr_chk_pingnumber(verbose, *recordid, buffer, new_ping);
+
+				/* fix lack of ping number for backscatter and beam geometry records */
+				if (*recordid == R7KRECID_7kBackscatterImageData
+					&& *new_ping <= 0)
+					*new_ping = *last_ping;
+				else if (*recordid == R7KRECID_7kBeamGeometry
+					&& *new_ping <= 0)
+					*new_ping = *last_ping;
+					
+				/* set current ping */
+				store->current_ping_number = *new_ping;
+
 #ifdef MBR_RESON7KR_DEBUG2
 fprintf(stderr,"called mbr_reson7kr_chk_pingnumber recordid:%d last_ping:%d new_ping:%d\n",
 *recordid,*last_ping,*new_ping);
@@ -1498,14 +1510,6 @@ fprintf(stderr,"current ping:%d records read: %d %d %d %d %d %d %d %d %d %d %d %
 	store->read_v2snippet,
 	store->read_processedsidescan);
 #endif
-
-				/* fix lack of ping number for backscatter and beam geometry records */
-				if (*recordid == R7KRECID_7kBackscatterImageData
-					&& *new_ping <= 0)
-					*new_ping = *last_ping;
-				else if (*recordid == R7KRECID_7kBeamGeometry
-					&& *new_ping <= 0)
-					*new_ping = *last_ping;
 
 				/* determine if record is continuation of the last ping
 					or a new ping - if new ping and last ping not yet

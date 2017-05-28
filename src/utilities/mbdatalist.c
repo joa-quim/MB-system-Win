@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbdatalist.c	10/10/2001
- *    $Id: mbdatalist.c 2302 2017-04-21 01:52:19Z caress $
+ *    $Id: mbdatalist.c 2305 2017-05-13 15:28:27Z caress $
  *
  *    Copyright (c) 2001-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -39,7 +39,7 @@
 #include "mb_status.h"
 #include "mb_process.h"
 
-static char rcs_id[] = "$Id: mbdatalist.c 2302 2017-04-21 01:52:19Z caress $";
+static char rcs_id[] = "$Id: mbdatalist.c 2305 2017-05-13 15:28:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -79,8 +79,8 @@ int main (int argc, char **argv)
 		{"help",						no_argument, 		NULL, 		0},
 		{"copy",						no_argument, 		NULL, 		0},
 		{"report",						no_argument, 		NULL, 		0},
-		{"format=FORMATID",				required_argument, 	NULL, 		0},
-		{"input=FILE",					required_argument, 	NULL, 		0},
+		{"format",						required_argument, 	NULL, 		0},
+		{"input",						required_argument, 	NULL, 		0},
 		{"make-ancilliary",				no_argument, 		NULL, 		0},
 		{"update-ancilliary",			no_argument, 		NULL, 		0},
 		{"processed",					no_argument, 		NULL, 		0},
@@ -168,7 +168,6 @@ int main (int argc, char **argv)
 		{
 		/* long options */
 		case 0:
-			
 			/* verbose */
 			if (strcmp("verbose", options[option_index].name) == 0)
 				{

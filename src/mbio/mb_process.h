@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_process.h	9/11/00
- *    $Id: mb_process.h 2295 2017-03-27 07:28:28Z caress $
+ *    $Id: mb_process.h 2305 2017-05-13 15:28:27Z caress $
  *
  *    Copyright (c) 2000-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -697,8 +697,9 @@
 #define MB_PR_KLUGE_NUM_MAX     10
 #define MB_PR_KLUGE_PAR_SIZE    64
 #define MB_PR_KLUGE_BEAMTWEAK                   1
-#define MB_PR_KLUGE_ZEROATTITUDECORRECTION      2
-#define MB_PR_KLUGE_ZEROALONGTRACKANGLES        3
+#define MB_PR_KLUGE_SOUNDSPEEDTWEAK             2
+#define MB_PR_KLUGE_ZEROATTITUDECORRECTION      3
+#define MB_PR_KLUGE_ZEROALONGTRACKANGLES        4
 
 /* structure holding mbpreprocess parameters to be passed to preprocess
  * functions of i/o modules */

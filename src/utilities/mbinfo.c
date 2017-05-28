@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbinfo.c	2/1/93
- *    $Id: mbinfo.c 2298 2017-04-10 07:57:48Z caress $
+ *    $Id: mbinfo.c 2305 2017-05-13 15:28:27Z caress $
  *
  *    Copyright (c) 1993-2016 by
  *    David W. Caress (caress@mbari.org)
@@ -59,7 +59,7 @@ struct ping
 #define XML			2
 #define MAX_OUTPUT_FORMAT 2
 
-static char rcs_id[] = "$Id: mbinfo.c 2298 2017-04-10 07:57:48Z caress $";
+static char rcs_id[] = "$Id: mbinfo.c 2305 2017-05-13 15:28:27Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -2509,14 +2509,20 @@ int main (int argc, char **argv)
 			fprintf(output,"\t\t<minimum_altitude>%.4f</minimum_altitude>\n",altmin);
 			fprintf(output,"\t\t<maximum_altitude>%.4f</maximum_altitude>\n",altmax);
 			if (ngdbeams > 0 || verbose >= 1)
+				{
 				fprintf(output,"\t\t<minimum_depth>%.4f</minimum_depth>\n",bathy_scale*bathmin);
 				fprintf(output,"\t\t<maximum_depth>%.4f</maximum_depth>\n",bathy_scale*bathmax);
+				}
 			if (ngabeams > 0 || verbose >= 1)
+				{
 				fprintf(output,"\t\t<minimum_amplitude>%.4f</minimum_amplitude>\n",ampmin);
 				fprintf(output,"\t\t<maximum_amplitude>%.4f</maximum_amplitude>\n",ampmax);
+				}
 			if (ngsbeams > 0 || verbose >= 1)
+				{
 				fprintf(output,"\t\t<minimum_sidescan>%.4f</minimum_sidescan>\n",ssmin);
 				fprintf(output,"\t\t<maximum_sidescan>%.4f</maximum_sidescan>\n",ssmax);
+				}
 			fprintf(output,"\t</limits>\n");
 			break;
 		case '?':

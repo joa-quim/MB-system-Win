@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system: mbm_route2mission.perl   7/18/2004
-#    $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $
+#    $Id: mbm_route2mission 2305 2017-05-13 15:28:27Z caress $
 #
 #    Copyright (c) 2004-2016 by
 #    D. W. Caress (caress@mbari.org)
@@ -36,7 +36,7 @@
 #      Moss Landing, CA
 #
 # Version:
-# $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $
+# $Id: mbm_route2mission 2305 2017-05-13 15:28:27Z caress $
 #
 #
 $program_name = "mbm_route2mission";
@@ -69,7 +69,8 @@ $program_name = "mbm_route2mission";
 $durationfactorwaypoint = 6.0;
 $durationfactormission = 1.5;
 $durationmax = 28800;
-$batterylife = 68400; # 19 hours
+$batterylife = 75600; # 21 hours
+#$batterylife = 68400; # 19 hours
 $safetymargin = 1800;
 
 # set defaults
@@ -194,7 +195,7 @@ $outputoff =		($opt_Z || $opt_z);
 # print out help message if required
 if ($help) {
     print "\r\n$program_name:\r\n";
-    print "\nVersion: $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $\r\n";
+    print "\nVersion: $Id: mbm_route2mission 2305 2017-05-13 15:28:27Z caress $\r\n";
     print "\r\nPerl shellscript to translate survey route file derived from \r\n";
     print "MBgrdviz into an MBARI AUV mission script. Developed for use\r\n";
     print "in survey planning for the MBARI Mapping AUV.\r\n";
@@ -1113,7 +1114,7 @@ if (!$outputoff)
 	printf MFILE "# user <$user> on cpu <$host> at <$date>\r\n";
 	printf MFILE "# \r\n";
 	printf MFILE "# Program mbm_route2mission version:\r\n";
-	printf MFILE "#     $Id: mbm_route2mission 2295 2017-03-27 07:28:28Z caress $\r\n";
+	printf MFILE "#     $Id: mbm_route2mission 2305 2017-05-13 15:28:27Z caress $\r\n";
 	printf MFILE "# \r\n";
 	printf MFILE "# Mission Summary:\r\n";
 	printf MFILE "#     Route File:               $routefile\r\n";

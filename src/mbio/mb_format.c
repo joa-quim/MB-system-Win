@@ -4470,6 +4470,7 @@ int mb_get_relative_path(int verbose,
 	int	status = MB_SUCCESS;
 	char	relativepath[MB_PATH_MAXLINE] = {""};
 	char	pwd[MB_PATH_MAXLINE] = {""};
+	char	drive[2] = { "" };
 	int	pathlen;
 	int	pwdlen;
 	int	same, isame, ndiff;
@@ -4498,6 +4499,8 @@ int mb_get_relative_path(int verbose,
 	   because we trim the first 2 chars in strings like C:\blabla and don't put it back. But
 	   test have shown that it was maybe not necessary.
 	*/
+	if (pathlen > 2 && path[1] == ':')
+		drive[0] = path[0];
 	cvt_to_nix_path(path);
 	cvt_to_nix_path(ipwd);
 #endif
@@ -4620,6 +4623,17 @@ int mb_get_relative_path(int verbose,
 	    status = MB_SUCCESS;
 	    *error = MB_ERROR_NO_ERROR;
 	    }
+
+#ifdef WIN32		/* See if we have an absolute path and if yes reset the drive leter. e.g. c:/... */
+	if (drive[0]) {
+		pathlen = strlen(path);
+		for (i = pathlen + 1; i > 1 ; i--)
+			path[i] = path[i-2];
+
+		path[0] = drive[0];		path[1] = ':';
+		path[pathlen+2] = '\0';	/* Make sure it's null terminated */
+	}
+#endif
 
 	/* print output debug statements */
 	if (verbose >= 2)
