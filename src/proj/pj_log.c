@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: pj_log.c 1997 2012-10-29 19:17:41Z caress $
+ * $Id: pj_log.c 2308 2017-06-04 19:55:48Z caress $
  *
  * Project:  PROJ.4
  * Purpose:  Implementation of pj_log() function.
@@ -31,43 +31,43 @@
 #include <string.h>
 #include <stdarg.h>
 
-PJ_CVSID("$Id: pj_log.c 1997 2012-10-29 19:17:41Z caress $");
+PJ_CVSID("$Id: pj_log.c 2308 2017-06-04 19:55:48Z caress $");
 
 /************************************************************************/
 /*                          pj_stderr_logger()                          */
 /************************************************************************/
 
-void pj_stderr_logger( void *app_data, int level, const char *msg )
+void pj_stderr_logger(void *app_data, int level, const char *msg)
 
 {
-    fprintf( stderr, "%s\n", msg );
+	fprintf(stderr, "%s\n", msg);
 }
 
 /************************************************************************/
 /*                               pj_log()                               */
 /************************************************************************/
 
-void pj_log( projCtx ctx, int level, const char *fmt, ... )
+void pj_log(projCtx ctx, int level, const char *fmt, ...)
 
 {
-    va_list args;
-    char *msg_buf;
+	va_list args;
+	char *msg_buf;
 
-    if( level > ctx->debug_level )
-        return;
+	if (level > ctx->debug_level)
+		return;
 
-    msg_buf = (char *) malloc(100000);
-    if( msg_buf == NULL )
-        return;
+	msg_buf = (char *)malloc(100000);
+	if (msg_buf == NULL)
+		return;
 
-    va_start( args, fmt );
+	va_start(args, fmt);
 
-    /* we should use vsnprintf where available once we add configure detect.*/
-    vsprintf( msg_buf, fmt, args );
+	/* we should use vsnprintf where available once we add configure detect.*/
+	vsprintf(msg_buf, fmt, args);
 
-    va_end( args );
+	va_end(args);
 
-    ctx->logger( ctx->app_data, level, msg_buf );
-    
-    free( msg_buf );
+	ctx->logger(ctx->app_data, level, msg_buf);
+
+	free(msg_buf);
 }

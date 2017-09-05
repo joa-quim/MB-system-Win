@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system: mbm_xbt.perl   6/18/93
-#    $Id: mbm_xbt 2261 2016-01-07 01:49:22Z caress $
+#    $Id: mbm_xbt 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1993-2016 by
+#    Copyright (c) 1993-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -79,7 +79,7 @@
 #
 #
 # Version:
-# $Id: mbm_xbt 2261 2016-01-07 01:49:22Z caress $
+# $Id: mbm_xbt 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -279,7 +279,7 @@ sub useage {
 
 
     print "\nUsage: $ProgramName -Ifile \n";
-    print "\nVersion: $Id: mbm_xbt 2261 2016-01-07 01:49:22Z caress $\n";
+    print "\nVersion: $Id: mbm_xbt 2308 2017-06-04 19:55:48Z caress $\n";
     print "\t[-C -Ssalinity -Fformat -Llatitude -V -H -C]\n\n";
 
     print "\tPerl shellscript to translate various XBT (with -F option) \n";

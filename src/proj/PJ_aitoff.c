@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: PJ_aitoff.c 1950 2012-05-10 16:51:51Z caress $
+ * $Id: PJ_aitoff.c 2308 2017-06-04 19:55:48Z caress $
  *
  * Project:  PROJ.4
  * Purpose:  Implementation of the aitoff (Aitoff) and wintri (Winkel Tripel)
@@ -28,49 +28,51 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
-#define PROJ_PARMS__ \
-	double	cosphi1; \
-	int		mode;
+#define PROJ_PARMS__                                                                                                             \
+	double cosphi1;                                                                                                              \
+	int mode;
 #define PJ_LIB__
 #include <projects.h>
 
-PJ_CVSID("$Id: PJ_aitoff.c 1950 2012-05-10 16:51:51Z caress $");
+PJ_CVSID("$Id: PJ_aitoff.c 2308 2017-06-04 19:55:48Z caress $");
 
 PROJ_HEAD(aitoff, "Aitoff") "\n\tMisc Sph";
 PROJ_HEAD(wintri, "Winkel Tripel") "\n\tMisc Sph\n\tlat_1";
 
 FORWARD(s_forward); /* spheroid */
-	double c, d;
+double c, d;
 
-	if((d = acos(cos(lp.phi) * cos(c = 0.5 * lp.lam)))) {/* basic Aitoff */
-		xy.x = 2. * d * cos(lp.phi) * sin(c) * (xy.y = 1. / sin(d));
-		xy.y *= d * sin(lp.phi);
-	} else
-		xy.x = xy.y = 0.;
-	if (P->mode) { /* Winkel Tripel */
-		xy.x = (xy.x + lp.lam * P->cosphi1) * 0.5;
-		xy.y = (xy.y + lp.phi) * 0.5;
-	}
-	return (xy);
+if ((d = acos(cos(lp.phi) * cos(c = 0.5 * lp.lam)))) { /* basic Aitoff */
+	xy.x = 2. * d * cos(lp.phi) * sin(c) * (xy.y = 1. / sin(d));
+	xy.y *= d * sin(lp.phi);
 }
-FREEUP; if (P) pj_dalloc(P); }
-	static PJ *
-setup(PJ *P) {
+else
+	xy.x = xy.y = 0.;
+if (P->mode) { /* Winkel Tripel */
+	xy.x = (xy.x + lp.lam * P->cosphi1) * 0.5;
+	xy.y = (xy.y + lp.phi) * 0.5;
+}
+return (xy);
+}
+FREEUP;
+if (P)
+	pj_dalloc(P);
+}
+static PJ *setup(PJ *P) {
 	P->inv = 0;
 	P->fwd = s_forward;
 	P->es = 0.;
 	return P;
 }
 ENTRY0(aitoff)
-	P->mode = 0;
+P->mode = 0;
 ENDENTRY(setup(P))
 ENTRY0(wintri)
-	P->mode = 1;
-	if (pj_param(P->ctx, P->params, "tlat_1").i)
-        {
-		if ((P->cosphi1 = cos(pj_param(P->ctx, P->params, "rlat_1").f)) == 0.)
-			E_ERROR(-22)
-        }
-	else /* 50d28' or acos(2/pi) */
-		P->cosphi1 = 0.636619772367581343;
+P->mode = 1;
+if (pj_param(P->ctx, P->params, "tlat_1").i) {
+	if ((P->cosphi1 = cos(pj_param(P->ctx, P->params, "rlat_1").f)) == 0.)
+		E_ERROR(-22)
+}
+else /* 50d28' or acos(2/pi) */
+	P->cosphi1 = 0.636619772367581343;
 ENDENTRY(setup(P))

@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_stat.perl	8/14/93
-#    $Id: mbm_stat 2261 2016-01-07 01:49:22Z caress $
+#    $Id: mbm_stat 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1993-2016 by
+#    Copyright (c) 1993-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -30,7 +30,7 @@
 #   August 14, 1993
 #
 # Version:
-#   $Id: mbm_stat 2261 2016-01-07 01:49:22Z caress $
+#   $Id: mbm_stat 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -46,7 +46,7 @@ $verbose = ($opt_V || $opt_v);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_stat 2261 2016-01-07 01:49:22Z caress $\n";
+	print "\nVersion: $Id: mbm_stat 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nPerl shellscript to extract beam statistics from the ouput of mbinfo.\n";
 	print "\nUsage: $program_name -Ifile [-V -H]\n";
 	exit 0;

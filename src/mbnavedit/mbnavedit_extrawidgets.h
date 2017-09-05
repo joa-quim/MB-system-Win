@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavedit_extrawidgets.h	8/7/95
- *    $Id: mbnavedit_extrawidgets.h 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbnavedit_extrawidgets.h 2308 2017-06-04 19:55:48Z caress $
  *
- *    Copyright (c) 1995-2016 by
+ *    Copyright (c) 1995-2017 by
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
  *      Moss Landing, CA 95039
@@ -38,9 +38,9 @@
 
 /* Global Widget Declarations Added By Hand */
 
-MBNAVEDIT_EXTERNAL Widget       fileSelectionBox_list;
-MBNAVEDIT_EXTERNAL Widget       fileSelectionBox_text;
-MBNAVEDIT_EXTERNAL Widget       scrolledWindow_hscrollbar;
-MBNAVEDIT_EXTERNAL Widget       scrolledWindow_vscrollbar;
+MBNAVEDIT_EXTERNAL Widget fileSelectionBox_list;
+MBNAVEDIT_EXTERNAL Widget fileSelectionBox_text;
+MBNAVEDIT_EXTERNAL Widget scrolledWindow_hscrollbar;
+MBNAVEDIT_EXTERNAL Widget scrolledWindow_vscrollbar;
 
 /*--------------------------------------------------------------------*/

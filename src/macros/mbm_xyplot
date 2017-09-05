@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_xyplot.perl	8/6/95
-#    $Id: mbm_xyplot 2302 2017-04-21 01:52:19Z caress $
+#    $Id: mbm_xyplot 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1993-2016 by
+#    Copyright (c) 1993-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -54,7 +54,7 @@
 #   August 9, 1995
 #
 # Version:
-#   $Id: mbm_xyplot 2302 2017-04-21 01:52:19Z caress $
+#   $Id: mbm_xyplot 2308 2017-06-04 19:55:48Z caress $
 #
 #
 $program_name = "mbm_xyplot";
@@ -173,7 +173,7 @@ $delete_temp_files = 	($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_xyplot 2302 2017-04-21 01:52:19Z caress $\n";
+	print "\nVersion: $Id: mbm_xyplot 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which,  \n";
 	print "when executed, will generate a Postscript plot of xy data. \n";
 	print "Axes may be linear, log,  or any of several geographic  \n";

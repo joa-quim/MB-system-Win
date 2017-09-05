@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_bpr.perl	5/13/2002
-#    $Id: mbm_bpr 2261 2016-01-07 01:49:22Z caress $
+#    $Id: mbm_bpr 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 2012-2016 by
+#    Copyright (c) 2012-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -31,7 +31,7 @@
 #   May 13, 2002
 #
 # Version:
-#   $Id: mbm_bpr 2261 2016-01-07 01:49:22Z caress $
+#   $Id: mbm_bpr 2308 2017-06-04 19:55:48Z caress $
 #
 #
 use Getopt::Std;
@@ -64,7 +64,7 @@ my $verbose  = ($opt_V || $opt_v);
 if ($help)
 	{
 	print "\n$ProgramName:\n";
-	print "\nVersion: $Id: mbm_bpr 2261 2016-01-07 01:49:22Z caress $\n";
+	print "\nVersion: $Id: mbm_bpr 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nMB-System macro to process data from a Seabird SBE53 pressure\n";
 	print "sensor into a tidal model for use by mbprocess\n";
 	print "\nUsage: \n";
@@ -116,7 +116,7 @@ while ($line=<FI>) {		# reading from the input
     #
     # Sea-Bird uses the formula in UNESCO Technical Papers in Marine Science No. 44.
     # This is an empirical formula that takes compressibility (that is, density) into account.
-    # An ocean water column at 0 °C (t = 0) and 35 PSU (s = 35) is assumed.
+    # An ocean water column at 0 degree C (t = 0) and 35 PSU (s = 35) is assumed.
     #
     # The gravity variation with latitude and pressure is computed as:
     #
@@ -134,7 +134,7 @@ while ($line=<FI>) {		# reading from the input
     # p = pressure (decibars)
     # g = gravity (m/sec2)
     #
-    # N. P. Fofonoff and R. C. Millard, Jr., ‘‘Algorithms for computation of fundamental properties of seawater,’’ Unesco Tech. Papers in Mar. Sci., No. 44 1983.
+    # N. P. Fofonoff and R. C. Millard, Jr., Algorithms for computation of fundamental properties of seawater, Unesco Tech. Papers in Mar. Sci., No. 44 1983.
     #
     $pressuredbar = 0.6894757293 * ($pressure - $surfacepressure);
     $x = (sin($latitude * $PI / 180.0))**2;

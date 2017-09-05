@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:    mbstripNaN.c        8/8/02
- *    $Id: mbstripnan.c 2261 2016-01-07 01:49:22Z caress $
+ *    $Id: mbstripnan.c 2308 2017-06-04 19:55:48Z caress $
  *
- *    Copyright (c) 2002-2016 by
+ *    Copyright (c) 2002-2017 by
  *    Mike McCann (mccann@mbari.org)
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
@@ -30,21 +30,23 @@
 #include <unistd.h>
 #include <math.h>
 #if defined(_WIN32) && !defined(isnan)
-#	define isnan(x) _isnan(x)
+#define isnan(x) _isnan(x)
 #endif
 
 /*--------------------------------------------------------------------*/
 /*
  * Read double x,y,z on stdin and send to stdout all but NaNs
  */
-int main () {
-	struct node { double lon, lat, height; };
+int main() {
+	struct node {
+		double lon, lat, height;
+	};
 	struct node n;
-	while ( ( fread(&n, 24, 1, stdin) > 0 ) ) {
-		if ( ! isnan(n.height) ) {
+	while ((fread(&n, 24, 1, stdin) > 0)) {
+		if (!isnan(n.height)) {
 			fwrite(&n, 24, 1, stdout);
 		}
 	}
-exit(0);
+	exit(0);
 }
 /*--------------------------------------------------------------------*/

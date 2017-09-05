@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_dslnavfix.perl	8/9/96
-#    $Id: mbm_dslnavfix 2283 2016-10-23 09:33:10Z caress $
+#    $Id: mbm_dslnavfix 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1996-2016 by
+#    Copyright (c) 1996-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -34,7 +34,7 @@
 #   August 9, 1996
 #
 # Version:
-#   $Id: mbm_dslnavfix 2283 2016-10-23 09:33:10Z caress $
+#   $Id: mbm_dslnavfix 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -56,7 +56,7 @@ $verbose =    		($opt_V || $opt_v);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_dslnavfix 2283 2016-10-23 09:33:10Z caress $\n";
+	print "\nVersion: $Id: mbm_dslnavfix 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nMacro to take WHOI DSL AMS-120 processed navigation \n";
 	print "in UTM projected eastings and northings and produce \n";
 	print "navigation in longitude and latitude. The output navigation \n";

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_glwdrawap.c	5/22/2007
- *    $Id: mb_glwdrawap.h 2258 2015-10-06 04:57:28Z caress $
+ *    $Id: mb_glwdrawap.h 2308 2017-06-04 19:55:48Z caress $
  *
  *    Altered from original code for MB-System by
  *    David W. Caress (caress@mbari.org)
@@ -64,61 +64,57 @@
 
 typedef struct _mbGLwDrawingAreaClassPart {
 #ifdef WIN32
-  char* extension;
+	char *extension;
 #else
-  caddr_t extension;
+	caddr_t extension;
 #endif
-  } mbGLwDrawingAreaClassPart;
-
+} mbGLwDrawingAreaClassPart;
 
 typedef struct _mbGLwMDrawingAreaClassRec {
-  CoreClassPart               core_class;
-  XmPrimitiveClassPart        primitive_class;
-  mbGLwDrawingAreaClassPart     mbglwDrawingArea_class;
-  } mbGLwMDrawingAreaClassRec;
-
+	CoreClassPart core_class;
+	XmPrimitiveClassPart primitive_class;
+	mbGLwDrawingAreaClassPart mbglwDrawingArea_class;
+} mbGLwMDrawingAreaClassRec;
 
 extern mbGLwMDrawingAreaClassRec mbglwMDrawingAreaClassRec;
 
-
-
 typedef struct {
-  /* resources */
-  int *                attribList;
-  XVisualInfo *        visualInfo;
-  Boolean              myList;                /* TRUE if we malloced the attribList*/
-  Boolean              myVisual;        /* TRUE if we created the visualInfo*/
-  Boolean              installColormap;
-  Boolean              allocateBackground;
-  Boolean              allocateOtherColors;
-  Boolean              installBackground;
-  XtCallbackList       ginitCallback;
-  XtCallbackList       resizeCallback;
-  XtCallbackList       exposeCallback;
-  XtCallbackList       inputCallback;
-  /* specific attributes; add as we get new attributes */
-  int                  bufferSize;
-  int                  level;
-  Boolean              rgba;
-  Boolean              doublebuffer;
-  Boolean              stereo;
-  int                  auxBuffers;
-  int                  redSize;
-  int                  greenSize;
-  int                  blueSize;
-  int                  alphaSize;
-  int                  depthSize;
-  int                  stencilSize;
-  int                  accumRedSize;
-  int                  accumGreenSize;
-  int                  accumBlueSize;
-  int                  accumAlphaSize;
-  } mbGLwDrawingAreaPart;
+	/* resources */
+	int *attribList;
+	XVisualInfo *visualInfo;
+	Boolean myList;   /* TRUE if we malloced the attribList*/
+	Boolean myVisual; /* TRUE if we created the visualInfo*/
+	Boolean installColormap;
+	Boolean allocateBackground;
+	Boolean allocateOtherColors;
+	Boolean installBackground;
+	XtCallbackList ginitCallback;
+	XtCallbackList resizeCallback;
+	XtCallbackList exposeCallback;
+	XtCallbackList inputCallback;
+	/* specific attributes; add as we get new attributes */
+	int bufferSize;
+	int level;
+	Boolean rgba;
+	Boolean doublebuffer;
+	Boolean stereo;
+	int auxBuffers;
+	int redSize;
+	int greenSize;
+	int blueSize;
+	int alphaSize;
+	int depthSize;
+	int stencilSize;
+	int accumRedSize;
+	int accumGreenSize;
+	int accumBlueSize;
+	int accumAlphaSize;
+} mbGLwDrawingAreaPart;
 
 typedef struct _mbGLwMDrawingAreaRec {
-  CorePart             core;
-  XmPrimitivePart      primitive;
-  mbGLwDrawingAreaPart   mbglwDrawingArea;
-  } mbGLwMDrawingAreaRec;
+	CorePart core;
+	XmPrimitivePart primitive;
+	mbGLwDrawingAreaPart mbglwDrawingArea;
+} mbGLwMDrawingAreaRec;
 
 #endif

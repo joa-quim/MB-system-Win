@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_utm.perl	5/13/2002
-#    $Id: mbm_utm 2283 2016-10-23 09:33:10Z caress $
+#    $Id: mbm_utm 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 2002-2016 by
+#    Copyright (c) 2002-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -34,7 +34,7 @@
 #   May 13, 2002
 #
 # Version:
-#   $Id: mbm_utm 2283 2016-10-23 09:33:10Z caress $
+#   $Id: mbm_utm 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -57,7 +57,7 @@ $verbose = 		($opt_V || $opt_v);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_utm 2283 2016-10-23 09:33:10Z caress $\n";
+	print "\nVersion: $Id: mbm_utm 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nMB-System macro to perform forward and inverse UTM projections";
 	print "of ASCII data triples using the GMT program mapproject. ";
 	print "Forward projections translate from geographic data ";

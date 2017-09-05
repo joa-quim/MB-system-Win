@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_grd3dplot.perl	8/6/95
-#    $Id: mbm_grd3dplot 2302 2017-04-21 01:52:19Z caress $
+#    $Id: mbm_grd3dplot 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1993-2016 by
+#    Copyright (c) 1993-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -61,7 +61,7 @@
 #   August 8, 1994
 #
 # Version:
-#   $Id: mbm_grd3dplot 2302 2017-04-21 01:52:19Z caress $
+#   $Id: mbm_grd3dplot 2308 2017-06-04 19:55:48Z caress $
 #
 #
 $program_name = "mbm_grd3dplot";
@@ -249,7 +249,7 @@ $zbounds = 		($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_grd3dplot 2302 2017-04-21 01:52:19Z caress $\n";
+	print "\nVersion: $Id: mbm_grd3dplot 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nMacro to generate a shellscript of GMT commands which, when \n";
 	print "executed, will generate a 3D perspective Postscript plot of  \n";
 	print "gridded data.  Several styles of plots can be generated, \n";

@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_fmtvel.perl	6/18/93
-#    $Id: mbm_fmtvel 2261 2016-01-07 01:49:22Z caress $
+#    $Id: mbm_fmtvel 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1993-2016 by
+#    Copyright (c) 1993-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -36,7 +36,7 @@
 #   May 19, 1993
 #
 # Version:
-#   $Id: mbm_fmtvel 2261 2016-01-07 01:49:22Z caress $
+#   $Id: mbm_fmtvel 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -52,7 +52,7 @@ $format =  ($opt_F || $opt_f);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_fmtvel 2261 2016-01-07 01:49:22Z caress $\n";
+	print "\nVersion: $Id: mbm_fmtvel 2308 2017-06-04 19:55:48Z caress $\n";
 	print "\nPerl shellscript to generate a list of the C-mean (mean water velocity) \nand C-keel (surface water velocity) used by Hydrosweepin its internal \nprocessing.  This macro executes the programhsdump and then scans the \noutput for the desired values.The only allowed formats are 5 (raw \nHydrosweep data) and 8(L-DEO in-house binary Hydrosweep data).\n";
 	print "\nUsage: $program_name -Fformat -Ifile\n";
 	exit 0;

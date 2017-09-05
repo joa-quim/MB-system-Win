@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_grdtiff.perl	11/3/1999
-#    $Id: mbm_grdtiff 2283 2016-10-23 09:33:10Z caress $
+#    $Id: mbm_grdtiff 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 1999-2016 by
+#    Copyright (c) 1999-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -47,7 +47,7 @@
 #   October 19, 1994
 #
 # Version:
-#   $Id: mbm_grdtiff 2283 2016-10-23 09:33:10Z caress $
+#   $Id: mbm_grdtiff 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -151,7 +151,7 @@ $zbounds = 		($opt_Z || $opt_z);
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_grdtiff 2283 2016-10-23 09:33:10Z caress $\n";
+	print "\nVersion: $Id: mbm_grdtiff 2308 2017-06-04 19:55:48Z caress $\n";
         print "\nMacro to generate a shellscript which, when executed, will \n";
         print "generate a geographically located TIFF image of gridded \n";
         print "data. The primary purpose of this macro is to allow the simple, \n";

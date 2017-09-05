@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbf_gsfgenmb.h	2/27/98
- *	$Id: mbf_gsfgenmb.h 2261 2016-01-07 01:49:22Z caress $
+ *	$Id: mbf_gsfgenmb.h 2308 2017-06-04 19:55:48Z caress $
  *
- *    Copyright (c) 1998-2016 by
+ *    Copyright (c) 1998-2017 by
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
  *      Moss Landing, CA 95039
@@ -38,9 +38,8 @@
 
 #include "gsf.h"
 
-struct mbf_gsfgenmb_struct
-	{
-	int	    kind;
-	gsfDataID   dataID;
-	gsfRecords  records;
-	};
+struct mbf_gsfgenmb_struct {
+	int kind;
+	gsfDataID dataID;
+	gsfRecords records;
+};

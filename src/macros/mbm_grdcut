@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_arc2grd.perl	4/23/01
-#    $Id: mbm_grdcut 2283 2016-10-23 09:33:10Z caress $
+#    $Id: mbm_grdcut 2308 2017-06-04 19:55:48Z caress $
 #
-#    Copyright (c) 2001-2016 by
+#    Copyright (c) 2001-2017 by
 #    D. W. Caress (caress@mbari.org)
 #      Monterey Bay Aquarium Research Institute
 #      Moss Landing, CA
@@ -38,7 +38,7 @@
 #    10 km off the Kohala coast of Hawaii)
 #
 # Version:
-#   $Id: mbm_grdcut 2283 2016-10-23 09:33:10Z caress $
+#   $Id: mbm_grdcut 2308 2017-06-04 19:55:48Z caress $
 #
 #
 #
@@ -74,7 +74,7 @@ $verbose += 1;
 if ($help)
 	{
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_grdcut 2283 2016-10-23 09:33:10Z caress $\n";
+	print "\nVersion: $Id: mbm_grdcut 2308 2017-06-04 19:55:48Z caress $\n";
  	print "Macro to painlessly cut out a region from a GMT grd grid file.\n";
 	print "The GMT program grdcut requires that one specify bounds which\n";
 	print "exactly match grid cell boundaries. Frequently, one just wants\n";

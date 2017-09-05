@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: pj_geocent.c 1770 2009-10-19 17:16:39Z caress $
+ * $Id: pj_geocent.c 2308 2017-06-04 19:55:48Z caress $
  *
  * Project:  PROJ.4
  * Purpose:  Stub projection for geocentric.  The transformation isn't
@@ -32,26 +32,29 @@
 #define PJ_LIB__
 #include <projects.h>
 
-PJ_CVSID("$Id: pj_geocent.c 1770 2009-10-19 17:16:39Z caress $");
+PJ_CVSID("$Id: pj_geocent.c 2308 2017-06-04 19:55:48Z caress $");
 
-PROJ_HEAD(geocent, "Geocentric")  "\n\t";
+PROJ_HEAD(geocent, "Geocentric") "\n\t";
 
 FORWARD(forward);
-        xy.x = lp.lam;
-        xy.y = lp.phi;
-        return xy;
+xy.x = lp.lam;
+xy.y = lp.phi;
+return xy;
 }
 INVERSE(inverse);
-        lp.phi = xy.y;
-        lp.lam = xy.x;
-        return lp;
+lp.phi = xy.y;
+lp.lam = xy.x;
+return lp;
 }
-FREEUP; if (P) pj_dalloc(P); }
+FREEUP;
+if (P)
+	pj_dalloc(P);
+}
 
 ENTRY0(geocent)
-    P->is_geocent = 1; 
-    P->x0 = 0.0;
-    P->y0 = 0.0;
-    P->inv = inverse; P->fwd = forward;
+P->is_geocent = 1;
+P->x0 = 0.0;
+P->y0 = 0.0;
+P->inv = inverse;
+P->fwd = forward;
 ENDENTRY(P)
-

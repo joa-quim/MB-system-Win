@@ -181,6 +181,10 @@ EXPORTS
      hilbert2
      mb_absorption
      mb_potential_temperature
+     mb_seabird_density
+     mb_seabird_depth
+     mb_seabird_salinity
+     mb_seabird_soundspeed
      mb_mem_debug_on
      mb_mem_debug_off
      mb_malloc
