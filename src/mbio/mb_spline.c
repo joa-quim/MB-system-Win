@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_spline.c	10/11/00
- *    $Id: mb_spline.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_spline.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 2000-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -37,7 +37,7 @@
 #include "mb_status.h"
 #include "mb_define.h"
 
-static char rcs_id[] = "$Id: mb_spline.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_spline.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*--------------------------------------------------------------------------*/
 int mb_spline_init(int verbose, double *x, double *y, int n, double yp1, double ypn, double *y2, int *error) {
@@ -194,8 +194,10 @@ int mb_linear_interp(int verbose, double *xa, double *ya, int n, double x, doubl
 	if (n < 1) {
 		status = MB_FAILURE;
 		*error = MB_ERROR_NOT_ENOUGH_DATA;
+	} else {
+		status = MB_SUCCESS;
+		*error = MB_ERROR_NO_ERROR;
 	}
-
 	/* perform interpolation */
 	if (status == MB_SUCCESS) {
 		/* do not extrapolate before or after the model, just use the

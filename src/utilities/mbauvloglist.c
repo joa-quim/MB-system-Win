@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbauvloglist.c	8/14/2006
- *    $Id: mbauvloglist.c 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mbauvloglist.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 2006-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -103,7 +103,7 @@ double calcTemp(struct ctd_calibration_struct *calibration_ptr,
 double calcCond(struct ctd_calibration_struct *calibration_ptr,
 				double cFreq, double temp, double pressure);
 
-static char rcs_id[] = "$Id: mbauvloglist.c 2312 2017-07-14 09:06:52Z caress $";
+static char rcs_id[] = "$Id: mbauvloglist.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -760,7 +760,7 @@ int main(int argc, char **argv) {
                                         &potentialtemperature_calc, &error);
             interp_status = mb_seabird_density(verbose, salinity_calc, temperature_calc, pressure_calc, &density_calc, &error);
         }
-        
+
         /* loop over the printfields */
 		for (i = 0; i < nprintfields; i++) {
 			index = printfields[i].index;

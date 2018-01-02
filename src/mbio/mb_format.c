@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_format.c	2/18/94
- *    $Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -57,7 +57,7 @@ static int format_alias_table[] = {
 /* local prototypes not found in mb_define.h */
 int cvt_to_nix_path(char *path);
 
-static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_format_register(int verbose, int *format, void *mbio_ptr, int *error) {
@@ -1084,7 +1084,7 @@ int mb_format(int verbose, int *format, int *error) {
 }
 /*--------------------------------------------------------------------*/
 int mb_format_system(int verbose, int *format, int *system, int *error) {
-	static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+	static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 	char *function_name = "mb_format_system";
 	int status;
 
@@ -1146,7 +1146,7 @@ int mb_format_system(int verbose, int *format, int *system, int *error) {
 }
 /*--------------------------------------------------------------------*/
 int mb_format_dimensions(int verbose, int *format, int *beams_bath_max, int *beams_amp_max, int *pixels_ss_max, int *error) {
-	static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+	static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 	char *function_name = "mb_format_dimensions";
 	int status;
 
@@ -1209,7 +1209,7 @@ int mb_format_dimensions(int verbose, int *format, int *beams_bath_max, int *bea
 }
 /*--------------------------------------------------------------------*/
 int mb_format_description(int verbose, int *format, char *description, int *error) {
-	static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+	static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 	char *function_name = "mb_format_description";
 	int status;
 
@@ -1268,7 +1268,7 @@ int mb_format_description(int verbose, int *format, char *description, int *erro
 }
 /*--------------------------------------------------------------------*/
 int mb_format_flags(int verbose, int *format, int *variable_beams, int *traveltime, int *beam_flagging, int *error) {
-	static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+	static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 	char *function_name = "mb_format_flags";
 	int status;
 
@@ -1333,7 +1333,7 @@ int mb_format_flags(int verbose, int *format, int *variable_beams, int *travelti
 /*--------------------------------------------------------------------*/
 int mb_format_source(int verbose, int *format, int *platform_source, int *nav_source, int *sensordepth_source,
                      int *heading_source, int *attitude_source, int *svp_source, int *error) {
-	static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+	static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 	char *function_name = "mb_format_source";
 	int status;
 
@@ -1400,7 +1400,7 @@ int mb_format_source(int verbose, int *format, int *platform_source, int *nav_so
 }
 /*--------------------------------------------------------------------*/
 int mb_format_beamwidth(int verbose, int *format, double *beamwidth_xtrack, double *beamwidth_ltrack, int *error) {
-	static char svn_id[] = "$Id: mb_format.c 2308 2017-06-04 19:55:48Z caress $";
+	static char svn_id[] = "$Id: mb_format.c 2315 2017-09-22 06:17:14Z caress $";
 	char *function_name = "mb_format_beamwidth";
 	int status;
 
@@ -2073,6 +2073,24 @@ int mb_get_format(int verbose, char *filename, char *fileroot, int *format, int 
 		else
 			suffix_len = 0;
 		if (suffix_len == 5) {
+			if (fileroot != NULL) {
+				strncpy(fileroot, filename, strlen(filename) - suffix_len);
+				fileroot[strlen(filename) - suffix_len] = '\0';
+			}
+			*format = MBF_SEGYSEGY;
+			found = MB_YES;
+		}
+	}
+	if (found == MB_NO) {
+		if (strlen(filename) >= 5)
+			i = strlen(filename) - 4;
+		else
+			i = 0;
+		if ((suffix = strstr(&filename[i], ".seg")) != NULL || (suffix = strstr(&filename[i], ".SEG")) != NULL)
+			suffix_len = 4;
+		else
+			suffix_len = 0;
+		if (suffix_len == 4) {
 			if (fileroot != NULL) {
 				strncpy(fileroot, filename, strlen(filename) - suffix_len);
 				fileroot[strlen(filename) - suffix_len] = '\0';

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_io.c	3/23/00
- *    $Id: mbnavadjust_io.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbnavadjust_io.c 2318 2017-09-30 01:46:42Z caress $
  *
  *    Copyright (c) 2014-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -60,7 +60,7 @@ extern int isnanf(float x);
 #define check_fnan(x) ((x) != (x))
 #endif
 
-static char version_id[] = "$Id: mbnavadjust_io.c 2308 2017-06-04 19:55:48Z caress $";
+static char version_id[] = "$Id: mbnavadjust_io.c 2318 2017-09-30 01:46:42Z caress $";
 static char program_name[] = "mbnavadjust i/o functions";
 
 /*--------------------------------------------------------------------*/
@@ -622,6 +622,9 @@ int mbnavadjust_read_project(int verbose, char *projectpath, struct mbna_project
 							strcat(file->path, file->file);
 						}
 					}
+					
+					/* reset output_id to 0 - this should no longer have any value but 0 */
+					file->output_id = 0;
 
 					/* read section info */
 					if (file->num_sections > 0) {

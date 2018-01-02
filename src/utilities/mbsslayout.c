@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsslayout.c	1/8/2014
- *    $Id: mbsslayout.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbsslayout.c 2316 2017-09-29 19:57:09Z caress $
  *
  *    Copyright (c) 2014-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -23,7 +23,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbsslayout.c 2308 2017-06-04 19:55:48Z caress $";
+static char version_id[] = "$Id: mbsslayout.c 2316 2017-09-29 19:57:09Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -126,57 +126,53 @@ int main(int argc, char **argv) {
 	 *
 	 * 		--platform-file
 	 * 		--platform-target-sensor
+	 * 		--output-source=record_kind
 	 *
-	 * 		--output_source=record_kind
-	 * 		--output_name1=name
-	 * 		--output_name2=name
+	 * 		--line-time-list=filename
+	 * 		--line-route=filename
+	 * 		--line-range-threshold=value
+	 * 		--line-name1=name
+	 * 		--line-name2=name
 	 *
-	 * 		--line_nameroot=name
-	 * 		--line_time_list=filename
-	 * 		--line_route=filename
-	 * 		--line_check_bearing
-	 * 		--line_range_threshold=value
-	 *
-	 * 		--topo_grid_file=filename
-	 * 		--altitude_altitude
-	 * 		--altitude_bottomppick
-	 * 		--altitude_bottompick_threshold=value
-	 * 		--altitude_topo_grid
-	 * 		--channel_swap
-	 * 		--swath_width=value
+	 * 		--topo-grid-file=filename
+	 * 		--altitude-altitude
+	 * 		--altitude-bottompick
+	 * 		--altitude-bottompick-threshold=value
+	 * 		--altitude-topo-grid
+	 * 		--channel-swap
+	 * 		--swath-width=value
 	 * 		--gain=value
 	 * 		--interpolation=value
 	 *
-	 * 		--nav_file=filename
-	 * 		--nav_file_format=format_id
-	 * 		--nav_async=record_kind
-	 * 		--sensordepth_file=filename
-	 * 		--sensordepth_file_format=format_id
-	 * 		--sensordepth_async=record_kind
-	 * 		--altitude_file=filename
-	 * 		--altitude_file_format=format_id
-	 * 		--altitude_async=record_kind
-	 * 		--heading_file=filename
-	 * 		--heading_file_format=format_id
-	 * 		--heading_async=record_kind
-	 * 		--attitude_file=filename
-	 * 		--attitude_file_format=format_id
-	 * 		--attitude_async=record_kind
-	 * 		--soundspeed_constant=value
-	 * 		--soundspeed_file=filename
-	 * 		--soundspeed_file_format=format_id
-	 * 		--soundspeed_async=record_kind
-	 * 		--time_latency_file=filename
-	 * 		--time_latency_constant=value
-	 * 		--time_latency_apply_nav
-	 * 		--time_latency_apply_sensordepth
-	 * 		--time_latency_apply_altitude
-	 * 		--time_latency_apply_heading
-	 * 		--time_latency_apply_attitude
-	 * 		--time_latency_apply_all_ancilliary
-	 * 		--time_latency_apply_survey
-	 * 		--time_latency_apply_all
-	 * 		--sensor_offsets=filename
+	 * 		--nav-file=filename
+	 * 		--nav-file-format=format_id
+	 * 		--nav-async=record_kind
+	 * 		--sensordepth-file=filename
+	 * 		--sensordepth-file-format=format_id
+	 * 		--sensordepth-async=record_kind
+	 * 		--altitude-file=filename
+	 * 		--altitude-file-format=format_id
+	 * 		--altitude-async=record_kind
+	 * 		--heading-file=filename
+	 * 		--heading-file-format=format_id
+	 * 		--heading-async=record_kind
+	 * 		--attitude-file=filename
+	 * 		--attitude-file-format=format_id
+	 * 		--attitude-async=record_kind
+	 * 		--soundspeed-constant=value
+	 * 		--soundspeed-file=filename
+	 * 		--soundspeed-file-format=format_id
+	 * 		--soundspeed-async=record_kind
+	 * 		--time-latency-file=filename
+	 * 		--time-latency-constant=value
+	 * 		--time-latency-apply-nav
+	 * 		--time-latency-apply-sensordepth
+	 * 		--time-latency-apply-altitude
+	 * 		--time-latency-apply-heading
+	 * 		--time-latency-apply-attitude
+	 * 		--time-latency-apply-all-ancilliary
+	 * 		--time-latency-apply-survey
+	 * 		--time-latency-apply-all
 	 */
 	static struct option options[] = {{"verbose", no_argument, NULL, 0},
 	                                  {"help", no_argument, NULL, 0},
@@ -185,65 +181,64 @@ int main(int argc, char **argv) {
 	                                  {"format", required_argument, NULL, 0},
 	                                  {"platform-file", required_argument, NULL, 0},
 	                                  {"platform-target-sensor", required_argument, NULL, 0},
-	                                  {"output_source", required_argument, NULL, 0},
-	                                  {"output_name1", required_argument, NULL, 0},
-	                                  {"output_name2", required_argument, NULL, 0},
-	                                  {"line_time_list", required_argument, NULL, 0},
-	                                  {"line_position_list", required_argument, NULL, 0},
-	                                  {"line_check_bearing", no_argument, NULL, 0},
-	                                  {"line_range_threshold", required_argument, NULL, 0},
-	                                  {"topo_grid_file", required_argument, NULL, 0},
-	                                  {"altitude_altitude", no_argument, NULL, 0},
-	                                  {"altitude_bottomppick", no_argument, NULL, 0},
-	                                  {"altitude_topo_grid", no_argument, NULL, 0},
-	                                  {"bottompick_threshold", required_argument, NULL, 0},
-	                                  {"channel_swap", required_argument, NULL, 0},
-	                                  {"swath_width", required_argument, NULL, 0},
+	                                  {"output-source", required_argument, NULL, 0},
+	                                  {"line-time-list", required_argument, NULL, 0},
+	                                  {"line-position-list", required_argument, NULL, 0},
+	                                  {"line-range-threshold", required_argument, NULL, 0},
+	                                  {"line-name1", required_argument, NULL, 0},
+	                                  {"line-name2", required_argument, NULL, 0},
+	                                  {"output-name1", required_argument, NULL, 0},
+	                                  {"output-name2", required_argument, NULL, 0},
+	                                  {"topo-grid-file", required_argument, NULL, 0},
+	                                  {"altitude-altitude", no_argument, NULL, 0},
+	                                  {"altitude-bottompick", no_argument, NULL, 0},
+	                                  {"altitude-topo-grid", no_argument, NULL, 0},
+	                                  {"altitude-bottompick-threshold", required_argument, NULL, 0},
+	                                  {"channel-swap", required_argument, NULL, 0},
+	                                  {"swath-width", required_argument, NULL, 0},
 	                                  {"gain", required_argument, NULL, 0},
 	                                  {"interpolation", required_argument, NULL, 0},
-	                                  {"nav_file", required_argument, NULL, 0},
-	                                  {"nav_file_format", required_argument, NULL, 0},
-	                                  {"nav_async", required_argument, NULL, 0},
-	                                  {"sensordepth_file", required_argument, NULL, 0},
-	                                  {"sensordepth_file_format", required_argument, NULL, 0},
-	                                  {"sensordepth_async", required_argument, NULL, 0},
-	                                  {"altitude_file", required_argument, NULL, 0},
-	                                  {"altitude_file_format", required_argument, NULL, 0},
-	                                  {"altitude_async", required_argument, NULL, 0},
-	                                  {"heading_file", required_argument, NULL, 0},
-	                                  {"heading_file_format", required_argument, NULL, 0},
-	                                  {"heading_async", required_argument, NULL, 0},
-	                                  {"attitude_file", required_argument, NULL, 0},
-	                                  {"attitude_file_format", required_argument, NULL, 0},
-	                                  {"attitude_async", required_argument, NULL, 0},
-	                                  {"soundspeed_constant", required_argument, NULL, 0},
-	                                  {"soundspeed_file", required_argument, NULL, 0},
-	                                  {"soundspeed_file_format", required_argument, NULL, 0},
-	                                  {"soundspeed_async", required_argument, NULL, 0},
-	                                  {"time_latency_file", required_argument, NULL, 0},
-	                                  {"time_latency_constant", required_argument, NULL, 0},
-	                                  {"time_latency_apply_nav", no_argument, NULL, 0},
-	                                  {"time_latency_apply_sensordepth", no_argument, NULL, 0},
-	                                  {"time_latency_apply_altitude", no_argument, NULL, 0},
-	                                  {"time_latency_apply_heading", no_argument, NULL, 0},
-	                                  {"time_latency_apply_attitude", no_argument, NULL, 0},
-	                                  {"time_latency_apply_all_ancilliary", no_argument, NULL, 0},
-	                                  {"time_latency_apply_survey", no_argument, NULL, 0},
-	                                  {"time_latency_apply_all", no_argument, NULL, 0},
-	                                  {"sensor_offsets", required_argument, NULL, 0},
+	                                  {"nav-file", required_argument, NULL, 0},
+	                                  {"nav-file-format", required_argument, NULL, 0},
+	                                  {"nav-async", required_argument, NULL, 0},
+	                                  {"sensordepth-file", required_argument, NULL, 0},
+	                                  {"sensordepth-file-format", required_argument, NULL, 0},
+	                                  {"sensordepth-async", required_argument, NULL, 0},
+	                                  {"altitude-file", required_argument, NULL, 0},
+	                                  {"altitude-file-format", required_argument, NULL, 0},
+	                                  {"altitude-async", required_argument, NULL, 0},
+	                                  {"heading-file", required_argument, NULL, 0},
+	                                  {"heading-file-format", required_argument, NULL, 0},
+	                                  {"heading-async", required_argument, NULL, 0},
+	                                  {"attitude-file", required_argument, NULL, 0},
+	                                  {"attitude-file-format", required_argument, NULL, 0},
+	                                  {"attitude-async", required_argument, NULL, 0},
+	                                  {"soundspeed-constant", required_argument, NULL, 0},
+	                                  {"soundspeed-file", required_argument, NULL, 0},
+	                                  {"soundspeed-file-format", required_argument, NULL, 0},
+	                                  {"soundspeed-async", required_argument, NULL, 0},
+	                                  {"time-latency-file", required_argument, NULL, 0},
+	                                  {"time-latency-constant", required_argument, NULL, 0},
+	                                  {"time-latency-apply-nav", no_argument, NULL, 0},
+	                                  {"time-latency-apply-sensordepth", no_argument, NULL, 0},
+	                                  {"time-latency-apply-altitude", no_argument, NULL, 0},
+	                                  {"time-latency-apply-heading", no_argument, NULL, 0},
+	                                  {"time-latency-apply-attitude", no_argument, NULL, 0},
+	                                  {"time-latency-apply-all-ancilliary", no_argument, NULL, 0},
+	                                  {"time-latency-apply-survey", no_argument, NULL, 0},
+	                                  {"time-latency-apply-all", no_argument, NULL, 0},
 	                                  {NULL, 0, NULL, 0}};
 
 	/* output variables */
-	int output_source = MB_DATA_NONE;
-	mb_path output_name1 = "Survey";
-	mb_path output_name2 = "sidescan";
+	int output_source = MB_DATA_DATA;
 
 	/* survey line variables */
 	int line_mode = MBSSLAYOUT_LINE_OFF;
 	mb_path line_time_list;
 	mb_path line_route;
-	int line_check_bearing = MB_NO;
 	double line_range_threshold = 50.0;
+	mb_path line_name1 = "Survey";
+	mb_path line_name2 = "sidescan";
 
 	/* sidescan layout variables */
 	int layout_mode = MBSSLAYOUT_LAYOUT_FLATBOTTOM;
@@ -356,6 +351,7 @@ int main(int argc, char **argv) {
 	double speedmin;
 	double timegap;
 	mb_path ifile;
+    mb_path ifileroot;
 	mb_path dfile;
 	mb_path ofile;
 	int beams_bath;
@@ -501,6 +497,11 @@ int main(int argc, char **argv) {
 	int n_wf_comment = 0;
 	int n_wt_data = 0;
 	int n_wt_comment = 0;
+    
+	time_t right_now;
+	char date[32], user[MB_PATH_MAXLINE], *user_ptr, host[MB_PATH_MAXLINE];
+	char *ctime();
+	char *getenv();
 
 	mb_path command;
 	int interp_status = MB_SUCCESS;
@@ -550,6 +551,9 @@ int main(int argc, char **argv) {
 	int jport, jstbd;
 	int previous, interpable;
 	double dss, dssl;
+    int error_format = MB_ERROR_NO_ERROR;
+    int status_format = MB_SUCCESS;
+    int format_nottobeused = 0;
 
 	int i, j, jj, n;
 
@@ -560,8 +564,8 @@ int main(int argc, char **argv) {
 	strcpy(read_file, "datalist.mb-1");
 
 	/* initialize some other things */
-	memset(output_name1, 0, sizeof(mb_path));
-	memset(output_name2, 0, sizeof(mb_path));
+	memset(line_name1, 0, sizeof(mb_path));
+	memset(line_name2, 0, sizeof(mb_path));
 	memset(line_time_list, 0, sizeof(mb_path));
 	memset(line_route, 0, sizeof(mb_path));
 	memset(topo_grid_file, 0, sizeof(mb_path));
@@ -572,7 +576,7 @@ int main(int argc, char **argv) {
 	memset(attitude_file, 0, sizeof(mb_path));
 	memset(soundspeed_file, 0, sizeof(mb_path));
 	memset(time_latency_file, 0, sizeof(mb_path));
-	memset(read_file, 0, sizeof(mb_path));
+	//memset(read_file, 0, sizeof(mb_path));
 	memset(output_file, 0, sizeof(mb_path));
 	memset(ifile, 0, sizeof(mb_path));
 	memset(dfile, 0, sizeof(mb_path));
@@ -580,8 +584,8 @@ int main(int argc, char **argv) {
 	memset(platform_file, 0, sizeof(mb_path));
 	memset(command, 0, sizeof(mb_path));
 	memset(scriptfile, 0, sizeof(mb_path));
-	strcpy(output_name1, "Survey");
-	strcpy(output_name2, "sidescan");
+	strcpy(line_name1, "Survey");
+	strcpy(line_name2, "sidescan");
 
 	/* process argument list */
 	while ((c = getopt_long(argc, argv, "", options, &option_index)) != -1)
@@ -629,78 +633,91 @@ int main(int argc, char **argv) {
 			/*-------------------------------------------------------
 			 * Define source data */
 
-			/* output_source */
-			else if (strcmp("output_source", options[option_index].name) == 0) {
-				n = sscanf(optarg, "%d", &output_source);
+			/* output-source */
+			else if ((strcmp("output-source", options[option_index].name) == 0)
+                     || (strcmp("output_source", options[option_index].name) == 0)) {
+                if (strcmp(optarg, "SIDESCAN") == 0 || strcmp(optarg, "sidescan") == 0)
+                    output_source = MB_DATA_DATA;
+                else if (strcmp(optarg, "LOW") == 0 || strcmp(optarg, "low") == 0)
+                    output_source = MB_DATA_DATA;
+                else if (strcmp(optarg, "HIGH") == 0 || strcmp(optarg, "high") == 0)
+                    output_source = MB_DATA_SIDESCAN2;
+				else
+                    n = sscanf(optarg, "%d", &output_source);
 			}
 
-			/* output_name1 */
-			else if (strcmp("output_name1", options[option_index].name) == 0) {
-				strcpy(output_name1, optarg);
+			/* line_name1 */
+			else if ((strcmp("line-name1", options[option_index].name) == 0)
+                     || (strcmp("line_name1", options[option_index].name) == 0)
+			         || (strcmp("output-name1", options[option_index].name) == 0)
+                     || (strcmp("output_name1", options[option_index].name) == 0)) {
+				strcpy(line_name1, optarg);
 			}
 
-			/* output_name2 */
-			else if (strcmp("output_name2", options[option_index].name) == 0) {
-				strcpy(output_name2, optarg);
+			/* line_name2 */
+			else if ((strcmp("line-name2", options[option_index].name) == 0) 
+                    || (strcmp("line_name2", options[option_index].name) == 0)
+			        || (strcmp("output-name2", options[option_index].name) == 0) 
+                    || (strcmp("output_name2", options[option_index].name) == 0)) {
+				strcpy(line_name2, optarg);
 			}
 
 			/*-------------------------------------------------------
 			 * Define survey line specification */
 
-			/* line_time_list */
-			else if (strcmp("line_time_list", options[option_index].name) == 0) {
+			/* line-time-list */
+			else if ((strcmp("line-time-list", options[option_index].name) == 0)
+                     || (strcmp("line_time_list", options[option_index].name) == 0)){
 				strcpy(line_time_list, optarg);
 				line_mode = MBSSLAYOUT_LINE_TIME;
 			}
 
-			/* line_route */
-			else if (strcmp("line_route", options[option_index].name) == 0) {
+			/* line-route */
+			else if (strcmp("line-route", options[option_index].name) == 0) {
 				strcpy(line_route, optarg);
 				line_mode = MBSSLAYOUT_LINE_ROUTE;
-			}
-
-			/* line_check_bearing */
-			else if (strcmp("line_check_bearing", options[option_index].name) == 0) {
-				line_check_bearing = MB_YES;
 			}
 
 			/*-------------------------------------------------------
 			 * Define sidescan layout algorithm parameters */
 
-			/* topo_grid_file */
-			else if (strcmp("topo_grid_file", options[option_index].name) == 0) {
+			/* topo-grid-file */
+			else if ((strcmp("topo-grid-file", options[option_index].name) == 0) 
+                    || (strcmp("topo_grid_file", options[option_index].name) == 0)) {
 				strcpy(topo_grid_file, optarg);
 				layout_mode = MBSSLAYOUT_LAYOUT_3DTOPO;
+				ss_altitude_mode = MBSSLAYOUT_ALTITUDE_TOPO_GRID;
 			}
 
-			/* altitude_altitude */
-			else if (strcmp("altitude_altitude", options[option_index].name) == 0) {
+			/* altitude-altitude */
+			else if (strcmp("altitude-altitude", options[option_index].name) == 0) {
 				ss_altitude_mode = MBSSLAYOUT_ALTITUDE_ALTITUDE;
 			}
 
-			/* altitude_bottomppick */
-			else if (strcmp("altitude_bottomppick", options[option_index].name) == 0) {
+			/* altitude-bottompick */
+			else if (strcmp("altitude-bottompick", options[option_index].name) == 0) {
 				ss_altitude_mode = MBSSLAYOUT_ALTITUDE_BOTTOMPICK;
 			}
 
-			/* bottompick_threshold */
-			else if (strcmp("bottompick_threshold", options[option_index].name) == 0) {
+			/* altitude-bottompick-threshold */
+			else if (strcmp("altitude-bottompick-threshold", options[option_index].name) == 0) {
 				n = sscanf(optarg, "%lf", &bottompick_threshold);
 				ss_altitude_mode = MBSSLAYOUT_ALTITUDE_BOTTOMPICK;
 			}
 
-			/* altitude_topo_grid */
-			else if (strcmp("altitude_topo_grid", options[option_index].name) == 0) {
+			/* altitude-topo-grid */
+			else if ((strcmp("altitude-topo-grid", options[option_index].name) == 0)
+                    || (strcmp("altitude_topo_grid", options[option_index].name) == 0)) {
 				ss_altitude_mode = MBSSLAYOUT_ALTITUDE_TOPO_GRID;
 			}
 
-			/* channel_swap */
-			else if (strcmp("channel_swap", options[option_index].name) == 0) {
+			/* channel-swap */
+			else if (strcmp("channel-swap", options[option_index].name) == 0) {
 				channel_swap = MB_YES;
 			}
 
-			/* swath_width */
-			else if (strcmp("swath_width", options[option_index].name) == 0) {
+			/* swath-width */
+			else if (strcmp("swath-width", options[option_index].name) == 0) {
 				n = sscanf(optarg, "%lf", &swath_width);
 				swath_mode = MBSSLAYOUT_SWATHWIDTH_CONSTANT;
 			}
@@ -854,25 +871,25 @@ int main(int argc, char **argv) {
 			 * Define source of sound speed - could be an external file
 			 * or an internal asynchronous record */
 
-			/* soundspeed_constant */
-			else if (strcmp("soundspeed_constant", options[option_index].name) == 0) {
+			/* soundspeed-constant */
+			else if (strcmp("soundspeed-constant", options[option_index].name) == 0) {
 				n = sscanf(optarg, "%lf", &soundspeed_constant);
 				soundspeed_mode = MBSSLAYOUT_MERGE_OFF;
 			}
 
-			/* soundspeed_file */
-			else if (strcmp("soundspeed_file", options[option_index].name) == 0) {
+			/* soundspeed-file */
+			else if (strcmp("soundspeed-file", options[option_index].name) == 0) {
 				strcpy(soundspeed_file, optarg);
 				soundspeed_mode = MBSSLAYOUT_MERGE_FILE;
 			}
 
-			/* soundspeed_file_format */
-			else if (strcmp("soundspeed_file_format", options[option_index].name) == 0) {
+			/* soundspeed-file-format */
+			else if (strcmp("soundspeed-file-format", options[option_index].name) == 0) {
 				n = sscanf(optarg, "%d", &soundspeed_file_format);
 			}
 
-			/* soundspeed_async */
-			else if (strcmp("soundspeed_async", options[option_index].name) == 0) {
+			/* soundspeed-async */
+			else if (strcmp("soundspeed-async", options[option_index].name) == 0) {
 				n = sscanf(optarg, "%d", &soundspeed_async);
 				if (n == 1)
 					soundspeed_mode = MBSSLAYOUT_MERGE_ASYNC;
@@ -1040,13 +1057,12 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dbg2       target_sensor:              %d\n", target_sensor);
 		fprintf(stderr, "dbg2  Source Data Parameters:\n");
 		fprintf(stderr, "dbg2       output_source:              %d\n", output_source);
-		fprintf(stderr, "dbg2       output_name1:               %s\n", output_name1);
-		fprintf(stderr, "dbg2       output_name2:               %s\n", output_name2);
+		fprintf(stderr, "dbg2       line_name1:                 %s\n", line_name1);
+		fprintf(stderr, "dbg2       line_name2:                 %s\n", line_name2);
 		fprintf(stderr, "dbg2  Survey Line Parameters:\n");
 		fprintf(stderr, "dbg2       line_mode:                  %d\n", line_mode);
 		fprintf(stderr, "dbg2       line_time_list:             %s\n", line_time_list);
 		fprintf(stderr, "dbg2       line_route:                 %s\n", line_route);
-		fprintf(stderr, "dbg2       line_check_bearing:         %d\n", line_check_bearing);
 		fprintf(stderr, "dbg2       line_range_threshold:       %f\n", line_range_threshold);
 		fprintf(stderr, "dbg2  Sidescan Layout Algorithm Parameters:\n");
 		fprintf(stderr, "dbg2       layout_mode:                %d\n", layout_mode);
@@ -1122,8 +1138,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Output Channel Parameters:\n");
 		if (output_source != MB_DATA_NONE) {
 			fprintf(stderr, "     output_source:            %d\n", output_source);
-			fprintf(stderr, "     output_name1:             %s\n", output_name1);
-			fprintf(stderr, "     output_name2:             %s\n", output_name2);
+			fprintf(stderr, "     line_name1:               %s\n", line_name1);
+			fprintf(stderr, "     line_name2:               %s\n", line_name2);
 		}
 		fprintf(stderr, "Survey Line Parameters:\n");
 		if (line_mode == MBSSLAYOUT_LINE_OFF) {
@@ -1132,12 +1148,10 @@ int main(int argc, char **argv) {
 		else if (line_mode == MBSSLAYOUT_LINE_TIME) {
 			fprintf(stderr, "     line_mode:                Lines defined by waypoint time list.\n");
 			fprintf(stderr, "     line_time_list:           %s\n", line_time_list);
-			fprintf(stderr, "     line_check_bearing:       %d\n", line_check_bearing);
 		}
 		else if (line_mode == MBSSLAYOUT_LINE_ROUTE) {
 			fprintf(stderr, "     line_mode:                Lines defined by route waypoint position list.\n");
 			fprintf(stderr, "     line_route:               %s\n", line_route);
-			fprintf(stderr, "     line_check_bearing:       %d\n", line_check_bearing);
 		}
 		fprintf(stderr, "Sidescan Layout Algorithm Parameters:\n");
 		if (layout_mode == MBSSLAYOUT_LAYOUT_FLATBOTTOM) {
@@ -1534,18 +1548,29 @@ int main(int argc, char **argv) {
 	}
 
 	/* set up plotting script file */
-	if ((line_mode == MBSSLAYOUT_LINE_ROUTE && nroutepoint > 1) || (line_mode == MBSSLAYOUT_LINE_TIME && ntimepoint > 1)) {
-		sprintf(scriptfile, "%s_%s_ssswathplot.cmd", output_name1, output_name2);
-	}
-	else {
-		sprintf(scriptfile, "%s_ssswathplot.cmd", read_file);
-	}
+	sprintf(scriptfile, "%s_%s_ssswathplot.cmd", line_name1, line_name2);
 	if ((sfp = fopen(scriptfile, "w")) == NULL) {
 		error = MB_ERROR_OPEN_FAIL;
 		status = MB_FAILURE;
 		fprintf(stderr, "\nUnable to open plotting script file <%s> \n", scriptfile);
 		exit(status);
-	}
+	} else {
+		right_now = time((time_t *)0);
+		strcpy(date, ctime(&right_now));
+		date[strlen(date) - 1] = '\0';
+		if ((user_ptr = getenv("USER")) == NULL)
+			user_ptr = getenv("LOGNAME");
+		if (user_ptr != NULL)
+			strcpy(user, user_ptr);
+		else
+			strcpy(user, "unknown");
+		i = gethostname(host, MB_PATH_MAXLINE);
+        fprintf(sfp, "# Swath plot generation script\n");
+        fprintf(sfp, "#   Written by MB-System program %s\n", program_name);
+		fprintf(sfp, "#   Source File Version %s\n", version_id);
+		fprintf(sfp, "#   MB-system Version %s\n", MB_VERSION);
+		fprintf(sfp, "#   Run run by %s on %s at %s\n#\n", user, host, date);
+    }
 
 	/*-------------------------------------------------------------------*/
 
@@ -2138,6 +2163,13 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "\nProgram <%s> Terminated\n", program_name);
 			exit(error);
 		}
+        
+        /* get the fileroot (but don't use the format id returned here, we already
+            know the format, probably from a datalist) */
+        error_format = MB_ERROR_NO_ERROR;
+        status_format = mb_get_format(verbose, ifile, ifileroot, &format_nottobeused, &error_format);
+        if (status_format != MB_SUCCESS)
+            strcpy(ifileroot, ifile);
 
 		/* if not generating survey line files then open output file to coincide with this input file */
 		if (line_mode == MBSSLAYOUT_LINE_OFF)
@@ -2309,15 +2341,15 @@ int main(int argc, char **argv) {
 						fprintf(sfp, "# Generate swath plot of sidescan file: %s\n", output_file);
 						fprintf(sfp, "mbm_plot -I %s -N -G5 -S -Pb -V -O %s_ssrawplot\n", output_file, output_file);
 						fprintf(sfp, "%s_ssrawplot.cmd $1\n", output_file);
-						fprintf(sfp, "convert -density 100 %s_ssrawplot.ps -trim -quality 75 %s_ssrawplot.jpg\n\n", output_file,
-						        output_file);
+                        fprintf(sfp, "gmt psconvert %s_ssrawplot.ps -Tj -A -E300 -P\n\n", output_file);
+                        fflush(sfp);
 					}
 
 					/* define the filename */
 					if (line_mode == MBSSLAYOUT_LINE_OFF)
-						sprintf(output_file, "%s_%s.mb%2.2d", ifile, output_name2, MBF_MBLDEOIH);
+						sprintf(output_file, "%s_%s.mb%2.2d", ifileroot, line_name2, MBF_MBLDEOIH);
 					else
-						sprintf(output_file, "%s_%s_%4.4d.mb%2.2d", output_name1, output_name2, line_number, MBF_MBLDEOIH);
+						sprintf(output_file, "%s_%s_%4.4d.mb%2.2d", line_name1, line_name2, line_number, MBF_MBLDEOIH);
 
 					/* open the new file */
 					if (verbose > 0)
@@ -2801,7 +2833,8 @@ int main(int argc, char **argv) {
 		fprintf(sfp, "# Generate swath plot of sidescan file: %s\n", output_file);
 		fprintf(sfp, "mbm_plot -I %s -N -G5 -S -Pb -V -O %s_ssrawplot\n", output_file, output_file);
 		fprintf(sfp, "%s_ssrawplot.cmd $1\n", output_file);
-		fprintf(sfp, "convert -density 100 %s_ssrawplot.ps -trim -quality 75 %s_ssrawplot.jpg\n\n", output_file, output_file);
+		fprintf(sfp, "gmt psconvert %s_ssrawplot.ps -Tj -A -E300 -P\n\n", output_file);
+		fflush(sfp);
 	}
 
 	/* close plotting script file */

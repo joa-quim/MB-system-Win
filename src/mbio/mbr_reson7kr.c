@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_reson7kr.c	4/4/2004
- *	$Id: mbr_reson7kr.c 2313 2017-08-09 21:05:29Z caress $
+ *	$Id: mbr_reson7kr.c 2321 2017-10-26 17:40:44Z caress $
  *
  *    Copyright (c) 2004-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -189,7 +189,7 @@ int mbr_reson7kr_wr_soundvelocity(int verbose, int *bufferalloc, char **bufferpt
 int mbr_reson7kr_wr_absorptionloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 int mbr_reson7kr_wr_spreadingloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 
-static char rcs_id[] = "$Id: mbr_reson7kr.c 2313 2017-08-09 21:05:29Z caress $";
+static char rcs_id[] = "$Id: mbr_reson7kr.c 2321 2017-10-26 17:40:44Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_reson7kr(int verbose, void *mbio_ptr, int *error) {
@@ -697,7 +697,7 @@ int mbr_rt_reson7kr(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 	}
 
 	/* save altitude if altitude record */
-	if (status == MB_SUCCESS && store->kind == MB_DATA_HEIGHT && store->type == R7KRECID_Altitude) {
+	if (status == MB_SUCCESS && store->kind == MB_DATA_ALTITUDE && store->type == R7KRECID_Altitude) {
 		/* get attitude structure */
 		altitude = &(store->altitude);
 
@@ -706,7 +706,7 @@ int mbr_rt_reson7kr(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 	}
 
 	/* save sonardepth if depth record */
-	if (status == MB_SUCCESS && store->kind == MB_DATA_HEIGHT && store->type == R7KRECID_Depth) {
+	if (status == MB_SUCCESS && store->kind == MB_DATA_SONARDEPTH && store->type == R7KRECID_Depth) {
 		/* get attitude structure */
 		depth = &(store->depth);
 
@@ -3362,7 +3362,7 @@ int mbr_reson7kr_rd_altitude(int verbose, char *buffer, void *store_ptr, int *er
 	/* set kind */
 	if (status == MB_SUCCESS) {
 		/* set kind */
-		store->kind = MB_DATA_HEIGHT;
+		store->kind = MB_DATA_ALTITUDE;
 		store->type = R7KRECID_Altitude;
 
 		/* get the time */
@@ -3588,7 +3588,7 @@ int mbr_reson7kr_rd_depth(int verbose, char *buffer, void *store_ptr, int *error
 	/* set kind */
 	if (status == MB_SUCCESS) {
 		/* set kind */
-		store->kind = MB_DATA_HEIGHT;
+		store->kind = MB_DATA_SONARDEPTH;
 		store->type = R7KRECID_Depth;
 
 		/* get the time */

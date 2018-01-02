@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbview_callbacks.c	10/7/2002
- *    $Id: mbview_callbacks.c 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mbview_callbacks.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 2002-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -103,8 +103,8 @@
 #include "mbview.h"
 #include "mbviewprivate.h"
 
-// #define MBV_DEBUG_GLX 1
-// #define MBV_GET_GLX_ERRORS 1
+//#define MBV_DEBUG_GLX 1
+//#define MBV_GET_GLX_ERRORS 1
 
 /*------------------------------------------------------------------------------*/
 
@@ -113,7 +113,7 @@ static Cardinal ac;
 static Arg args[256];
 static char value_text[MB_PATH_MAXLINE];
 
-static char rcs_id[] = "$Id: mbview_callbacks.c 2312 2017-07-14 09:06:52Z caress $";
+static char rcs_id[] = "$Id: mbview_callbacks.c 2315 2017-09-22 06:17:14Z caress $";
 
 /* function prototypes */
 /*------------------------------------------------------------------------------*/
@@ -2249,14 +2249,14 @@ int mbview_open(int verbose, size_t instance, int *error) {
 
 	/* set widget sensitivity */
 	mbview_update_sensitivity(verbose, instance, error);
-	fprintf(stderr,"Calling mbview_action_sensitivityall()\n");
+	//fprintf(stderr,"Calling mbview_action_sensitivityall()\n");
 	mbview_action_sensitivityall();
-	fprintf(stderr,"Done with mbview_action_sensitivityall()\n");
+	//fprintf(stderr,"Done with mbview_action_sensitivityall()\n");
 
 	/* create glx context */
-	fprintf(stderr,"Calling mbview_reset_glx(%zu)\n",instance);
+	//fprintf(stderr,"Calling mbview_reset_glx(%zu)\n",instance);
 	mbview_reset_glx(instance);
-	fprintf(stderr,"Done with mbview_reset_glx()\n");
+	//fprintf(stderr,"Done with mbview_reset_glx()\n");
 
 	/* print output debug statements */
 	if (verbose >= 2) {
@@ -4703,7 +4703,7 @@ int mbview_destroy(int verbose, size_t instance, int destroywidgets, int *error)
 				fprintf(stderr, "%s:%d:%s instance:%zu glXMakeCurrent(%p,%lu,%p)\n", __FILE__, __LINE__, function_name, instance,
 				        view->dpy, XtWindow(view->prglwmda), view->prglx_context);
 #endif
-				glXMakeCurrent(view->dpy, XtWindow(view->prglwmda), view->prglx_context);
+				//glXMakeCurrent(view->dpy, XtWindow(view->prglwmda), view->prglx_context);
 
 #ifdef MBV_GET_GLX_ERRORS
 				mbview_glerrorcheck(instance, __FILE__, __LINE__, function_name);
@@ -4728,7 +4728,7 @@ int mbview_destroy(int verbose, size_t instance, int destroywidgets, int *error)
 				fprintf(stderr, "%s:%d:%s instance:%zu glXMakeCurrent(%p,%lu,%p)\n", __FILE__, __LINE__, function_name, instance,
 				        XtDisplay(view->glwmda), XtWindow(view->glwmda), view->glx_context);
 #endif
-				glXMakeCurrent(XtDisplay(view->glwmda), XtWindow(view->glwmda), view->glx_context);
+				//glXMakeCurrent(XtDisplay(view->glwmda), XtWindow(view->glwmda), view->glx_context);
 
 #ifdef MBV_GET_GLX_ERRORS
 				mbview_glerrorcheck(instance, __FILE__, __LINE__, function_name);

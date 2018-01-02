@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbeditviz_callbacks.c		4/27/2007
- *    $Id: mbeditviz_callbacks.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbeditviz_callbacks.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 2007-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -1839,6 +1839,7 @@ void do_mbeditviz_regrid_notify(Widget w, XtPointer client_data, XtPointer call_
 	double pitchbias;
 	double headingbias;
 	double timelag;
+	double snell;
 
 	/* print input debug statements */
 	if (mbev_verbose >= 2) {
@@ -1854,10 +1855,10 @@ void do_mbeditviz_regrid_notify(Widget w, XtPointer client_data, XtPointer call_
 #endif
 
 	/* get current bias parameters */
-	mb3dsoundings_get_bias_values(mbev_verbose, &rollbias, &pitchbias, &headingbias, &timelag, &mbev_error);
+	mb3dsoundings_get_bias_values(mbev_verbose, &rollbias, &pitchbias, &headingbias, &timelag, &snell, &mbev_error);
 
 	/* regrid the bathymetry */
-	mbeditviz_mb3dsoundings_biasapply(rollbias, pitchbias, headingbias, timelag);
+	mbeditviz_mb3dsoundings_biasapply(rollbias, pitchbias, headingbias, timelag, snell);
 
 	/* reset the gui */
 	do_mbeditviz_update_gui();

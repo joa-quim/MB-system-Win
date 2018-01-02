@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbio_status.h	2/1/93
- *    $Id: mb_status.h 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_status.h 2319 2017-10-17 01:34:44Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -54,7 +54,7 @@
 #define MB_IMAGERY_TYPE_POINT 8
 
 /* MBIO data type ("kind") convention */
-#define MB_DATA_KINDS 61
+#define MB_DATA_KINDS 62
 #define MB_DATA_NONE 0
 #define MB_DATA_DATA 1                   /* general survey data */
 #define MB_DATA_COMMENT 2                /* general comment */
@@ -255,33 +255,42 @@ static char *notice_msg[] = {
     "MB_DATA_HISTORY (ID=22): GSF history record", "MB_DATA_SUMMARY (ID=23): GSF summary record",
     "MB_DATA_PROCESSING_PARAMETERS (ID=24): GSF processing parameters record",
     "MB_DATA_SENSOR_PARAMETERS (ID=25): GSF sensor parameter record",
-    "MB_DATA_NAVIGATION_ERROR (ID=26): GSF navigation error record", "MB_DATA_RAW_LINE (ID=27): uninterpretable ASCII line",
-    "MB_DATA_NAV1 (ID=28): Auxiliary nav system 1", "MB_DATA_NAV2 (ID=29): Auxiliary nav system 2",
-    "MB_DATA_NAV3 (ID=30): Auxiliary nav system 3", "MB_DATA_TILT (ID=31): Mechanical tilt record",
-    "MB_DATA_MOTION (ID=32): Motion (DVL) sensor record", "MB_DATA_CTD (ID=33): CTD record",
-    "MB_DATA_SUBBOTTOM_MCS (ID=34): MCS subbottom record", "MB_DATA_SUBBOTTOM_CNTRBEAM (ID=35): Centerbeam subbottom record",
-    "MB_DATA_SUBBOTTOM_SUBBOTTOM (ID=36): Subbottom record", "MB_DATA_SIDESCAN2 (ID=37): Secondary sidescan record",
-    "MB_DATA_SIDESCAN3 (ID=38): Tertiary sidescan record", "MB_DATA_IMAGE (ID=39): Sonar image record",
-    "MB_DATA_ROLL (ID=40): Roll record", "MB_DATA_PITCH (ID=41): Pitch record",
-    "MB_DATA_ABSORPTIONLOSS (ID=42): Absorption loss record", "MB_DATA_SPREADINGLOSS (ID=43): Spreading loss record",
-    "MB_DATA_INSTALLATION (ID=44): Installation parameter record", "MB_DATA_WATER_COLUMN (ID=45): Water column record",
-    "MB_DATA_STATUS (ID=46): Status record", "MB_DATA_DVL (ID=47): DVL record", "MB_DATA_NMEA_RMC (ID=48): NMEA RMC record",
-    "MB_DATA_NMEA_DBT (ID=49): NMEA DBT record", "MB_DATA_NMEA_DPT (ID=50): NMEA DPT record",
-    "MB_DATA_NMEA_ZDA (ID=51): NMEA ZDA record", "MB_DATA_NMEA_GLL (ID=52): NMEA GLL record",
-    "MB_DATA_NMEA_GGA (ID=53): NMEA GGA record", "MB_DATA_SURVEY_LINE (ID=54): Survey line record",
-    "MB_DATA_ATTITUDE1 (55): ancillary attitude system 1", "MB_DATA_ATTITUDE2 (56): ancillary attitude system 2",
-    "MB_DATA_ATTITUDE3 (57): ancillary attitude system 3", "MB_DATA_SONARDEPTH (58): HYSWEEP dynamic draft",
-    "MB_DATA_ALTITUDE (59): HYSWEEP single beam echosounder", "MB_DATA_GEN_SENS (60): WASSP generic sensor data",
-    "MB_DATA_WC_PICKS (61): WASSP water column picks",
+    "MB_DATA_NAVIGATION_ERROR (ID=26): GSF navigation error record",
+    "MB_DATA_SINGLE_BEAM_PING (ID=27): GSF single beam ping record",
+    "MB_DATA_RAW_LINE (ID=28): uninterpretable ASCII line",
+    "MB_DATA_NAV1 (ID=29): Auxiliary nav system 1", "MB_DATA_NAV2 (ID=30): Auxiliary nav system 2",
+    "MB_DATA_NAV3 (ID=31): Auxiliary nav system 3", "MB_DATA_TILT (ID=32): Mechanical tilt record",
+    "MB_DATA_MOTION (ID=33): Motion (DVL) sensor record", "MB_DATA_CTD (ID=34): CTD record",
+    "MB_DATA_SUBBOTTOM_MCS (ID=35): MCS subbottom record", "MB_DATA_SUBBOTTOM_CNTRBEAM (ID=36): Centerbeam subbottom record",
+    "MB_DATA_SUBBOTTOM_SUBBOTTOM (ID=37): Subbottom record", "MB_DATA_SIDESCAN2 (ID=38): Secondary sidescan record",
+    "MB_DATA_SIDESCAN3 (ID=39): Tertiary sidescan record", "MB_DATA_IMAGE (ID=40): Sonar image record",
+    "MB_DATA_ROLL (ID=41): Roll record", "MB_DATA_PITCH (ID=42): Pitch record",
+    "MB_DATA_ABSORPTIONLOSS (ID=43): Absorption loss record", "MB_DATA_SPREADINGLOSS (ID=44): Spreading loss record",
+    "MB_DATA_INSTALLATION (ID=45): Installation parameter record", "MB_DATA_WATER_COLUMN (ID=46): Water column record",
+    "MB_DATA_STATUS (ID=47): Status record", "MB_DATA_DVL (ID=48): DVL record", "MB_DATA_NMEA_RMC (ID=49): NMEA RMC record",
+    "MB_DATA_NMEA_DBT (ID=50): NMEA DBT record", "MB_DATA_NMEA_DPT (ID=51): NMEA DPT record",
+    "MB_DATA_NMEA_ZDA (ID=52): NMEA ZDA record", "MB_DATA_NMEA_GLL (ID=53): NMEA GLL record",
+    "MB_DATA_NMEA_GGA (ID=54): NMEA GGA record", "MB_DATA_SURVEY_LINE (ID=55): Survey line record",
+    "MB_DATA_ATTITUDE1 (56): ancillary attitude system 1", "MB_DATA_ATTITUDE2 (57): ancillary attitude system 2",
+    "MB_DATA_ATTITUDE3 (58): ancillary attitude system 3", "MB_DATA_SONARDEPTH (59): HYSWEEP dynamic draft",
+    "MB_DATA_ALTITUDE (60): HYSWEEP single beam echosounder",
+    "MB_DATA_GEN_SENS (61): WASSP generic sensor data",
+    "MB_DATA_WC_PICKS (62): WASSP water column picks",
 
     /* notices for nonfatal error messages */
-    "MB_ERROR_TIME_GAP (ID=-1): Time gap in data", "MB_ERROR_OUT_BOUNDS (ID=-2): Data outside specified location bounds",
-    "MB_ERROR_OUT_TIME (ID=-3): Data outside specified time interval", "MB_ERROR_SPEED_TOO_SMALL (ID=-4): Ship speed too small",
-    "MB_ERROR_COMMENT (ID=-5): Comment record", "MB_ERROR_SUBBOTTOM (ID=-6): Subbottom record",
-    "MB_ERROR_WATER_COLUMN (ID=-7): Water column record", "MB_ERROR_OTHER (ID=-8): Neither a data record nor a comment record",
-    "MB_ERROR_UNINTELLIGIBLE (ID=-9): Unintelligible data record", "MB_ERROR_IGNORE (ID=-10): Ignore these data",
+    "MB_ERROR_TIME_GAP (ID=-1): Time gap in data",
+    "MB_ERROR_OUT_BOUNDS (ID=-2): Data outside specified location bounds",
+    "MB_ERROR_OUT_TIME (ID=-3): Data outside specified time interval",
+    "MB_ERROR_SPEED_TOO_SMALL (ID=-4): Ship speed too small",
+    "MB_ERROR_COMMENT (ID=-5): Comment record",
+    "MB_ERROR_SUBBOTTOM (ID=-6): Subbottom record",
+    "MB_ERROR_WATER_COLUMN (ID=-7): Water column record",
+    "MB_ERROR_OTHER (ID=-8): Neither a data record nor a comment record",
+    "MB_ERROR_UNINTELLIGIBLE (ID=-9): Unintelligible data record",
+    "MB_ERROR_IGNORE (ID=-10): Ignore these data",
     "MB_ERROR_NO_DATA_REQUESTED (ID=-11): No data requested for buffer load",
-    "MB_ERROR_BUFFER_FULL (ID=-12): Data buffer is full", "MB_ERROR_NO_DATA_LOADED (ID=-13): No data was loaded into the buffer",
+    "MB_ERROR_BUFFER_FULL (ID=-12): Data buffer is full",
+    "MB_ERROR_NO_DATA_LOADED (ID=-13): No data was loaded into the buffer",
     "MB_ERROR_BUFFER_EMPTY (ID=-14): Data buffer is empty",
     "MB_ERROR_NO_DATA_DUMPED (ID=-15): No data was dumped from the buffer",
     "MB_ERROR_NO_MORE_DATA (ID=-16): No more survey data records in buffer",

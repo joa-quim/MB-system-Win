@@ -59,6 +59,7 @@ mbm_vrefcheck.1 \
 mbm_xbt.1 \
 mbm_xyplot.1 \
 mbmakeplatform.1 \
+mbminirovnav.1 \
 mbnavadjust.1 \
 mbnavadjustmerge.1 \
 mbnavedit.1 \
@@ -76,6 +77,7 @@ mbsegyinfo.1 \
 mbsegylist.1 \
 mbsegypsd.1 \
 mbset.1 \
+mbsslayout.1 \
 mbstripnan.1 \
 mbsvplist.1 \
 mbsvpselect.1 \

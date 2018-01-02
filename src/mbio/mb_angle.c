@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_angle.c	1/21/93
- *    $Id: mb_angle.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_angle.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 1998-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -190,7 +190,7 @@
 #include "mb_status.h"
 #include "mb_define.h"
 
-static char rcs_id[] = "$Id: mb_angle.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_angle.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_takeoff_to_rollpitch(int verbose, double theta, double phi, double *pitch, double *roll, int *error) {
@@ -614,7 +614,7 @@ int mb_beaudoin(int verbose, mb_3D_orientation tx_align, mb_3D_orientation tx_or
 		beamVectRel.z = 0.0;
 	}
 
-	// if (verbose >= 4)
+	if (verbose >= 4)
 	if (radial > 1.0)
 		fprintf(stderr, "dbg4     Got y1, y2, radial: %lf %lf %lf     beamVectRel:%f %f %f\n", y1, y2, radial, beamVectRel.x,
 		        beamVectRel.y, beamVectRel.z);

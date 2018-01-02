@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #--------------------------------------------------------------------
 #    The MB-system:	mbm_makedatalist.perl	27/1/2006
-#    $Id: mbm_makedatalist 2308 2017-06-04 19:55:48Z caress $
+#    $Id: mbm_makedatalist 2315 2017-09-22 06:17:14Z caress $
 #
 #    Copyright (c) 2006-2017 by
 #    D. W. Caress (caress@mbari.org)
@@ -33,7 +33,7 @@
 #   January 27, 2006
 #
 # Version:
-#   $Id: mbm_makedatalist 2308 2017-06-04 19:55:48Z caress $
+#   $Id: mbm_makedatalist 2315 2017-09-22 06:17:14Z caress $
 #
 #
 $program_name = "mbm_makedatalist";
@@ -54,7 +54,7 @@ $verbose = 			($opt_V || $opt_v);
 # print out help message if required
 if ($help) {
 	print "\n$program_name:\n";
-	print "\nVersion: $Id: mbm_makedatalist 2308 2017-06-04 19:55:48Z caress $\n";
+	print "\nVersion: $Id: mbm_makedatalist 2315 2017-09-22 06:17:14Z caress $\n";
 	print "Macro to generate an MB-System datalist file referencing all\n";
 	print "identifiable swath files in the specified directory. If no directory\n";
 	print "is specified with the -I option, then the current directory is used.\n";
@@ -91,14 +91,15 @@ if ($verbose) {
 		print " - Checking all files for those that meet swath data naming conventions\n";
 	}
 	if ($disablesorting) {
-		if ($suffix eq ".all" || $suffix eq ".ALL") {
+		if ($suffix eq ".all" || $suffix eq ".ALL" || $suffix eq ".mb56" || $suffix eq ".mb57" || $suffix eq ".mb58" || $suffix eq ".mb59") {
 			print " - Sorting Kongsberg multibeam files into time order is disabled.\n"
         }
 		else {
 			print " - Request to disable time sorting of Kongsberg multibeam files ignored because a Kongsberg multibeam file\n   suffix (.all or .ALL) has not been specified with the -S option\n"
         }
     } else {
-		if ($suffix eq ".all" || $suffix eq ".ALL") {
+		if ($suffix eq ".all" || $suffix eq ".ALL"
+			|| $suffix eq ".mb56" || $suffix eq ".mb57" || $suffix eq ".mb58" || $suffix eq ".mb59") {
 			print " - Attempting to sort Kongsberg multibeam files into time order based on filenames.\n"
         }
     }

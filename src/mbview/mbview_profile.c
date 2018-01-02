@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_profile.c	3/8/2006
- *    $Id: mbview_profile.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbview_profile.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 2006-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -67,6 +67,9 @@
 #include "mbview.h"
 #include "mbviewprivate.h"
 
+//#define MBV_DEBUG_GLX 1
+//#define MBV_GET_GLX_ERRORS 1
+
 /*------------------------------------------------------------------------------*/
 
 /* library variables */
@@ -82,7 +85,7 @@ static Cardinal ac = 0;
 static Arg args[256];
 static char value_text[MB_PATH_MAXLINE];
 
-static char rcs_id[] = "$Id: mbview_profile.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbview_profile.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_getprofilecount(int verbose, size_t instance, int *npoints, int *error)
@@ -416,7 +419,13 @@ int mbview_reset_prglx(size_t instance) {
 	if (data->profile_view_mode == MBV_VIEW_ON) {
 		/* delete old glx_context if it exists */
 		if (view->prglx_init == MB_YES) {
+#ifdef MBV_DEBUG_GLX
+			fprintf(stderr, "%s:%d:%s instance:%zu glXDestroyContext(%p,%p)\n", __FILE__, __LINE__, function_name, instance, view->dpy, view->prglx_context);
+#endif
 			glXDestroyContext(view->dpy, view->prglx_context);
+#ifdef MBV_GET_GLX_ERRORS
+			mbview_glerrorcheck(instance, __FILE__, __LINE__, function_name);
+#endif
 			view->prglx_init = MB_NO;
 		}
 

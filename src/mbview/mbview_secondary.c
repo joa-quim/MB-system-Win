@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_secondary.c	9/25/2003
- *    $Id: mbview_secondary.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbview_secondary.c 2321 2017-10-26 17:40:44Z caress $
  *
  *    Copyright (c) 2003-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -75,7 +75,7 @@
 
 /* local variables */
 static char value_text[MB_PATH_MAXLINE];
-static char rcs_id[] = "$Id: mbview_secondary.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbview_secondary.c 2321 2017-10-26 17:40:44Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_setsecondarygrid(int verbose, size_t instance, int secondary_grid_projection_mode, char *secondary_grid_projection_id,
@@ -146,7 +146,7 @@ int mbview_setsecondarygrid(int verbose, size_t instance, int secondary_grid_pro
 
 	/* copy grid */
 	memcpy(data->secondary_data, secondary_data, data->secondary_nxy * sizeof(float));
-
+ 
 	/* check if secondary grid has same bounds and dimensions as primary grid so
 	    that overlay calculations are trivial */
 	if (data->secondary_nx == data->primary_nx && data->secondary_ny == data->primary_ny &&

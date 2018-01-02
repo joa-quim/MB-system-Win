@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbbs_defines.h	3/3/2014
- *	$Id: mbbs_defines.h 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbbs_defines.h 2322 2017-11-26 00:44:11Z caress $
  *
  *    Copyright (c) 2014-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -81,7 +81,7 @@
 #ifdef HPUX
 #include <rpc/rpc.h>
 #endif
-#ifdef DARWIN
+#if defined(DARWIN) || defined(__APPLE__)
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #endif

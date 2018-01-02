@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_gsfgenmb.c	2/27/98
- *	$Id: mbr_gsfgenmb.c 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbr_gsfgenmb.c 2323 2017-12-08 00:44:44Z caress $
  *
  *    Copyright (c) 1998-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -55,7 +55,7 @@ int mbr_dem_gsfgenmb(int verbose, void *mbio_ptr, int *error);
 int mbr_rt_gsfgenmb(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_gsfgenmb(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 
-static char rcs_id[] = "$Id: mbr_gsfgenmb.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbr_gsfgenmb.c 2323 2017-12-08 00:44:44Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_gsfgenmb(int verbose, void *mbio_ptr, int *error) {
@@ -76,11 +76,11 @@ int mbr_register_gsfgenmb(int verbose, void *mbio_ptr, int *error) {
 
 	/* set format info parameters */
 	status = mbr_info_gsfgenmb(
-	    verbose, &mb_io_ptr->system, &mb_io_ptr->beams_bath_max, &mb_io_ptr->beams_amp_max, &mb_io_ptr->pixels_ss_max,
-	    mb_io_ptr->format_name, mb_io_ptr->system_name, mb_io_ptr->format_description, &mb_io_ptr->numfile, &mb_io_ptr->filetype,
-	    &mb_io_ptr->variable_beams, &mb_io_ptr->traveltime, &mb_io_ptr->beam_flagging, &mb_io_ptr->platform_source,
-	    &mb_io_ptr->nav_source, &mb_io_ptr->sensordepth_source, &mb_io_ptr->heading_source, &mb_io_ptr->attitude_source,
-	    &mb_io_ptr->svp_source, &mb_io_ptr->beamwidth_xtrack, &mb_io_ptr->beamwidth_ltrack, error);
+                verbose, &mb_io_ptr->system, &mb_io_ptr->beams_bath_max, &mb_io_ptr->beams_amp_max, &mb_io_ptr->pixels_ss_max,
+                mb_io_ptr->format_name, mb_io_ptr->system_name, mb_io_ptr->format_description, &mb_io_ptr->numfile, &mb_io_ptr->filetype,
+                &mb_io_ptr->variable_beams, &mb_io_ptr->traveltime, &mb_io_ptr->beam_flagging, &mb_io_ptr->platform_source,
+                &mb_io_ptr->nav_source, &mb_io_ptr->sensordepth_source, &mb_io_ptr->heading_source, &mb_io_ptr->attitude_source,
+                &mb_io_ptr->svp_source, &mb_io_ptr->beamwidth_xtrack, &mb_io_ptr->beamwidth_ltrack, error);
 
 	/* set format and system specific function pointers */
 	mb_io_ptr->mb_io_format_alloc = &mbr_alm_gsfgenmb;

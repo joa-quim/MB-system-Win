@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavedit_callbacks.c	6/24/95
- *    $Id: mbnavedit_callbacks.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbnavedit_callbacks.c 2321 2017-10-26 17:40:44Z caress $
  *
  *    Copyright (c) 1995-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -94,7 +94,7 @@ WidgetList BxWidgetIdsFromNames PROTOTYPE((Widget, char *, char *));
 /*--------------------------------------------------------------------*/
 
 /* id variables */
-static char svn_id[] = "$Id: mbnavedit_callbacks.c 2308 2017-06-04 19:55:48Z caress $";
+static char svn_id[] = "$Id: mbnavedit_callbacks.c 2321 2017-10-26 17:40:44Z caress $";
 static char program_name[] = "MBnavedit";
 
 #define xgfont "-*-" FIXED "-bold-r-normal-*-13-*-75-75-c-70-iso8859-1"
@@ -541,7 +541,7 @@ void do_parse_datalist(char *file, int form) {
 	int verbose = 0;
 	int i;
 
-	fprintf(stderr, "Called do_parse_datalist:%s %d\n", file, form);
+	//fprintf(stderr, "Called do_parse_datalist:%s %d\n", file, form);
 	/* try to resolve format if necessary */
 	format = form;
 	mb_get_format(verbose, file, NULL, &format, &error);
@@ -578,9 +578,6 @@ void do_parse_datalist(char *file, int form) {
 			}
 		}
 	}
-	fprintf(stderr, "numfiles:%d\n", numfiles);
-	for (i = 0; i < numfiles; i++)
-		fprintf(stderr, "\t%s\t%d\t%d\t%d\n", filepaths[i], fileformats[i], filelocks[i], filenves[i]);
 }
 
 /*--------------------------------------------------------------------*/
@@ -682,7 +679,7 @@ void do_load_specific_file(int i_file) {
 	;
 	char save_file[MB_PATH_MAXLINE];
 
-	fprintf(stderr, "Called do_load_specific_file:%d\n", i_file);
+	//fprintf(stderr, "Called do_load_specific_file:%d\n", i_file);
 	/* check the specified file is in the list */
 	if (numfiles > 0 && i_file >= 0 && i_file < numfiles) {
 		/* set current_file */
@@ -2273,7 +2270,7 @@ void do_useprevious_no(Widget w, XtPointer client_data, XtPointer call_data) {
 void do_load(int useprevious) {
 	int status;
 
-	fprintf(stderr, "Called do_load:%d\n", useprevious);
+	//fprintf(stderr, "Called do_load:%d\n", useprevious);
 	/* turn off expose plots */
 	expose_plot_ok = False;
 

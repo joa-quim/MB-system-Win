@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbprocess.c	3/31/93
- *    $Id: mbprocess.c 2314 2017-08-24 19:52:17Z caress $
+ *    $Id: mbprocess.c 2319 2017-10-17 01:34:44Z caress $
  *
  *    Copyright (c) 2000-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -98,7 +98,7 @@ int get_corrtable(int verbose, double time_d, int ncorrtable, int ncorrangle, st
                   struct mbprocess_sscorr_struct *corrtableuse, int *error);
 int get_anglecorr(int verbose, int nangle, double *angles, double *corrs, double angle, double *corr, int *error);
 
-static char rcs_id[] = "$Id: mbprocess.c 2314 2017-08-24 19:52:17Z caress $";
+static char rcs_id[] = "$Id: mbprocess.c 2319 2017-10-17 01:34:44Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -4459,7 +4459,8 @@ and mbedit edit save files.\n";
 				  --------------------------------------------*/
 
 				/* apply tide corrections */
-				if (process.mbp_tide_mode == MBP_TIDE_ON && ntide > 0) {
+				if (error == MB_ERROR_NO_ERROR && kind == MB_DATA_DATA
+					&& process.mbp_tide_mode == MBP_TIDE_ON && ntide > 0) {
 					/* interpolate tide */
 					intstat = mb_linear_interp(verbose, tidetime - 1, tide - 1, ntide, time_d, &tideval, &itime, &error);
 

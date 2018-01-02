@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbextractsegy.c	4/18/2004
- *    $Id: mbextractsegy.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbextractsegy.c 2321 2017-10-26 17:40:44Z caress $
  *
  *    Copyright (c) 2004-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -48,7 +48,7 @@
 #define MBES_NUM_PLOT_MAX 50
 #define MBES_MAX_SWEEP 1.0
 
-static char rcs_id[] = "$Id: mbextractsegy.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbextractsegy.c 2321 2017-10-26 17:40:44Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -1463,10 +1463,8 @@ int main(int argc, char **argv) {
 					fprintf(stderr, "%s", command);
 					fprintf(sfp, "%s", command);
 
-					sprintf(
-					    command,
-					    "convert -density 100 %s_%4.4d_%2.2d_sectionplot.ps -trim -quality 75 %s_%4.4d_%2.2d_sectionplot.jpg\n\n",
-					    lineroot, linenumber, i + 1, lineroot, linenumber, i + 1);
+					sprintf(command, "gmt psconvert %s_%4.4d_%2.2d_sectionplot.ps -Tj -A -E300 -P\n\n",
+					    lineroot, linenumber, i + 1);
 					fprintf(stderr, "%s", command);
 					fprintf(sfp, "%s", command);
 					fflush(sfp);

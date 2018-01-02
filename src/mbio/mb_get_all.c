@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_get_all.c	1/26/93
- *    $Id: mb_get_all.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_get_all.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -37,7 +37,7 @@
 #include "mb_io.h"
 #include "mb_define.h"
 
-static char rcs_id[] = "$Id: mb_get_all.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_get_all.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_get_all(int verbose, void *mbio_ptr, void **store_ptr, int *kind, int time_i[7], double *time_d, double *navlon,
@@ -316,7 +316,7 @@ int mb_get_all(int verbose, void *mbio_ptr, void **store_ptr, int *kind, int tim
 	/* check for time gap */
 	if (status == MB_SUCCESS && mb_io_ptr->new_time_d > MB_TIME_D_UNKNOWN &&
 	    (*kind == MB_DATA_DATA || *kind == MB_DATA_NAV || *kind == MB_DATA_CALIBRATE) && mb_io_ptr->ping_count > 1) {
-		if ((*time_d - mb_io_ptr->old_ntime_d) > 60 * mb_io_ptr->timegap) {
+		if ((*time_d - mb_io_ptr->old_time_d) > 60 * mb_io_ptr->timegap) {
 			status = MB_FAILURE;
 			*error = MB_ERROR_TIME_GAP;
 		}

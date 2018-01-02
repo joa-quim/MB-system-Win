@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_elac.c	3.00	8/20/94
- *	$Id: mbsys_elac.c 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbsys_elac.c 2322 2017-11-26 00:44:11Z caress $
  *
  *    Copyright (c) 1994-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -38,7 +38,7 @@
 #include "mb_define.h"
 #include "mbsys_elac.h"
 
-static char rcs_id[] = "$Id: mbsys_elac.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbsys_elac.c 2322 2017-11-26 00:44:11Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_elac_alloc(int verbose, void *mbio_ptr, void **store_ptr, int *error) {
@@ -346,13 +346,13 @@ int mbsys_elac_extract(int verbose, void *mbio_ptr, void *store_ptr, int *kind, 
 				if (store->profile[i].quality[j] == 1)
 					beamflag[ibeam] = MB_FLAG_NONE;
 				else if (store->profile[i].quality[j] < 8)
-					beamflag[ibeam] = MB_FLAG_SONAR + MB_FLAG_FLAG;
+					beamflag[ibeam] = (char)(MB_FLAG_SONAR | MB_FLAG_FLAG);
 				else if (store->profile[i].quality[j] == 8)
 					beamflag[ibeam] = MB_FLAG_NULL;
 				else if (store->profile[i].quality[j] == 10)
-					beamflag[ibeam] = MB_FLAG_MANUAL + MB_FLAG_FLAG;
+					beamflag[ibeam] = (char)(MB_FLAG_MANUAL | MB_FLAG_FLAG);
 				else if (store->profile[i].quality[j] == 20)
-					beamflag[ibeam] = MB_FLAG_FILTER + MB_FLAG_FLAG;
+					beamflag[ibeam] = (char)(MB_FLAG_FILTER | MB_FLAG_FLAG);
 				else
 					beamflag[ibeam] = MB_FLAG_NULL;
 				bath[ibeam] = depthscale * store->profile[i].bath[j];

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_time.c	10/30/2000
- *    $Id: mb_navint.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_navint.c 2316 2017-09-29 19:57:09Z caress $
  *
  *    Copyright (c) 2000-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -41,7 +41,7 @@
 //    #define MB_DEPINT_DEBUG 1
 //    #define MB_ALTINT_DEBUG 1
 
-static char rcs_id[] = "$Id: mb_navint.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_navint.c 2316 2017-09-29 19:57:09Z caress $";
 
 /*--------------------------------------------------------------------*/
 /* 	function mb_navint_add adds a nav fix to the internal
@@ -1586,7 +1586,7 @@ int mb_loadnavdata(int verbose, char *merge_nav_file, int merge_nav_format, int 
 					nav_ok = MB_YES;
 				}
 
-				/* deal with nav in form: yr mon day hour min sec time_d lon lat heading speed sensordepth*/
+				/* deal with nav in form: yr mon day hour min sec time_d lon lat heading speed sensordepth */
 				else if (merge_nav_format == 9) {
 					nget = sscanf(buffer, "%d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &time_i[0], &time_i[1],
 					              &time_i[2], &time_i[3], &time_i[4], &sec, &n_time_d[nrecord], &n_lon[nrecord], &n_lat[nrecord],

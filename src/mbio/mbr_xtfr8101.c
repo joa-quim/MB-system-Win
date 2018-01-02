@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_xtfr8101.c	8/8/94
- *	$Id: mbr_xtfr8101.c 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbr_xtfr8101.c 2322 2017-11-26 00:44:11Z caress $
  *
  *    Copyright (c) 2001-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -57,7 +57,7 @@ int mbr_rt_xtfr8101(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_xtfr8101(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_xtfr8101_rd_data(int verbose, void *mbio_ptr, int *error);
 
-static char rcs_id[] = "$Id: mbr_xtfr8101.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbr_xtfr8101.c 2322 2017-11-26 00:44:11Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_xtfr8101(int verbose, void *mbio_ptr, int *error) {
@@ -662,7 +662,7 @@ int mbr_rt_xtfr8101(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 			if (quality == 0)
 				store->beamflag[i] = MB_FLAG_NULL;
 			else if (quality < 3)
-				store->beamflag[i] = MB_FLAG_FLAG + MB_FLAG_SONAR;
+				store->beamflag[i] = (char)(MB_FLAG_FLAG | MB_FLAG_SONAR);
 			else
 				store->beamflag[i] = MB_FLAG_NONE;
 

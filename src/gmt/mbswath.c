@@ -768,7 +768,11 @@ int GMT_mbswath(void *V_API, int mode, void *args) {
 
 	/* Read the color palette file */
 	if (Ctrl->C.active) { /* Read palette file */
+#if GMT_MAJOR_VERSION < 6
 		if ((CPTcolor = gmt_get_cpt(GMT, Ctrl->C.cptfile, GMT_CPT_REQUIRED, 0.0, 0.0)) == NULL) {
+#else
+		if ((CPTcolor = gmt_get_cpt(GMT, Ctrl->C.cptfile, GMT_CPT_REQUIRED, 0.0, 0.0, 0.0)) == NULL) {
+#endif
 			Return(API->error);
 		}
 		if (CPTcolor && CPTcolor->is_gray && Ctrl->image_type == MBSWATH_IMAGE_24)
@@ -777,7 +781,11 @@ int GMT_mbswath(void *V_API, int mode, void *args) {
 
 	/* Read the color palette file for amplitude shading if requested */
 	if (Ctrl->N.active) { /* Read palette file */
+#if GMT_MAJOR_VERSION < 6
 		if ((CPTshade = gmt_get_cpt(GMT, Ctrl->N.cptfile, GMT_CPT_REQUIRED, 0.0, 0.0)) == NULL) {
+#else
+		if ((CPTshade = gmt_get_cpt(GMT, Ctrl->N.cptfile, GMT_CPT_REQUIRED, 0.0, 0.0, 0.0)) == NULL) {
+#endif
 			Return(API->error);
 		}
 	}

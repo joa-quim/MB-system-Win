@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_segysegy.c	10/27/2006
- *	$Id: mbr_segysegy.c 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbr_segysegy.c 2315 2017-09-22 06:17:14Z caress $
  *
  *    Copyright (c) 2006-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -52,7 +52,7 @@ int mbr_dem_segysegy(int verbose, void *mbio_ptr, int *error);
 int mbr_rt_segysegy(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_segysegy(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 
-static char rcs_id[] = "$Id: mbr_segysegy.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbr_segysegy.c 2315 2017-09-22 06:17:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_segysegy(int verbose, void *mbio_ptr, int *error) {
@@ -319,6 +319,7 @@ int mbr_rt_segysegy(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 	struct mb_segyio_struct *mb_segyio_ptr;
 	struct mb_segytraceheader_struct traceheader;
 	float *trace;
+    double factor;
 	int time_j[5];
 	int i;
 
@@ -357,8 +358,38 @@ int mbr_rt_segysegy(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 		mb_get_itime(verbose, time_j, store->time_i);
 		mb_get_time(verbose, store->time_i, &store->time_d);
 		store->timezone = 0;
-		store->longitude = ((double)traceheader.src_long) / 360000.0;
-		store->latitude = ((double)traceheader.src_lat) / 360000.0;
+		//store->longitude = ((double)traceheader.src_long) / 360000.0;
+		//store->latitude = ((double)traceheader.src_lat) / 360000.0;
+        if (traceheader.coord_scalar < 0)
+            factor = 1.0 / ((float)(-traceheader.coord_scalar)) / 3600.0;
+        else
+            factor = (float)traceheader.coord_scalar / 3600.0;
+        if (traceheader.src_long != 0)
+            store->longitude = factor * ((float)traceheader.src_long);
+        else
+            store->longitude = factor * ((float)traceheader.grp_long);
+        if (traceheader.src_lat != 0)
+            store->latitude = factor * ((float)traceheader.src_lat);
+        else
+            store->latitude = factor * ((float)traceheader.grp_lat);
+        if (mb_io_ptr->lonflip < 0) {
+            if (store->longitude > 0.)
+                store->longitude = store->longitude - 360.;
+            else if (store->longitude < -360.)
+                store->longitude = store->longitude + 360.;
+        }
+        else if (mb_io_ptr->lonflip == 0) {
+            if (store->longitude > 180.)
+                store->longitude = store->longitude - 360.;
+            else if (store->longitude < -180.)
+                store->longitude = store->longitude + 360.;
+        }
+        else {
+            if (store->longitude > 360.)
+                store->longitude = store->longitude - 360.;
+            else if (store->longitude < 0.)
+                store->longitude = store->longitude + 360.;
+        }
 		store->easting = 0.0;
 		store->northing = 0.0;
 		store->heading = traceheader.heading;

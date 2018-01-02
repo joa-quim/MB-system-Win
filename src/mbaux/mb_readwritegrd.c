@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_grdio.c	12/10/2007
- *    $Id: mb_readwritegrd.c 2314 2017-08-24 19:52:17Z caress $
+ *    $Id: mb_readwritegrd.c 2320 2017-10-19 01:40:44Z caress $
  *
  *    Copyright (c) 2007-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -42,7 +42,7 @@
 #define ModelTypeGeographic 2
 #define GCS_WGS_84 4326
 
-static char rcs_id[] = "$Id: mb_readwritegrd.c 2314 2017-08-24 19:52:17Z caress $";
+static char rcs_id[] = "$Id: mb_readwritegrd.c 2320 2017-10-19 01:40:44Z caress $";
 
 /*--------------------------------------------------------------------------*/
 int mb_read_gmt_grd(int verbose, char *grdfile, int *grid_projection_mode, char *grid_projection_id, float *nodatavalue, int *nxy,
@@ -109,11 +109,16 @@ int mb_read_gmt_grd(int verbose, char *grdfile, int *grid_projection_mode, char 
 #else
 				usleep(1000);
 #endif
-				fprintf(stderr,"Failed to read grid with GMT_Read_Data(), attempt %d\n", num_tries);
+				//fprintf(stderr,"Failed to read grid with GMT_Read_Data(), attempt %d\n", num_tries);
+			} else {
+				if (num_tries > 0) {
+					fprintf(stderr, "Read grid on try %d\n", num_tries);
+				}
 			}
 		}
 		if (G == NULL) {
-			fprintf(stderr, "\nUnable to read GMT grid file %s with GMT_Read_Data() in function %s\n", grdfile, function_name);
+			fprintf(stderr, "\nUnable to read GMT grid file %s with GMT_Read_Data() after %d tries in function %s\n",
+					grdfile, num_tries, function_name);
 			fprintf(stderr, "Program terminated\n");
 			exit(EXIT_FAILURE);
 		}
