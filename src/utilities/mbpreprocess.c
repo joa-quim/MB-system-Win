@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbpreprocess.c	1/8/2014
- *    $Id: mbpreprocess.c 2322 2017-11-26 00:44:11Z caress $
+ *    $Id: mbpreprocess.c 2336 2018-06-07 01:27:18Z caress $
  *
- *    Copyright (c) 2014-2017 by
+ *    Copyright (c) 2014-2018 by
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
  *      Moss Landing, CA 95039
@@ -26,7 +26,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbpreprocess.c 2322 2017-11-26 00:44:11Z caress $";
+static char version_id[] = "$Id: mbpreprocess.c 2336 2018-06-07 01:27:18Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -35,6 +35,7 @@ static char version_id[] = "$Id: mbpreprocess.c 2322 2017-11-26 00:44:11Z caress
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
+#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -130,13 +131,15 @@ int main(int argc, char **argv) {
 	                       "\t--no-change-survey\n"
 	                       "\t--multibeam-sidescan-source=recordid\n"
 						   "\t--sounding-amplitude-filter=value\n\n"
+						   "\t--sounding-altitude-filter=value\n\n"
 	                       "\t--kluge-time-jumps=threshold\n"
                            "\t--kluge-ancilliary-time-jumps=threshold\n"
                            "\t--kluge-mbaripressure-time-jumps=threshold\n"
 	                       "\t--kluge-beam-tweak=factor\n"
 	                       "\t--kluge-soundspeed-tweak=factor\n"
 	                       "\t--kluge-zero-attitude-correction\n"
-	                       "\t--kluge-zero-alongtrack-angles\n";
+	                       "\t--kluge-zero-alongtrack-angles\n"
+                           "\t--kluge-fix-wissl-timestamps\n";
 
 	extern char *optarg;
 	int option_index;
@@ -217,6 +220,7 @@ int main(int argc, char **argv) {
 	 * 		--no-change-survey
 	 * 		--multibeam-sidescan-source=recordid
 	 * 		--sounding-amplitude-filter=value
+	 * 		--sounding-altitude-filter=value
 	 * 		--ignore-water-column
 	 *
 	 * 		--kluge-time-jumps=threshold
@@ -226,6 +230,7 @@ int main(int argc, char **argv) {
 	 *      --kluge-soundspeed-tweak=factor
 	 *      --kluge-zero-attitude-correction
 	 *      --kluge-zero-alongtrack-angles
+	 *      --kluge-fix-wissl-timestamps
 	 */
 	static struct option options[] = {{"verbose", no_argument, NULL, 0},
 	                                  {"help", no_argument, NULL, 0},
@@ -279,6 +284,7 @@ int main(int argc, char **argv) {
 	                                  {"no-change-survey", no_argument, NULL, 0},
 	                                  {"multibeam-sidescan-source", required_argument, NULL, 0},
 	                                  {"sounding-amplitude-filter", required_argument, NULL, 0},
+	                                  {"sounding-altitude-filter", required_argument, NULL, 0},
 	                                  {"ignore-water-column", no_argument, NULL, 0},
 	                                  {"kluge-time-jumps", required_argument, NULL, 0},
 	                                  {"kluge-ancilliary-time-jumps", required_argument, NULL, 0},
@@ -287,6 +293,7 @@ int main(int argc, char **argv) {
 	                                  {"kluge-soundspeed-tweak", required_argument, NULL, 0},
 	                                  {"kluge-zero-attitude-correction", no_argument, NULL, 0},
 	                                  {"kluge-zero-alongtrack-angles", no_argument, NULL, 0},
+	                                  {"kluge-fix-wissl-timestamps", no_argument, NULL, 0},
 	                                  {NULL, 0, NULL, 0}};
 
 	/* asynchronous navigation, heading, altitude, attitude, soundspeed data */
@@ -387,6 +394,13 @@ int main(int argc, char **argv) {
 
 	/* skip existing output files */
 	int skip_existing = MB_NO;
+    
+    /* file indexing (used by some formats) */
+    int num_indextable = 0;
+    int num_indextable_alloc = 0;
+    struct mb_io_indextable_struct *indextable = NULL;
+    int i_num_indextable = 0;
+    struct mb_io_indextable_struct *i_indextable = NULL;
 
 	/* kluge various data fixes */
 	int kluge_timejumps = MB_NO;
@@ -414,6 +428,9 @@ int main(int argc, char **argv) {
 	int altitude_changed = MB_NO;
 	int attitude_changed = MB_NO;
 	int soundspeed_changed = MB_NO;
+    int kluge_fix_wissl_timestamps = MB_NO;
+    int kluge_fix_wissl_timestamps_setup1 = MB_NO;
+    int kluge_fix_wissl_timestamps_setup2 = MB_NO;
 
 	/* preprocess structure */
 	struct mb_preprocess_struct preprocess_pars;
@@ -522,6 +539,7 @@ int main(int argc, char **argv) {
 	int n_rt_att1 = 0;
 	int n_rt_att2 = 0;
 	int n_rt_att3 = 0;
+    int n_rt_files = 0;
 
 	int n_wf_data = 0;
 	int n_wf_comment = 0;
@@ -543,6 +561,7 @@ int main(int argc, char **argv) {
 	int n_wt_att1 = 0;
 	int n_wt_att2 = 0;
 	int n_wt_att3 = 0;
+    int n_wt_files = 0;
 
 	int shellstatus;
 	mb_path command = "";
@@ -984,6 +1003,13 @@ int main(int argc, char **argv) {
 					preprocess_pars.sounding_amplitude_filter = MB_YES;
 			}
 
+			/* sounding-altitude-filter=value */
+			else if (strcmp("sounding-altitude-filter", options[option_index].name) == 0) {
+				n = sscanf(optarg, "%lf", &preprocess_pars.sounding_target_altitude);
+				if (n == 1)
+					preprocess_pars.sounding_altitude_filter = MB_YES;
+			}
+
 			/* ignore-water-column */
 			else if (strcmp("ignore-water-column", options[option_index].name) == 0) {
 				preprocess_pars.ignore_water_column = MB_YES;
@@ -1051,6 +1077,14 @@ int main(int argc, char **argv) {
 				preprocess_pars.kluge_id[preprocess_pars.n_kluge] = MB_PR_KLUGE_ZEROALONGTRACKANGLES;
 				preprocess_pars.n_kluge++;
 				preprocess_pars.recalculate_bathymetry = MB_YES;
+			}
+
+			/* kluge-fix-wissl-timestamps */
+			else if (strcmp("kluge-fix-wissl-timestamps", options[option_index].name) == 0) {
+				preprocess_pars.kluge_id[preprocess_pars.n_kluge] = MB_PR_KLUGE_FIXWISSLTIMESTAMPS;
+				preprocess_pars.n_kluge++;
+				preprocess_pars.recalculate_bathymetry = MB_YES;
+                kluge_fix_wissl_timestamps = MB_YES;
 			}
 
 			break;
@@ -1172,6 +1206,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dbg2       recalculate_bathymetry:       %d\n", preprocess_pars.recalculate_bathymetry);
 		fprintf(stderr, "dbg2       sounding_amplitude_filter:    %d\n", preprocess_pars.sounding_amplitude_filter);
 		fprintf(stderr, "dbg2       sounding_amplitude_threshold: %f\n", preprocess_pars.sounding_amplitude_threshold);
+		fprintf(stderr, "dbg2       sounding_altitude_filter:     %d\n", preprocess_pars.sounding_altitude_filter);
+		fprintf(stderr, "dbg2       sounding_target_altitude:     %f\n", preprocess_pars.sounding_target_altitude);
 		fprintf(stderr, "dbg2       ignore_water_column:          %d\n", preprocess_pars.ignore_water_column);
 		fprintf(stderr, "dbg2  Various data fixes (kluges):\n");
 		fprintf(stderr, "dbg2       kluge_timejumps:              %d\n", kluge_timejumps);
@@ -1184,6 +1220,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dbg2       kluge_beamtweak_factor:       %f\n", kluge_beamtweak_factor);
 		fprintf(stderr, "dbg2       kluge_soundspeedtweak:        %d\n", kluge_soundspeedtweak);
 		fprintf(stderr, "dbg2       kluge_soundspeedtweak_factor: %f\n", kluge_soundspeedtweak_factor);
+		fprintf(stderr, "dbg2       kluge_fix_wissl_timestamps:   %d\n", kluge_fix_wissl_timestamps);
 		fprintf(stderr, "dbg2  Additional output:\n");
 		fprintf(stderr, "dbg2       output_sensor_fnv:            %d\n", output_sensor_fnv);
 		fprintf(stderr, "dbg2  Skip existing output files:\n");
@@ -1255,6 +1292,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "     recalculate_bathymetry:       %d\n", preprocess_pars.recalculate_bathymetry);
 		fprintf(stderr, "     sounding_amplitude_filter:    %d\n", preprocess_pars.sounding_amplitude_filter);
 		fprintf(stderr, "     sounding_amplitude_threshold: %f\n", preprocess_pars.sounding_amplitude_threshold);
+		fprintf(stderr, "     sounding_altitude_filter:     %d\n", preprocess_pars.sounding_altitude_filter);
+		fprintf(stderr, "     sounding_target_altitude:     %f\n", preprocess_pars.sounding_target_altitude);
 		fprintf(stderr, "     ignore_water_column:          %d\n", preprocess_pars.ignore_water_column);
 		fprintf(stderr, "Various data fixes (kluges):\n");
 		fprintf(stderr, "     kluge_timejumps:              %d\n", kluge_timejumps);
@@ -1267,6 +1306,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "     kluge_beamtweak_factor:       %f\n", kluge_beamtweak_factor);
 		fprintf(stderr, "     kluge_soundspeedtweak:        %d\n", kluge_soundspeedtweak);
 		fprintf(stderr, "     kluge_soundspeedtweak_factor: %f\n", kluge_soundspeedtweak_factor);
+		fprintf(stderr, "     kluge_fix_wissl_timestamps:   %d\n", kluge_fix_wissl_timestamps);
 		fprintf(stderr, "Additional output:\n");
 		fprintf(stderr, "     output_sensor_fnv:            %d\n", output_sensor_fnv);
 		fprintf(stderr, "Skip existing output files:\n");
@@ -1825,10 +1865,36 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
+        
+        /* copy data record index if used for this format */
+        status =  mb_indextable(verbose, imbio_ptr, &i_num_indextable, (void **)&i_indextable, &error);
+        if (i_num_indextable > 0) {
+            if (num_indextable_alloc <= num_indextable + i_num_indextable) {
+                /* allocate space */
+                num_indextable_alloc += i_num_indextable;
+                status = mb_reallocd(verbose, __FILE__, __LINE__,
+                                    num_indextable_alloc * sizeof(struct mb_io_indextable_struct),
+                                    (void **)(&indextable), &error);
+                if (error != MB_ERROR_NO_ERROR) {
+                    mb_error(verbose, error, &message);
+                    fprintf(stderr, "\nMBIO Error allocating data arrays:\n%s\n", message);
+                    fprintf(stderr, "\nProgram <%s> Terminated\n", program_name);
+                    exit(error);
+                }
+            }
+                
+            /* copy the index */
+            memcpy(&indextable[num_indextable], i_indextable,
+                       i_num_indextable * sizeof(struct mb_io_indextable_struct));
+            for (i = num_indextable; i < num_indextable + i_num_indextable; i++) {
+                indextable[i].file_index = n_rt_files;
+            }
+            num_indextable += i_num_indextable;
+        }
 
 		/* output data counts */
 		if (verbose > 0) {
-			fprintf(stderr, "Pass 1: Records read from input file %s\n", ifile);
+			fprintf(stderr, "Pass 1: Records read from input file %d: %s\n", n_rt_files, ifile);
 			fprintf(stderr, "     %d survey records\n", n_rf_data);
 			fprintf(stderr, "     %d comment records\n", n_rf_comment);
 			fprintf(stderr, "     %d nav records\n", n_rf_nav);
@@ -1843,6 +1909,7 @@ int main(int argc, char **argv) {
 
 		/* close the swath file */
 		status = mb_close(verbose, &imbio_ptr, &error);
+        n_rt_files++;
 
 		/* figure out whether and what to read next */
 		if (read_datalist == MB_YES) {
@@ -1863,7 +1930,7 @@ int main(int argc, char **argv) {
 	/* output data counts */
 	if (verbose > 0) {
 		fprintf(stderr, "\n-----------------------------------------------\n");
-		fprintf(stderr, "Pass 1: Total records read from all input files:\n");
+		fprintf(stderr, "Pass 1: Total records read from %d input files:\n", n_rt_files);
 		fprintf(stderr, "     %d survey records\n", n_rt_data);
 		fprintf(stderr, "     %d comment records\n", n_rt_comment);
 		fprintf(stderr, "     %d nav records\n", n_rt_nav);
@@ -2376,6 +2443,7 @@ int main(int argc, char **argv) {
 	n_rt_att1 = 0;
 	n_rt_att2 = 0;
 	n_rt_att3 = 0;
+    n_rt_files = 0;
 	n_wf_data = 0;
 	n_wf_comment = 0;
 	n_wf_nav = 0;
@@ -2396,6 +2464,7 @@ int main(int argc, char **argv) {
 	n_wt_att1 = 0;
 	n_wt_att2 = 0;
 	n_wt_att3 = 0;
+    n_wt_files = 0;
 
 	/* if requested to output integrated nav for all survey sensors, open files */
 	if (output_sensor_fnv == MB_YES && platform != NULL) {
@@ -2419,7 +2488,7 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
-
+	
 	/* open file list */
 	if (read_datalist == MB_YES) {
 		if ((status = mb_datalist_open(verbose, &datalist, read_file, look_processed, &error)) != MB_SUCCESS) {
@@ -2452,6 +2521,8 @@ int main(int argc, char **argv) {
 			oformat = MBF_EM710MBA;
 		else if (iformat == MBF_IMAGE83P)
 			oformat = MBF_IMAGEMBA;
+		else if (iformat == MBF_3DWISSLR)
+			oformat = MBF_3DWISSLP;
 		else
 			oformat = iformat;
 
@@ -2614,7 +2685,7 @@ int main(int argc, char **argv) {
 				fprintf(stderr, "\nProgram <%s> Terminated\n", program_name);
 				exit(error);
 			}
-	
+
 			/* zero file count records */
 			n_rf_data = 0;
 			n_rf_comment = 0;
@@ -2638,7 +2709,10 @@ int main(int argc, char **argv) {
 			n_wf_att3 = 0;
 			start_time_d = -1.0;
 			end_time_d = -1.0;
-	
+            
+            if (kluge_fix_wissl_timestamps == MB_YES)
+                kluge_fix_wissl_timestamps_setup2 = MB_NO;
+
 			/* ------------------------------- */
 			/* write comments to output file   */
 	
@@ -2654,7 +2728,6 @@ int main(int argc, char **argv) {
 									&heading_org, &distance, &altitude_org, &sensordepth_org, &beams_bath, &beams_amp, &pixels_ss,
 									beamflag, bath, amp, bathacrosstrack, bathalongtrack, ss, ssacrosstrack, ssalongtrack, comment,
 									&error);
-//fprintf(stderr,"mbpreprocess: A:  kind:%d status:%d error:%d",kind,status,error);
 	
 				/* some nonfatal errors do not matter */
 				if (error < MB_ERROR_NO_ERROR && error > MB_ERROR_UNINTELLIGIBLE) {
@@ -2744,6 +2817,25 @@ int main(int argc, char **argv) {
 								dtime_d_expect = (kluge_last_time_d - kluge_first_time_d) / (n_rf_data - 1);
 						}
 					}
+            
+                    /* if the input data are WiSSL data in format MBF_3DWISSLR
+                     * and kluge_fix_wissl_timestamps is enabled, call special function
+                     * to fix the timestmps in the file's internal index table */
+                    if (kind == MB_DATA_DATA && iformat == MBF_3DWISSLR
+                        && kluge_fix_wissl_timestamps == MB_YES) {
+                        if (kluge_fix_wissl_timestamps_setup1 == MB_NO) {
+                            status = mb_indextablefix(verbose, imbio_ptr,
+                                                      num_indextable, indextable,
+                                                      &error);
+                            kluge_fix_wissl_timestamps_setup1 = MB_YES;
+                        }
+                        if (kluge_fix_wissl_timestamps_setup2 == MB_NO) {
+                            status = mb_indextableapply(verbose, imbio_ptr,
+                                                        num_indextable, indextable,
+                                                        n_rt_files, &error);
+                            kluge_fix_wissl_timestamps_setup2 = MB_YES;
+                        }
+                    }
 	
 					/* apply time latency correction called for in the platform file */
 					if (sensor_target != NULL && sensor_target->time_latency_mode != MB_SENSOR_TIME_LATENCY_NONE) {
@@ -3035,7 +3127,7 @@ int main(int argc, char **argv) {
 	
 			/* output data counts */
 			if (verbose > 0) {
-				fprintf(stderr, "Pass 2: Records read from input file %s\n", ifile);
+				fprintf(stderr, "Pass 2: Records read from input file %d: %s\n", n_rt_files, ifile);
 				fprintf(stderr, "     %d survey records\n", n_rf_data);
 				fprintf(stderr, "     %d comment records\n", n_rf_comment);
 				fprintf(stderr, "     %d nav records\n", n_rf_nav);
@@ -3046,7 +3138,7 @@ int main(int argc, char **argv) {
 				fprintf(stderr, "     %d att1 records\n", n_rf_att1);
 				fprintf(stderr, "     %d att2 records\n", n_rf_att2);
 				fprintf(stderr, "     %d att3 records\n", n_rf_att3);
-				fprintf(stderr, "Pass 2: Records written to output file %s\n", ofile);
+				fprintf(stderr, "Pass 2: Records written to output file %d: %s\n", n_wt_files, ofile);
 				fprintf(stderr, "     %d survey records\n", n_wf_data);
 				fprintf(stderr, "     %d comment records\n", n_wf_comment);
 				fprintf(stderr, "     %d nav records\n", n_wf_nav);
@@ -3061,9 +3153,11 @@ int main(int argc, char **argv) {
 	
 			/* close the input swath file */
 			status = mb_close(verbose, &imbio_ptr, &error);
+            n_rt_files++;
 	
 			/* close the output swath file */
 			status = mb_close(verbose, &ombio_ptr, &error);
+            n_wt_files++;
 	
 			/* close the synchronous attitude file */
 			fclose(afp);
@@ -3074,11 +3168,13 @@ int main(int argc, char **argv) {
 				/* generate inf fnv and fbt files */
 				status = mb_make_info(verbose, MB_YES, ofile, oformat, &error);
 	
-				/* generate gef files */
-				sprintf(command, "mbgetesf -I %s -M2 -O %s.gef", ofile, ofile);
-				if (verbose > 0)
-					fprintf(stderr, "Generating gef file for %s\n", ofile);
-				shellstatus = system(command);
+				/* generate gef files
+				 * - deprecated in favor of *resf files generated by mbprocess
+				 * - DWC 11 February 2018 */
+				//sprintf(command, "mbgetesf -I %s -M4 -O %s.gef", ofile, ofile);
+				//if (verbose > 0)
+				//	fprintf(stderr, "Generating gef file for %s\n", ofile);
+				//shellstatus = system(command);
 	
 				/* generate asynchronous heading file */
 				if (n_heading > 0) {
@@ -3218,7 +3314,7 @@ int main(int argc, char **argv) {
 
 	/* output data counts */
 	if (verbose > 0) {
-		fprintf(stderr, "\nPass 2: Total records read from all input files\n");
+		fprintf(stderr, "\nPass 2: Total records read from %d input files\n", n_rt_files);
 		fprintf(stderr, "     %d survey records\n", n_rt_data);
 		fprintf(stderr, "     %d comment records\n", n_rt_comment);
 		fprintf(stderr, "     %d nav records\n", n_rt_nav);
@@ -3229,7 +3325,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "     %d att1 records\n", n_rt_att1);
 		fprintf(stderr, "     %d att2 records\n", n_rt_att2);
 		fprintf(stderr, "     %d att3 records\n", n_rt_att3);
-		fprintf(stderr, "Pass 2: Total records written to all output files\n");
+		fprintf(stderr, "Pass 2: Total records written to %d output files\n", n_wt_files);
 		fprintf(stderr, "     %d survey records\n", n_wt_data);
 		fprintf(stderr, "     %d comment records\n", n_wt_comment);
 		fprintf(stderr, "     %d nav records\n", n_wt_nav);

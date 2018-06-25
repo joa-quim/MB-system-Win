@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_check_info.c	1/25/93
- *    $Id: mb_check_info.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_check_info.c 2329 2018-02-12 06:48:39Z caress $
  *
- *    Copyright (c) 1993-2017 by
+ *    Copyright (c) 1993-2018 by
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
  *      Moss Landing, CA 95039
@@ -42,7 +42,7 @@
 #include "mb_format.h"
 #include "mb_info.h"
 
-static char rcs_id[] = "$Id: mb_check_info.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_check_info.c 2329 2018-02-12 06:48:39Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_check_info(int verbose, char *file, int lonflip, double bounds[4], int *file_in_bounds, int *error) {

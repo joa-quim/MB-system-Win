@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbcontour.c	5/30/93
- *    $Id: mbcontour.c 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mbcontour.c 2324 2018-01-19 03:04:33Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -226,7 +226,7 @@ void mbcontour_newpen(int ipen);
 void mbcontour_justify_string(double height, char *string, double *s);
 void mbcontour_plot_string(double x, double y, double hgt, double angle, char *label);
 
-static char svn_id[] = "$Id: mbcontour.c 2312 2017-07-14 09:06:52Z caress $";
+static char svn_id[] = "$Id: mbcontour.c 2324 2018-01-19 03:04:33Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -535,7 +535,7 @@ int GMT_mbcontour_parse(struct GMT_CTRL *GMT, struct MBCONTOUR_CTRL *Ctrl, struc
 		}
 	}
 
-	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors +=
 	    gmt_M_check_condition(GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition(GMT, n_files != 1, "Syntax error: Must specify one input file(s)\n");

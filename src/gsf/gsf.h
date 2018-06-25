@@ -419,10 +419,12 @@ typedef struct t_gsfDataID {
 /* insure the definition below does not conflict. */
 #ifndef __APPLE__
 
+#ifndef __CYGWIN__
 struct timespec {
 	time_t tv_sec;
 	long tv_nsec;
 };
+#endif
 #endif
 #endif
 

@@ -58,7 +58,8 @@ OBJS = mb_format.obj mb_error.obj mb_swap.obj \
 	mbr_image83p.obj mbr_imagemba.obj mbr_hir2rnav.obj mbr_hysweep1.obj \
 	mbr_xtfb1624.obj mbr_swplssxi.obj mbr_swplssxp.obj mbr_3ddepthp.obj \
 	mbsys_gsf.obj    mbr_gsfgenmb.obj mbr_wasspenl.obj mbsys_wassp.obj  \
-	mbr_photgram.obj mbsys_stereopair.obj
+	mbr_photgram.obj mbsys_stereopair.obj \
+	mbr_3dwisslr.obj mbr_3dwisslp.obj mbsys_3ddwissl.obj
 
 
 # targets
@@ -223,6 +224,8 @@ mbr_mgd77txt.obj: mbr_mgd77txt.c mb_status.h mb_format.h mb_io.h mb_define.h mb_
 mbr_mgd77tab.obj: mbr_mgd77tab.c mb_status.h mb_format.h mb_io.h mb_define.h mb_swap.h mbsys_3datdepthlidar.h
 mbsys_stereopair.obj: mbsys_stereopair.c mb_status.h mbsys_stereopair.h
 mbr_photgram.obj: mbr_photgram.c mb_status.h mbsys_stereopair.h
+mbr_3dwisslr.obj: mbr_3dwisslr.c mbsys_3ddwissl.h 
+mbr_3dwisslp.obj: mbr_3dwisslp.c mbsys_3ddwissl.h 
 
 
 

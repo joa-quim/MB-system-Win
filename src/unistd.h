@@ -9,7 +9,7 @@
 # define PATH_MAX 260
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #	define R_OK 04
 #	define W_OK 02
 #	define X_OK 01

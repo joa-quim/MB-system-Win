@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_esf.c	4/10/2003
- *    $Id: mb_esf.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_esf.c 2329 2018-02-12 06:48:39Z caress $
  *
- *    Copyright (c) 2003-2017 by
+ *    Copyright (c) 2003-2018 by
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
  *      Moss Landing, CA 95039
@@ -42,7 +42,7 @@
 void mb_mergesort_setup(mb_u_char *list1, mb_u_char *list2, size_t n, size_t size, int (*cmp)(const void *, const void *));
 void mb_mergesort_insertionsort(mb_u_char *a, size_t n, size_t size, int (*cmp)(const void *, const void *));
 
-static char svn_id[] = "$Id: mb_esf.c 2308 2017-06-04 19:55:48Z caress $";
+static char svn_id[] = "$Id: mb_esf.c 2329 2018-02-12 06:48:39Z caress $";
 
 /*--------------------------------------------------------------------*/
 /* 	function mb_esf_check checks for an existing esf file. */
@@ -123,14 +123,15 @@ int mb_esf_load(int verbose, char *program_name, char *swathfile, int load, int 
 	}
 
 	/* initialize the esf structure */
-	esf->nedit = 0;
 	esf->esffile[0] = '\0';
 	esf->esstream[0] = '\0';
+	esf->byteswapped = mb_swap_check();
+	esf->version = 3;
+	esf->mode = MB_ESF_MODE_EXPLICIT;
+	esf->nedit = 0;
 	esf->edit = NULL;
 	esf->esffp = NULL;
 	esf->essfp = NULL;
-	esf->byteswapped = mb_swap_check();
-	esf->version = 2;
 	esf->startnextsearch = 0;
 
 	/* get name of existing or new esffile, then load old edits
@@ -185,6 +186,7 @@ int mb_esf_open(int verbose, char *program_name, char *esffile, int load, int ou
 	char fmode[16];
 	int shellstatus;
 	int header = MB_YES;
+	int nscan = 0;
 
 	/* time, user, host variables */
 	time_t right_now;
@@ -209,14 +211,15 @@ int mb_esf_open(int verbose, char *program_name, char *esffile, int load, int ou
 	}
 
 	/* initialize the esf structure */
-	esf->nedit = 0;
 	strcpy(esf->esffile, esffile);
 	sprintf(esf->esstream, "%s.stream", esffile);
+	esf->byteswapped = mb_swap_check();
+	esf->version = 3;
+	esf->mode = MB_ESF_MODE_EXPLICIT;
+	esf->nedit = 0;
 	esf->edit = NULL;
 	esf->esffp = NULL;
 	esf->essfp = NULL;
-	esf->byteswapped = mb_swap_check();
-	esf->version = 2;
 	esf->startnextsearch = 0;
 
 	/* load edits from existing esf file if requested */
@@ -261,14 +264,30 @@ int mb_esf_open(int verbose, char *program_name, char *esffile, int load, int ou
 					fprintf(stderr, "Reading %d old edits...\n", esf->nedit);
 
 				/* read file header to discern the format */
-				if (fread(esf_header, MB_PATH_MAXLINE, 1, esffp) == 1 && strncmp(esf_header, "ESFVERSION02", 12) == 0) {
-					esf->version = 2;
-					esf->nedit -= MB_PATH_MAXLINE / (sizeof(double) + 2 * sizeof(int));
+				if (fread(esf_header, MB_PATH_MAXLINE, 1, esffp) == 1) {
+					if (strncmp(esf_header, "ESFVERSION03", 12) == 0) {
+						esf->version = 3;
+						esf->nedit -= MB_PATH_MAXLINE / (sizeof(double) + 2 * sizeof(int));
+						nscan = sscanf(&esf_header[13], "ESF Mode: %d", &esf->mode);
+//fprintf(stderr,"sscanf ESF V3 mode: nscan:%d mode:%d\n",nscan,esf->mode);
+					}
+					else if (strncmp(esf_header, "ESFVERSION02", 12) == 0) {
+						esf->version = 2;
+						esf->nedit -= MB_PATH_MAXLINE / (sizeof(double) + 2 * sizeof(int));
+						esf->mode = MB_ESF_MODE_EXPLICIT;
+					}
+					else {
+						rewind(esffp);
+						esf->version = 1;
+						esf->mode = MB_ESF_MODE_EXPLICIT;
+					}
 				}
 				else {
 					rewind(esffp);
 					esf->version = 1;
+					esf->mode = MB_ESF_MODE_EXPLICIT;
 				}
+//fprintf(stderr,"ESF file loaded:%s VERSION:%d MODE:%d\n", esf->esffile, esf->version, esf->mode);
 
 				*error = MB_ERROR_NO_ERROR;
 				nedit = 0;
@@ -354,17 +373,21 @@ int mb_esf_open(int verbose, char *program_name, char *esffile, int load, int ou
 		if ((esf->esffp = fopen(esf->esffile, fmode)) == NULL) {
 			status = MB_FAILURE;
 			*error = MB_ERROR_OPEN_FAIL;
+			fprintf(stderr,"failed to open esffile %s with file mode %s\n",esf->esffile,fmode);
 		}
-		/*else
-		fprintf(stderr,"esffile %s opened with mode %s\n",esf->esffile,fmode);*/
+		//else
+		//	fprintf(stderr,"esffile %s opened with file mode %s\n",esf->esffile,fmode);
 
 		/* open the edit save stream file */
-		if (status == MB_SUCCESS && (esf->essfp = fopen(esf->esstream, fmode)) == NULL) {
-			status = MB_FAILURE;
-			*error = MB_ERROR_OPEN_FAIL;
+		if (status == MB_SUCCESS) {
+			if ((esf->essfp = fopen(esf->esstream, fmode)) == NULL) {
+				status = MB_FAILURE;
+				*error = MB_ERROR_OPEN_FAIL;
+				fprintf(stderr,"failed to open esstream %s with file mode %s\n",esf->esstream,fmode);
+			}
+			//else
+			//	fprintf(stderr,"esstream %s opened with file mode %s\n",esf->esstream,fmode);
 		}
-		/*else
-		fprintf(stderr,"esstream %s opened with mode %s\n",esf->esstream,fmode);*/
 
 		/* if writing a new esf file then put version header at beginning */
 		if (status == MB_SUCCESS && header == MB_YES) {
@@ -380,8 +403,8 @@ int mb_esf_open(int verbose, char *program_name, char *esffile, int load, int ou
 				strcpy(user, "unknown");
 			gethostname(host, MBP_FILENAMESIZE);
 			sprintf(esf_header,
-			        "ESFVERSION02\nMB-System Version %s\nSource Version: %s\nProgram: %s\nUser: %s\nCPU: %s\nDate: %s\n",
-			        MB_VERSION, svn_id, program_name, user, host, date);
+			        "ESFVERSION03\nESF Mode: %d\nMB-System Version %s\nSource Version: %s\nProgram: %s\nUser: %s\nCPU: %s\nDate: %s\n",
+			        esf->mode, MB_VERSION, svn_id, program_name, user, host, date);
 			if (fwrite(esf_header, MB_PATH_MAXLINE, 1, esf->esffp) != 1) {
 				status = MB_FAILURE;
 				*error = MB_ERROR_WRITE_FAIL;
@@ -399,6 +422,7 @@ int mb_esf_open(int verbose, char *program_name, char *esffile, int load, int ou
 		fprintf(stderr, "dbg2  Revision id: %s\n", svn_id);
 		fprintf(stderr, "dbg2  Return value:\n");
 		fprintf(stderr, "dbg2       nedit:       %d\n", esf->nedit);
+		fprintf(stderr, "dbg2       mode:        %d\n", esf->mode);
 		for (i = 0; i < esf->nedit; i++)
 			fprintf(stderr, "dbg2       edit event:  %d %.6f %5d %3d %3d\n", i, esf->edit[i].time_d, esf->edit[i].beam,
 			        esf->edit[i].action, esf->edit[i].use);
@@ -493,6 +517,7 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf, double time_d, int ping
 		fprintf(stderr, "dbg2       verbose:          %d\n", verbose);
 		fprintf(stderr, "dbg2       esf:              %p\n", esf);
 		fprintf(stderr, "dbg2       nedit:            %d\n", esf->nedit);
+		fprintf(stderr, "dbg2       mode:             %d\n", esf->mode);
 		for (i = 0; i < esf->nedit; i++)
 			fprintf(stderr, "dbg2       edit event: %d %.6f %5d %3d %3d\n", i, esf->edit[i].time_d, esf->edit[i].beam,
 			        esf->edit[i].action, esf->edit[i].use);
@@ -518,8 +543,14 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf, double time_d, int ping
 		maxtimediff = MB_ESF_MAXTIMEDIFF;
 
 	/* find first and last edits for this ping - take ping multiplicity into account */
-	if (esf->nedit > 0 && time_d < (esf->edit[esf->startnextsearch].time_d - maxtimediff) &&
-	    (esf->startnextsearch > 0 && time_d < (esf->edit[esf->startnextsearch - 1].time_d - maxtimediff)))
+	if (esf->nedit > 0 && esf->startnextsearch > 0 
+		&& time_d < (esf->edit[esf->startnextsearch].time_d - maxtimediff)
+			&& time_d < (esf->edit[esf->startnextsearch - 1].time_d - maxtimediff))
+		firstedit = 0;
+	else if (esf->nedit > 0 && esf->startnextsearch > 0 
+		&& fabs(time_d - esf->edit[esf->startnextsearch - 1].time_d) <= maxtimediff
+		&& (esf->edit[esf->startnextsearch - 1].beam < beamoffset
+				|| esf->edit[esf->startnextsearch-1].beam > beamoffsetmax))
 		firstedit = 0;
 	else
 		firstedit = esf->startnextsearch;
@@ -534,8 +565,8 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf, double time_d, int ping
 			lastedit = j;
 		}
 	}
-	// fprintf(stderr,"time_d:%.6f pingmultiplicity:%d beamoffset:%d beamoffsetmax:%d   firstedit:%d lastedit:%d\n",
-	// time_d,pingmultiplicity,beamoffset,beamoffsetmax,firstedit,lastedit);
+//fprintf(stderr,"time_d:%.9f pingmultiplicity:%d beamoffset:%d beamoffsetmax:%d   startnextsearch:%d firstedit:%d lastedit:%d\n",
+//time_d,pingmultiplicity,beamoffset,beamoffsetmax,esf->startnextsearch,firstedit,lastedit);
 
 	/* apply edits */
 	if (lastedit >= firstedit) {
@@ -582,6 +613,15 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf, double time_d, int ping
 							action = esf->edit[j].action;
 							//	fprintf(stderr," %d\n",beamflag[i]);
 						}
+						else if (esf->edit[j].action == MBP_EDIT_SONAR) {
+							//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_SONAR  flag:%d
+							//",i,j,esf->edit[j].time_d,beamflag[i]);
+							beamflag[i] = mb_beam_set_flag_sonar(beamflag[i]);
+							esf->edit[j].use++;
+							apply = MB_YES;
+							action = esf->edit[j].action;
+							//	fprintf(stderr," %d\n",beamflag[i]);
+						}
 						else if (esf->edit[j].action == MBP_EDIT_UNFLAG) {
 							//	fprintf(stderr,"beam:%4.4d edit:%d time_d:%.6f MBP_EDIT_UNFLAG  flag:%d
 							//",i,j,esf->edit[j].time_d,beamflag[i]);
@@ -610,6 +650,29 @@ int mb_esf_apply(int verbose, struct mb_esf_struct *esf, double time_d, int ping
 					}
 				}
 			}
+			
+			/* handle implicit default modes:
+			 * if the esf file mode is
+			 *      MB_ESF_MODE_IMPLICIT_NULL == 1
+			 * or
+			 *      MB_ESF_MODE_IMPLICIT_GOOD == 2
+			 * then the esf file will include events for all beams different from the
+			 * implicit value. Such files will only be created by mbgetesf
+			 * using the -M4 or -M5 commands. If a beam is not set by an edit event,
+			 * set it to the implicit value
+			 */
+			if (apply == MB_NO) {
+				if (esf->mode == MB_ESF_MODE_IMPLICIT_NULL) {
+					beamflag[i] = MB_FLAG_NULL;
+				}
+				else if (esf->mode == MB_ESF_MODE_IMPLICIT_GOOD) {
+					beamflag[i] = MB_FLAG_NONE;
+				}
+				if (beamflag[i] != beamflagorg)
+					apply = MB_YES;
+			}
+
+			/* output change to stream file */
 			if (apply == MB_YES && esf->essfp != NULL && beamflag[i] != beamflagorg)
 				mb_ess_save(verbose, esf, time_d, ibeam, action, error);
 		}

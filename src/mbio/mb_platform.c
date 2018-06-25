@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_platform.c	11/1/00
- *    $Id: mb_platform.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_platform.c 2331 2018-04-10 17:49:20Z caress $
  *
  *    Copyright (c) 2015-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -38,7 +38,7 @@
 #include "mb_define.h"
 #include "mb_segy.h"
 
-static char svn_id[] = "$Id: mb_platform.c 2308 2017-06-04 19:55:48Z caress $";
+static char svn_id[] = "$Id: mb_platform.c 2331 2018-04-10 17:49:20Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_platform_init(int verbose, void **platform_ptr, int *error) {
@@ -72,8 +72,8 @@ int mb_platform_init(int verbose, void **platform_ptr, int *error) {
 		/* set values */
 		platform->type = MB_PLATFORM_NONE;
 		memset(platform->name, 0, sizeof(mb_longname));
-		memset(platform->name, 0, sizeof(mb_longname));
-		memset(platform->name, 0, sizeof(mb_longname));
+		memset(platform->organization, 0, sizeof(mb_longname));
+		memset(platform->documentation_url, 0, sizeof(mb_longname));
 		memset(platform->start_time_i, 0, 7 * sizeof(int));
 		memset(platform->end_time_i, 0, 7 * sizeof(int));
 		platform->source_bathymetry = -1;

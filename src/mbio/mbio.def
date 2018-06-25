@@ -23,7 +23,7 @@ EXPORTS
      mb_datalist_open
      mb_datalist_read
      mb_datalist_read2
-	mb_datalist_recursion
+     mb_datalist_recursion
      mb_datalist_close
      mb_get_relative_path
      mb_get_shortest_path
@@ -60,6 +60,7 @@ EXPORTS
      mb_sidescantype
      mb_preprocess
      mb_extract_platform
+     mb_sensorhead
      mb_extract
      mb_insert
      mb_extract_nav
@@ -81,6 +82,9 @@ EXPORTS
      mb_insert_segy
      mb_ctd
      mb_ancilliarysensor
+     mb_indextable
+     mb_indextablefix
+     mb_indextableapply
      mb_copyrecord
      mb_platform_init
      mb_platform_add_sensor
@@ -617,3 +621,9 @@ EXPORTS
      swpls_pr_wl_offset
 ;
      mbsys_singlebeam_swathbounds
+ 
+; from mb_format.h
+     mbr_register_3dwisslr
+     mbr_register_3dwisslp
+     mbr_info_3dwisslr
+     mbr_info_3dwisslp

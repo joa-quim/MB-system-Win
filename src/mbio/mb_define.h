@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_define.h	4/21/96
- *    $Id: mb_define.h 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mb_define.h 2336 2018-06-07 01:27:18Z caress $
  *
  *    Copyright (c) 1996-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -27,7 +27,15 @@
 #ifndef MB_DEFINE_DEF
 #define MB_DEFINE_DEF
 
-#include "mb_config.h"
+#ifdef _WIN32
+#	include <mb_config.h>
+#else
+#	ifdef HAVE_CONFIG_H
+#		ifndef MBSYSTEM_CONFIG_DEFINED
+#			include <mb_config.h>
+#		endif
+#	endif
+#endif
 
 /* include for mb_s_char types */
 #if HAVE_STDINT_H
@@ -73,7 +81,7 @@
 /* MB-system version id */
 #define MB_VERSION VERSION
 #define MB_BUILD_DATE VERSION_DATE
-#define MB_SVN "$Id: mb_define.h 2312 2017-07-14 09:06:52Z caress $"
+#define MB_SVN "$Id: mb_define.h 2336 2018-06-07 01:27:18Z caress $"
 
 /* type definitions of signed and unsigned char */
 typedef unsigned char mb_u_char;
@@ -145,6 +153,7 @@ typedef char mb_longname[MB_LONGNAME_LENGTH];
 #define MB_FILETYPE_NETCDF 5
 #define MB_FILETYPE_SURF 6
 #define MB_FILETYPE_SEGY 7
+#define MB_FILETYPE_INPUT 8
 
 /* settings for recursive datalist reading functions */
 #define MB_DATALIST_LOOK_UNSET 0
@@ -181,6 +190,7 @@ typedef char mb_longname[MB_LONGNAME_LENGTH];
 #define MB_ISECINHOUR 3600
 #define MB_ISECINMINUTE 60
 #define MB_IMININHOUR 60
+#define MB_SECONDS_01JAN2000 946684800.0
 
 /* water sound speed calculation algorithms */
 #define MB_SOUNDSPEEDALGORITHM_NONE 		0
@@ -272,8 +282,15 @@ int mb_swathbounds(int verbose, int checkgood, double navlon, double navlat, dou
                    double *ssalongtrack, int *ibeamport, int *ibeamcntr, int *ibeamstbd, int *ipixelport, int *ipixelcntr,
                    int *ipixelstbd, int *error);
 int mb_read_init(int verbose, char *file, int format, int pings, int lonflip, double bounds[4], int btime_i[7], int etime_i[7],
-                 double speedmin, double timegap, void **mbio_ptr, double *btime_d, double *etime_d, int *beams_bath,
-                 int *beams_amp, int *pixels_ss, int *error);
+                double speedmin, double timegap, void **mbio_ptr, double *btime_d, double *etime_d, int *beams_bath,
+                int *beams_amp, int *pixels_ss, int *error);
+int mb_input_init(int verbose, char *file, int format, int pings, int lonflip, double bounds[4], int btime_i[7], int etime_i[7],
+                double speedmin, double timegap, void **mbio_ptr, double *btime_d, double *etime_d, int *beams_bath,
+                int *beams_amp, int *pixels_ss, 
+                int (*input_open)(int verbose, void *mbio_ptr, char *path, int *error),
+                int (*input_read)(int verbose, void *mbio_ptr, size_t size, char *buffer, int *error),
+                int (*input_close)(int verbose, void *mbio_ptr, int *error),
+                int *error);
 int mb_write_init(int verbose, char *file, int format, void **mbio_ptr, int *beams_bath, int *beams_amp, int *pixels_ss,
                   int *error);
 int mb_close(int verbose, void **mbio_ptr, int *error);
@@ -311,6 +328,7 @@ int mb_sonartype(int verbose, void *mbio_ptr, void *store_ptr, int *sonartype, i
 int mb_sidescantype(int verbose, void *mbio_ptr, void *store_ptr, int *ss_type, int *error);
 int mb_preprocess(int verbose, void *mbio_ptr, void *store_ptr, void *platform_ptr, void *preprocess_pars_ptr, int *error);
 int mb_extract_platform(int verbose, void *mbio_ptr, void *store_ptr, int *kind, void **platform_ptr, int *error);
+int mb_sensorhead(int verbose, void *mbio_ptr, void *store_ptr, int *sensorhead, int *error);
 int mb_extract(int verbose, void *mbio_ptr, void *store_ptr, int *kind, int time_i[7], double *time_d, double *navlon,
                double *navlat, double *speed, double *heading, int *nbath, int *namp, int *nss, char *beamflag, double *bath,
                double *amp, double *bathacrosstrack, double *bathalongtrack, double *ss, double *ssacrosstrack,
@@ -358,6 +376,9 @@ int mb_ancilliarysensor(int verbose, void *mbio_ptr, void *store_ptr, int *kind,
                         double *sensor2, double *sensor3, double *sensor4, double *sensor5, double *sensor6, double *sensor7,
                         double *sensor8, int *error);
 int mb_copyrecord(int verbose, void *mbio_ptr, void *store_ptr, void *copy_ptr, int *error);
+int mb_indextable(int verbose, void *mbio_ptr, int *num_indextable, void **indextable_ptr, int *error);
+int mb_indextablefix(int verbose, void *mbio_ptr, int num_indextable, void *indextable_ptr, int *error);
+int mb_indextableapply(int verbose, void *mbio_ptr, int num_indextable, void *indextable_ptr, int n_file, int *error);
 
 int mb_platform_init(int verbose, void **platform_ptr, int *error);
 int mb_platform_setinfo(int verbose, void *platform_ptr, int type, char *name, char *organization, char *documentation_url,

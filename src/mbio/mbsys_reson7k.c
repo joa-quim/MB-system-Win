@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson7k.c	3.00	3/23/2004
- *	$Id: mbsys_reson7k.c 2315 2017-09-22 06:17:14Z caress $
+ *	$Id: mbsys_reson7k.c 2324 2018-01-19 03:04:33Z caress $
  *
  *    Copyright (c) 2004-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -46,7 +46,7 @@
 /* turn on debug statements here */
 /* #define MSYS_RESON7KR_DEBUG 1 */
 
-static char svn_id[] = "$Id: mbsys_reson7k.c 2315 2017-09-22 06:17:14Z caress $";
+static char svn_id[] = "$Id: mbsys_reson7k.c 2324 2018-01-19 03:04:33Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_reson7k_zero7kheader(int verbose, s7k_header *header, int *error) {
@@ -5706,7 +5706,7 @@ int mbsys_reson7k_preprocess(int verbose,     /* in: verbosity level set on comm
 			headingx = sin(DTR * heading);
 			headingy = cos(DTR * heading);
 
-			/* if a valide speed is not available calculate it */
+			/* if a valid speed is not available calculate it */
 			if (interp_status == MB_SUCCESS && speed <= 0.0) {
 				if (jnav > 1) {
 					j1 = jnav - 2;

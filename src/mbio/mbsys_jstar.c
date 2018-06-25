@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_jstar.c	10/4/94
- *	$Id: mbsys_jstar.c 2322 2017-11-26 00:44:11Z caress $
+ *	$Id: mbsys_jstar.c 2324 2018-01-19 03:04:33Z caress $
  *
  *    Copyright (c) 2005-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -42,7 +42,7 @@
 #include "mb_segy.h"
 #include "mbsys_jstar.h"
 
-static char svn_id[] = "$Id: mbsys_jstar.c 2322 2017-11-26 00:44:11Z caress $";
+static char svn_id[] = "$Id: mbsys_jstar.c 2324 2018-01-19 03:04:33Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbsys_jstar_alloc(int verbose, void *mbio_ptr, void **store_ptr, int *error) {
@@ -2958,7 +2958,7 @@ int mbsys_jstar_ctd(int verbose, void *mbio_ptr, void *store_ptr, int *kind, int
 	/* get the ctd data from the Edgetech pressure record */
 	if (*kind == MB_DATA_CTD) {
 		*nctd = 1;
-		*time_d = pressure->seconds + 0.001 * pressure->msec;
+		*time_d = pressure->seconds + 0.001 * pressure->milliseconds;
 		*conductivity = 1000000.0 * pressure->conductivity;
 		*temperature = 0.0;
 

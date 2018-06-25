@@ -119,7 +119,7 @@ extern double hypot(double, double);
 #endif
 
 /* directory delimiter for DOS support */
-#ifdef WIN32
+#ifdef _WIN32
 #define DIR_CHAR '\\'
 #else
 #define DIR_CHAR '/'

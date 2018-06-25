@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_aux.h	5/16/94
- *    $Id: mb_aux.h 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_aux.h 2336 2018-06-07 01:27:18Z caress $
  *
  *    Copyright (c); 1993-2017 by
  *    David W. Caress (caress@mbari.org);
@@ -221,6 +221,7 @@ void lspeig(double *a, int *ia, int *nia, int nnz, int nc, int nr, int ncyc, int
 /* mb_topogrid function prototypes */
 int mb_topogrid_init(int verbose, mb_path topogridfile, int *lonflip, void **topogrid_ptr, int *error);
 int mb_topogrid_deall(int verbose, void **topogrid_ptr, int *error);
+int mb_topogrid_bounds(int verbose, void *topogrid_ptr, double bounds[4], int *error);
 int mb_topogrid_topo(int verbose, void *topogrid_ptr, double navlon, double navlat, double *topo, int *error);
 int mb_topogrid_intersect(int verbose, void *topogrid_ptr, double navlon, double navlat, double altitude, double sonardepth,
                           double mtodeglon, double mtodeglat, double vx, double vy, double vz, double *lon, double *lat,

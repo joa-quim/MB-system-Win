@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgrid.c	5/2/94
- *    $Id: mbgrid.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbgrid.c 2337 2018-06-25 08:14:52Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -127,7 +127,7 @@ int mbgrid_weight(int verbose, double foot_a, double foot_b, double pcx, double 
 FILE *outfp = NULL;
 
 /* program identifiers */
-static char rcs_id[] = "$Id: mbgrid.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbgrid.c 2337 2018-06-25 08:14:52Z caress $";
 char program_name[] = "mbgrid";
 char help_message[] = "mbgrid is an utility used to grid bathymetry, amplitude, or \nsidescan data contained in a set of swath "
                       "sonar data files.  \nThis program uses one of four algorithms (gaussian weighted mean, \nmedian filter, "
@@ -1983,6 +1983,15 @@ int main(int argc, char **argv) {
 
 						if ((datatype == MBGRID_DATA_BATHYMETRY || datatype == MBGRID_DATA_TOPOGRAPHY) &&
 						    error == MB_ERROR_NO_ERROR) {
+                        
+                            /* if needed try again to get topography type */
+                            if (topo_type == MB_TOPOGRAPHY_TYPE_UNKNOWN) {
+                                status = mb_sonartype(verbose, mbio_ptr, mb_io_ptr->store_data, &topo_type, &error);
+                                if (topo_type == MB_TOPOGRAPHY_TYPE_UNKNOWN
+                                    && mb_io_ptr->beamwidth_xtrack > 0.0 && mb_io_ptr->beamwidth_ltrack > 0.0) {
+                                    topo_type = MB_TOPOGRAPHY_TYPE_MULTIBEAM;
+                                }
+                            }
 
 							/* reproject beam positions if necessary */
 							if (use_projection == MB_YES) {
@@ -2019,7 +2028,6 @@ int main(int argc, char **argv) {
 
 									/* else deal with multibeam data that have beam footprints */
 									else {
-
 										/* get slope from low resolution grid */
 										isx = (bathlon[ib] - wbnd[0] + 0.5 * sdx) / sdx;
 										isy = (bathlat[ib] - wbnd[2] + 0.5 * sdy) / sdy;
@@ -2423,6 +2431,15 @@ int main(int argc, char **argv) {
 
 						if ((datatype == MBGRID_DATA_BATHYMETRY || datatype == MBGRID_DATA_TOPOGRAPHY) &&
 						    error == MB_ERROR_NO_ERROR) {
+                        
+                            /* if needed try again to get topography type */
+                            if (topo_type == MB_TOPOGRAPHY_TYPE_UNKNOWN) {
+                                status = mb_sonartype(verbose, mbio_ptr, mb_io_ptr->store_data, &topo_type, &error);
+                                if (topo_type == MB_TOPOGRAPHY_TYPE_UNKNOWN
+                                    && mb_io_ptr->beamwidth_xtrack > 0.0 && mb_io_ptr->beamwidth_ltrack > 0.0) {
+                                    topo_type = MB_TOPOGRAPHY_TYPE_MULTIBEAM;
+                                }
+                            }
 
 							/* reproject beam positions if necessary */
 							if (use_projection == MB_YES) {

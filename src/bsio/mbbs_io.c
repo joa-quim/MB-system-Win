@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbbs_io.c	3/3/2014
- *	$Id: mbbs_io.c 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbbs_io.c 2327 2018-01-24 00:44:58Z caress $
  *
  *    Copyright (c) 2014-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -32,13 +32,20 @@
    io.c --
    I/O routines for Hawaii Mapping Research Group BS files.
 */
+#ifdef HAVE_CONFIG_H
+#include <mb_config.h>
+#endif
 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <stdint.h> /* To get INT32_MIN, INT32_MAX, etc ... */
+#else
+#	ifdef HAVE_STDINT_H
+#		include <stdint.h>
+#	endif
 #endif
 
 #include "mbbs_defines.h"

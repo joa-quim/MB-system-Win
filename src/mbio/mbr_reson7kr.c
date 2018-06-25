@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_reson7kr.c	4/4/2004
- *	$Id: mbr_reson7kr.c 2321 2017-10-26 17:40:44Z caress $
+ *	$Id: mbr_reson7kr.c 2335 2018-05-06 23:24:33Z caress $
  *
  *    Copyright (c) 2004-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -189,7 +189,7 @@ int mbr_reson7kr_wr_soundvelocity(int verbose, int *bufferalloc, char **bufferpt
 int mbr_reson7kr_wr_absorptionloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 int mbr_reson7kr_wr_spreadingloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 
-static char rcs_id[] = "$Id: mbr_reson7kr.c 2321 2017-10-26 17:40:44Z caress $";
+static char rcs_id[] = "$Id: mbr_reson7kr.c 2335 2018-05-06 23:24:33Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_reson7kr(int verbose, void *mbio_ptr, int *error) {
@@ -756,7 +756,7 @@ int mbr_rt_reson7kr(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 		bathymetry->serial_number = v2rawdetection->serial_number;
 		bathymetry->ping_number = v2rawdetection->ping_number;
 		bathymetry->multi_ping = v2rawdetection->multi_ping;
-		bathymetry->number_beams = v2rawdetection->number_beams;
+		bathymetry->number_beams = v2rawdetection->beam_descriptor[v2rawdetection->number_beams-1] + 1;
 		bathymetry->layer_comp_flag = 0;
 		bathymetry->sound_vel_flag = 0;
 		if (volatilesettings->sound_velocity > 0.0)
@@ -943,6 +943,7 @@ int mbr_rt_reson7kr(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 		/* else default case of beamgeometry record */
 		else {
 			/* loop over all beams */
+            bathymetry->number_beams = beamgeometry->number_beams;
 			for (i = 0; i < bathymetry->number_beams; i++) {
 				if ((bathymetry->quality[i] & 15) > 0) {
 					alpha = RTD * (beamgeometry->angle_alongtrack[i] + bathymetry->pitch + volatilesettings->steering_vertical);
@@ -8687,6 +8688,7 @@ int mbr_reson7kr_rd_v2rawdetection(int verbose, char *buffer, void *store_ptr, i
 	s7k_header *header;
 	s7kr_v2rawdetection *v2rawdetection;
 	s7kr_bathymetry *bathymetry;
+    s7kr_beamgeometry *beamgeometry;
 	int index;
 	int time_j[5];
 	int i;
@@ -8706,6 +8708,7 @@ int mbr_reson7kr_rd_v2rawdetection(int verbose, char *buffer, void *store_ptr, i
 	v2rawdetection = &(store->v2rawdetection);
 	header = &(v2rawdetection->header);
 	bathymetry = &(store->bathymetry);
+    beamgeometry = &(store->beamgeometry);
 
 	/* extract the header */
 	index = 0;
@@ -8778,7 +8781,8 @@ int mbr_reson7kr_rd_v2rawdetection(int verbose, char *buffer, void *store_ptr, i
 	/* check for broken record */
 	for (i = 0; i < v2rawdetection->number_beams; i++) {
 		if ((v2rawdetection->beam_descriptor[i] > MBSYS_RESON7K_MAX_BEAMS) ||
-		    (bathymetry->number_beams > 0 && v2rawdetection->beam_descriptor[i] > bathymetry->number_beams)) {
+		    (store->read_bathymetry == MB_YES && v2rawdetection->beam_descriptor[i] > bathymetry->number_beams) ||
+		    (store->read_beamgeometry == MB_YES && v2rawdetection->beam_descriptor[i] > beamgeometry->number_beams)) {
 			status = MB_FAILURE;
 			*error = MB_ERROR_UNINTELLIGIBLE;
 		}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbrphsbias.c	9/29/2013
- *    $Id: mbrphsbias.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbrphsbias.c 2334 2018-04-18 15:33:43Z caress $
  *
  *    Copyright (c) 2013-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -96,7 +96,7 @@ struct mbrphsbias_file_struct {
 	struct mbrphsbias_ping_struct *pings;
 };
 
-static char rcs_id[] = "$Id: mbrphsbias.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbrphsbias.c 2334 2018-04-18 15:33:43Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -647,7 +647,7 @@ int main(int argc, char **argv) {
 				for (i = 0; i < 7; i++)
 					ping->time_i[i] = time_i[i];
 				ping->time_d = time_d;
-				if (file->num_pings > 0 && ping->time_d == file->pings[file->num_pings - 1].time_d) {
+				if (file->num_pings > 0 && fabs(ping->time_d - file->pings[file->num_pings - 1].time_d) < MB_ESF_MAXTIMEDIFF) {
 					ping->multiplicity = file->pings[file->num_pings - 1].multiplicity + 1;
 				}
 				else {

@@ -1,1 +1,1 @@
-char *otps_location = "../share/mbsystem/OTPS2";
+char *otps_location = "/usr/local/opt/otps";

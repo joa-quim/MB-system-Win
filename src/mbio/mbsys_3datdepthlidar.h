@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_3datdepthlidar.h	11/29/2013
- *	$Id: mbsys_3datdepthlidar.h 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbsys_3datdepthlidar.h 2324 2018-01-19 03:04:33Z caress $
  *
  *    Copyright (c) 2013-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -19,7 +19,6 @@
  *
  * Author:	David W. Caress
  * Date:	November 29, 2013
- *
  *
  */
 /*

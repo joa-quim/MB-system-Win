@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbedit.c	4/8/93
- *    $Id: mbedit_prog.c 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mbedit_prog.c 2332 2018-04-18 02:28:06Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -133,7 +133,7 @@ struct mbedit_ping_struct {
 };
 
 /* id variables */
-static char svn_id[] = "$Id: mbedit_prog.c 2312 2017-07-14 09:06:52Z caress $";
+static char svn_id[] = "$Id: mbedit_prog.c 2332 2018-04-18 02:28:06Z caress $";
 static char program_name[] = "MBedit";
 static char help_message[] = "MBedit is an interactive editor used to identify and flag\n\
 artifacts in swath sonar bathymetry data. Once a file has\n\
@@ -4191,6 +4191,9 @@ int mbedit_load_data(int buffer_size, int *nloaded, int *nbuffer, int *ngood, in
 	char string[MB_PATH_MAXLINE];
 	int detect_status, detect_error, nbeams;
 	double speed_nav;
+	int sensorhead = 0;
+	int sensorhead_status = MB_SUCCESS;
+	int sensorhead_error = MB_ERROR_NO_ERROR;
 	int i, j;
 
 	/* print input debug statements */
@@ -4218,7 +4221,11 @@ int mbedit_load_data(int buffer_size, int *nloaded, int *nbuffer, int *ngood, in
 			status = mb_extract_nav(verbose, imbio_ptr, store_ptr, &kind, ping[nbuff].time_i, &ping[nbuff].time_d,
 			                        &ping[nbuff].navlon, &ping[nbuff].navlat, &speed_nav, &ping[nbuff].heading, &draft,
 			                        &ping[nbuff].roll, &ping[nbuff].pitch, &ping[nbuff].heave, &error);
-			if (nbuff > 0 && ping[nbuff].time_d == ping[nbuff - 1].time_d) {
+			sensorhead_status = mb_sensorhead(verbose, imbio_ptr, store_ptr, &sensorhead, &sensorhead_error);
+			if (sensorhead_status == MB_SUCCESS) {
+				ping[nbuff].multiplicity = sensorhead;
+			}
+			else if (nbuff > 0 && fabs(ping[nbuff].time_d - ping[nbuff - 1].time_d) < MB_ESF_MAXTIMEDIFF) {
 				ping[nbuff].multiplicity = ping[nbuff - 1].multiplicity + 1;
 			}
 			else {

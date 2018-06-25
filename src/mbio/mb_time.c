@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_time.c	1/21/93
- *    $Id: mb_time.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_time.c 2324 2018-01-19 03:04:33Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -33,7 +33,7 @@
 
 /* year-day conversion */
 int yday[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
-static char rcs_id[] = "$Id: mb_time.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_time.c 2324 2018-01-19 03:04:33Z caress $";
 
 /*--------------------------------------------------------------------*/
 /* 	function mb_get_time returns the number of seconds from
@@ -57,6 +57,8 @@ int mb_get_time(int verbose, int time_i[7], double *time_d) {
 		fprintf(stderr, "dbg2       minute:  %d\n", time_i[4]);
 		fprintf(stderr, "dbg2       second:  %d\n", time_i[5]);
 		fprintf(stderr, "dbg2       microsec:%d\n", time_i[6]);
+		fprintf(stderr, "dbg2       time_d:  %p\n", time_d);
+		fprintf(stderr, "dbg2       *time_d: %f\n", *time_d);
 	}
 
 	/* get time */

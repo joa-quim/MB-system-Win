@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbinfo.c	2/1/93
- *    $Id: mbinfo.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbinfo.c 2328 2018-02-01 02:40:39Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -58,7 +58,7 @@ struct ping {
 #define XML 2
 #define MAX_OUTPUT_FORMAT 2
 
-static char rcs_id[] = "$Id: mbinfo.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbinfo.c 2328 2018-02-01 02:40:39Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 	void *mbio_ptr = NULL;
 	struct mb_io_struct *mb_io_ptr;
 	int kind;
-	struct ping *data[MBINFO_MAXPINGS];
+	struct ping data[MBINFO_MAXPINGS];
 	struct ping *datacur;
 	int time_i[7];
 	double time_d;
@@ -567,6 +567,7 @@ int main(int argc, char **argv) {
 	pass = 0;
 	done = MB_NO;
 	while (done == MB_NO) {
+
 		/* open file list */
 		if (read_datalist == MB_YES) {
 			if ((status = mb_datalist_open(verbose, &datalist, read_file, look_processed, &error)) != MB_SUCCESS) {
@@ -601,20 +602,9 @@ int main(int argc, char **argv) {
 			}
 
 			/* allocate memory for data arrays */
+			memset(data, 0, MBINFO_MAXPINGS * sizeof(struct ping));
 			for (i = 0; i < pings_read; i++) {
-				data[i] = NULL;
-				status = mb_mallocd(verbose, __FILE__, __LINE__, pings_read * sizeof(struct ping), (void **)&data[i], &error);
-				if (error == MB_ERROR_NO_ERROR) {
-					datacur = data[i];
-					datacur->beamflag = NULL;
-					datacur->bath = NULL;
-					datacur->amp = NULL;
-					datacur->bathlon = NULL;
-					datacur->bathlat = NULL;
-					datacur->ss = NULL;
-					datacur->sslon = NULL;
-					datacur->sslat = NULL;
-				}
+				datacur = &data[i];
 				if (error == MB_ERROR_NO_ERROR)
 					status = mb_register_array(verbose, mbio_ptr, MB_MEM_TYPE_BATHYMETRY, sizeof(char),
 					                           (void **)&datacur->beamflag, &error);
@@ -759,12 +749,13 @@ int main(int argc, char **argv) {
 					fprintf(output, "%s", format_description);
 					break;
 				case JSON:
-					fprintf(output, "\"file_info\":{\n");
-					fprintf(output, "\"swath_data_file\":\"%s\",\n", fileprint);
-					fprintf(output, "\"mbio_data_format_id\":\"%d\",\n", format);
+					fprintf(output, "\"file_info\": {\n");
+					fprintf(output, "\"swath_data_file\": \"%s\",\n", fileprint);
+					fprintf(output, "\"mbio_data_format_id\": \"%d\",\n", format);
 					len1 = strspn(format_description, "Formatname: ");
 					len2 = strcspn(&format_description[len1], "\n");
 					strncpy(string, &format_description[len1], len2);
+					string[len2] = '\0';
 					fprintf(output, "\"format_name\": \"%s\",\n", string);
 					len1 += len2 + 1;
 					len1 += strspn(&format_description[len1], "InformalDescription: ");
@@ -789,11 +780,13 @@ int main(int argc, char **argv) {
 					len1 = strspn(format_description, "Formatname: ");
 					len2 = strcspn(&format_description[len1], "\n");
 					strncpy(string, &format_description[len1], len2);
+					string[len2] = '\0';
 					fprintf(output, "\t\t<format_name>%s</format_name>\n", string);
 					len1 += len2 + 1;
 					len1 += strspn(&format_description[len1], "InformalDescription: ");
 					len2 = strcspn(&format_description[len1], "\n");
 					strncpy(string, &format_description[len1], len2);
+					string[len2] = '\0';
 					fprintf(output, "\t\t<informal_description>%s</informal_description>\n", string);
 					len1 += len2 + 1;
 					len1 += strspn(&format_description[len1], "Attributes: ");
@@ -817,7 +810,7 @@ int main(int argc, char **argv) {
 				while (nread < pings_read && error == MB_ERROR_NO_ERROR) {
 
 					/* read a ping of data */
-					datacur = data[nread];
+					datacur = &data[nread];
 					status = mb_read(verbose, mbio_ptr, &kind, &pings, time_i, &time_d, &navlon, &navlat, &speed, &heading,
 					                 &distance, &altitude, &sonardepth, &beams_bath, &beams_amp, &pixels_ss, datacur->beamflag,
 					                 datacur->bath, datacur->amp, datacur->bathlon, datacur->bathlat, datacur->ss, datacur->sslon,
@@ -860,7 +853,7 @@ int main(int argc, char **argv) {
 								fprintf(output, "  %s\n", comment);
 								break;
 							case JSON:
-								fprintf(output, "\"comment\":\"%s\",\n", comment);
+								fprintf(output, "\"comment\": \"%s\",\n", comment);
 								break;
 							case XML:
 								fprintf(output, "\t<comment>%s</comment>\n", comment);
@@ -1600,7 +1593,7 @@ int main(int argc, char **argv) {
 						sumxy = 0.0;
 						variance = 0.0;
 						for (j = 0; j < nread; j++) {
-							datacur = data[j];
+							datacur = &data[j];
 							bath = datacur->bath;
 							beamflag = datacur->beamflag;
 							if (mb_beam_ok(beamflag[i])) {
@@ -1616,7 +1609,7 @@ int main(int argc, char **argv) {
 							a = (sumxx * sumy - sumx * sumxy) / delta;
 							b = (nbath * sumxy - sumx * sumy) / delta;
 							for (j = 0; j < nread; j++) {
-								datacur = data[j];
+								datacur = &data[j];
 								bath = datacur->bath;
 								beamflag = datacur->beamflag;
 								if (mb_beam_ok(beamflag[i])) {
@@ -1638,7 +1631,7 @@ int main(int argc, char **argv) {
 						mean = 0.0;
 						variance = 0.0;
 						for (j = 0; j < nread; j++) {
-							datacur = data[j];
+							datacur = &data[j];
 							amp = datacur->amp;
 							beamflag = datacur->beamflag;
 							if (mb_beam_ok(beamflag[i])) {
@@ -1649,7 +1642,7 @@ int main(int argc, char **argv) {
 						if (namp == pings_read) {
 							mean = mean / namp;
 							for (j = 0; j < nread; j++) {
-								datacur = data[j];
+								datacur = &data[j];
 								amp = datacur->amp;
 								if (mb_beam_ok(beamflag[i])) {
 									dev = amp[i] - mean;
@@ -1670,7 +1663,7 @@ int main(int argc, char **argv) {
 						mean = 0.0;
 						variance = 0.0;
 						for (j = 0; j < nread; j++) {
-							datacur = data[j];
+							datacur = &data[j];
 							ss = datacur->ss;
 							if (ss[i] > MB_SIDESCAN_NULL) {
 								nss++;
@@ -1680,7 +1673,7 @@ int main(int argc, char **argv) {
 						if (nss == pings_read) {
 							mean = mean / nss;
 							for (j = 0; j < nread; j++) {
-								datacur = data[j];
+								datacur = &data[j];
 								ss = datacur->ss;
 								if (ss[i] > MB_SIDESCAN_NULL) {
 									dev = ss[i] - mean;
@@ -1959,7 +1952,7 @@ int main(int argc, char **argv) {
 		break;
 	case JSON:
 		fprintf(output, "\"data_totals\": {\n");
-		fprintf(output, "\"number_of_records\":\"%d\"", irec);
+		fprintf(output, "\"number_of_records\": \"%d\"", irec);
 		isbtmrec = notice_list_tot[MB_DATA_SUBBOTTOM_MCS] + notice_list_tot[MB_DATA_SUBBOTTOM_CNTRBEAM] +
 		           notice_list_tot[MB_DATA_SUBBOTTOM_SUBBOTTOM];
 		if (isbtmrec > 0)
@@ -2345,7 +2338,7 @@ int main(int argc, char **argv) {
 					mb_notice_message(verbose, i, &notice_msg);
 					if (notice_total > 0)
 						fprintf(output, ",\n");
-					fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}}",
+					fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\": \"%s\"\n}}",
 					        notice_list_tot[i], notice_msg);
 					notice_total++;
 				}
@@ -2360,7 +2353,7 @@ int main(int argc, char **argv) {
 					mb_notice_message(verbose, i, &notice_msg);
 					if (notice_total > 0)
 						fprintf(output, ",\n");
-					fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}}",
+					fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\": \"%s\"\n}}",
 					        notice_list_tot[i], notice_msg);
 					notice_total++;
 				}
@@ -2375,7 +2368,7 @@ int main(int argc, char **argv) {
 					mb_notice_message(verbose, i, &notice_msg);
 					if (notice_total > 0)
 						fprintf(output, ",\n");
-					fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\":\"%s\"\n}}",
+					fprintf(output, "{\"notice\": {\n\"notice_number\": \"%d\",\n\"notice_message\": \"%s\"\n}}",
 					        notice_list_tot[i], notice_msg);
 					notice_total++;
 				}

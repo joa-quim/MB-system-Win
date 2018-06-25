@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_process.h	9/11/00
- *    $Id: mb_process.h 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mb_process.h 2336 2018-06-07 01:27:18Z caress $
  *
- *    Copyright (c) 2000-2017 by
+ *    Copyright (c) 2000-2018 by
  *    David W. Caress (caress@mbari.org)
  *      Monterey Bay Aquarium Research Institute
  *      Moss Landing, CA 95039
@@ -602,6 +602,7 @@
 #define MBP_EDIT_UNFLAG 2
 #define MBP_EDIT_ZERO 3
 #define MBP_EDIT_FILTER 4
+#define MBP_EDIT_SONAR 5
 #define MBP_ESF_NOWRITE 0
 #define MBP_ESF_WRITE 1
 #define MBP_ESF_APPEND 2
@@ -700,6 +701,7 @@
 #define MB_PR_KLUGE_SOUNDSPEEDTWEAK 2
 #define MB_PR_KLUGE_ZEROATTITUDECORRECTION 3
 #define MB_PR_KLUGE_ZEROALONGTRACKANGLES 4
+#define MB_PR_KLUGE_FIXWISSLTIMESTAMPS 5
 
 /* structure holding mbpreprocess parameters to be passed to preprocess
  * functions of i/o modules */
@@ -743,6 +745,8 @@ struct mb_preprocess_struct {
 	int recalculate_bathymetry;
     int sounding_amplitude_filter;
     double sounding_amplitude_threshold;
+    int sounding_altitude_filter;
+    double sounding_target_altitude;
     int ignore_water_column;
 
 	int n_kluge;
@@ -916,9 +920,12 @@ struct mb_process_struct {
 };
 
 /* edit save file definitions */
-#define MB_ESF_MAXTIMEDIFF 0.00011
+#define MB_ESF_MODE_EXPLICIT 0
+#define MB_ESF_MODE_IMPLICIT_NULL 1
+#define MB_ESF_MODE_IMPLICIT_GOOD 2
+#define MB_ESF_MAXTIMEDIFF 0.0000011
 #define MB_ESF_MAXTIMEDIFF_X10 0.0011
-#define MB_ESF_MULTIPLICITY_FACTOR 1000000
+#define MB_ESF_MULTIPLICITY_FACTOR 100000000
 struct mb_edit_struct {
 	double time_d;
 	int beam;
@@ -930,6 +937,7 @@ struct mb_esf_struct {
 	char esstream[MB_PATH_MAXLINE];
 	int byteswapped;
 	int version;
+    int mode;
 	int nedit;
 	struct mb_edit_struct *edit;
 	FILE *esffp;

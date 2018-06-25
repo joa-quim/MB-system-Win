@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbclean.c	2/26/93
- *    $Id: mbclean.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbclean.c 2334 2018-04-18 15:33:43Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -114,7 +114,7 @@ struct bad_struct {
 /* edit output function */
 int mbclean_save_edit(int verbose, FILE *sofp, double time_d, int beam, int action, int *error);
 
-static char rcs_id[] = "$Id: mbclean.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbclean.c 2334 2018-04-18 15:33:43Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -187,6 +187,7 @@ int main(int argc, char **argv) {
 
 	/* mbio read and write values */
 	void *mbio_ptr = NULL;
+	void *store_ptr = NULL;
 	int kind;
 	struct mbclean_ping_struct ping[3];
 	int nrec, irec;
@@ -317,6 +318,9 @@ int main(int argc, char **argv) {
 	struct mb_esf_struct esf;
 
 	/* processing variables */
+	int sensorhead = 0;
+	int sensorhead_status = MB_SUCCESS;
+	int sensorhead_error = MB_ERROR_NO_ERROR;
 	double distance_left, distance_right;
 	int distance_mode;
 	int read_data;
@@ -882,8 +886,13 @@ int main(int argc, char **argv) {
 					fprintf(stderr, "dbg2    nunflag:        %d\n", nunflag);
 				}
 				if (status == MB_SUCCESS && kind == MB_DATA_DATA) {
-					/* check for multiple pings with the same time stamps */
-					if (nrec > 0 && ping[nrec].time_d == ping[nrec - 1].time_d) {
+					/* check for ping multiplicity */
+					status = mb_get_store(verbose, mbio_ptr, &store_ptr, &error);
+					sensorhead_status = mb_sensorhead(verbose, mbio_ptr, store_ptr, &sensorhead, &sensorhead_error);
+					if (sensorhead_status == MB_SUCCESS) {
+						ping[nrec].multiplicity = sensorhead;
+					}
+					else if (nrec > 0 && fabs(ping[nrec].time_d - ping[nrec - 1].time_d) < MB_ESF_MAXTIMEDIFF) {
 						ping[nrec].multiplicity = ping[nrec - 1].multiplicity + 1;
 					}
 					else {

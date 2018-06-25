@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_io.h	1/19/93
- *    $Id: mb_io.h 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_io.h 2337 2018-06-25 08:14:52Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -26,7 +26,6 @@
 #ifndef MB_IO_DEF
 #define MB_IO_DEF
 
-#include "mb_config.h"
 #include "mb_define.h"
 #include "mb_status.h"
 
@@ -382,6 +381,22 @@ struct mb_platform_struct {
 /* ---------------------------------------------------------------------------*/
 /* MBIO data storage and control structures */
 
+/* MBIO file index storage structure */
+struct mb_io_indextable_struct {
+    int file_index;
+    int total_index_org;
+    int total_index_sorted;
+    int subsensor;
+    int subsensor_index;
+    double time_d_org;
+    double time_d_corrected;
+    long offset;
+    size_t size;
+    mb_u_char kind;
+    mb_u_char read;
+};
+
+/* MBIO ping storage structure */
 struct mb_io_ping_struct {
 	double time_d;
 	double navlon;
@@ -455,25 +470,30 @@ struct mb_io_struct {
 	/* file descriptor, file name, and usage flag */
 	FILE *mbfp;                  /* file descriptor */
 	mb_path file;                /* file name */
-	long file_pos;               /* file position at start of
-	                         last record read */
+	long file_pos;               /* file position at start of last record read */
 	long file_bytes;             /* number of bytes read from file */
 	char *file_iobuffer;         /* file i/o buffer for fread() and fwrite() calls */
 	FILE *mbfp2;                 /* file descriptor #2 */
 	char file2[MB_PATH_MAXLINE]; /* file name #2 */
-	long file2_pos;              /* file position #2 at start of
-	                         last record read */
+	long file2_pos;              /* file position #2 at start of last record read */
 	long file2_bytes;            /* number of bytes read from file */
 	FILE *mbfp3;                 /* file descriptor #3 */
 	char file3[MB_PATH_MAXLINE]; /* file name #3 */
-	long file3_pos;              /* file position #3 at start of
-	                         last record read */
+	long file3_pos;              /* file position #3 at start of last record read */
 	long file3_bytes;            /* number of bytes read from file */
 	int ncid;                    /* netCDF datastream ID */
 	int gsfid;                   /* GSF datastream ID */
 	void *xdrs;                  /* XDR stream handle */
 	void *xdrs2;                 /* XDR stream handle #2 */
 	void *xdrs3;                 /* XDR stream handle #2 */
+    
+    /* application defined i/o */
+    void *mbsp;                  /* mbtrn socket i/o */
+    
+    /* file indexing (used by some formats) */
+    int num_indextable;
+    int num_indextable_alloc;
+    struct mb_io_indextable_struct *indextable;
 
 	/* read or write history */
 	int fileheader;       /* indicates whether file header has
@@ -662,6 +682,7 @@ struct mb_io_struct {
 	int (*mb_io_sidescantype)(int verbose, void *mbio_ptr, void *store_ptr, int *ss_type, int *error);
 	int (*mb_io_preprocess)(int verbose, void *mbio_ptr, void *store_ptr, void *platform_ptr, void *preprocess_pars, int *error);
 	int (*mb_io_extract_platform)(int verbose, void *mbio_ptr, void *store_ptr, int *kind, void **platform_ptr, int *error);
+	int (*mb_io_sensorhead)(int verbose, void *mbio_ptr, void *store_ptr, int *sensorhead, int *error);
 	int (*mb_io_extract)(int verbose, void *mbio_ptr, void *store_ptr, int *kind, int time_i[7], double *time_d, double *navlon,
 	                     double *navlat, double *speed, double *heading, int *nbath, int *namp, int *nss, char *beamflag,
 	                     double *bath, double *amp, double *bathacrosstrack, double *bathalongtrack, double *ss,
@@ -713,6 +734,16 @@ struct mb_io_struct {
 	                              double *sensor1, double *sensor2, double *sensor3, double *sensor4, double *sensor5,
 	                              double *sensor6, double *sensor7, double *sensor8, int *error);
 	int (*mb_io_copyrecord)(int verbose, void *mbio_ptr, void *store_ptr, void *copy_ptr, int *error);
+
+    /* function pointers used by mbpreprocess to fix timestamps */
+    int (*mb_io_indextablefix)(int verbose, void *mbio_ptr, int num_indextable, void *indextable_ptr, int *error);
+    int (*mb_io_indextableapply)(int verbose, void *mbio_ptr, int num_indextable, void *indextable_ptr, int n_file, int *error);
+
+	/* function pointers for reading from application defined input */
+	int (*mb_io_input_open)(int verbose, void *mbio_ptr, char *path, int *error);
+	int (*mb_io_input_read)(int verbose, void *mbio_ptr, size_t size, char *buffer, int *error);
+	int (*mb_io_input_close)(int verbose, void *mbio_ptr, int *error);
+
 };
 
 /* MBIO buffer control structure */
@@ -735,6 +766,18 @@ struct mb_datalist_struct {
 	char path[MB_PATH_MAXLINE];
 	int printed;
 	struct mb_datalist_struct *datalist;
+};
+
+/* MBIO imagelist control structure */
+#define MB_IMAGELIST_RECURSION_MAX 25
+struct mb_imagelist_struct {
+	int open;
+	int recursion;
+    int leftrightstereo;
+    int printed;
+ 	char path[MB_PATH_MAXLINE];
+	FILE *fp;
+	struct mb_imagelist_struct *imagelist;
 };
 
 /* end conditional include */

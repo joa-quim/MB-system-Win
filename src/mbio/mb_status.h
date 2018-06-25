@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbio_status.h	2/1/93
- *    $Id: mb_status.h 2319 2017-10-17 01:34:44Z caress $
+ *    $Id: mb_status.h 2337 2018-06-25 08:14:52Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -54,7 +54,7 @@
 #define MB_IMAGERY_TYPE_POINT 8
 
 /* MBIO data type ("kind") convention */
-#define MB_DATA_KINDS 62
+#define MB_DATA_KINDS 63
 #define MB_DATA_NONE 0
 #define MB_DATA_DATA 1                   /* general survey data */
 #define MB_DATA_COMMENT 2                /* general comment */
@@ -118,6 +118,7 @@
 #define MB_DATA_ALTITUDE 60              /* HYSWEEP single beam echosounder */
 #define MB_DATA_GEN_SENS 61              /* WASSP generic sensor data */
 #define MB_DATA_WC_PICKS 62              /* WASSP water column picks */
+#define MB_DATA_TIMESTAMP 63             /* JSTAR file timestamp */
 
 /* MBIO function status convention */
 #define MB_SUCCESS 1
@@ -185,6 +186,19 @@
 #define MB_PROCESSED_NONE 0
 #define MB_PROCESSED_EXIST 1
 #define MB_PROCESSED_USE 2
+
+/* image status values returned by mb_imagelist_read() */
+#define MB_IMAGESTATUS_NONE         0x00
+#define MB_IMAGESTATUS_SINGLE       0x01
+#define MB_IMAGESTATUS_LEFT         0x01
+#define MB_IMAGESTATUS_RIGHT        0x02
+#define MB_IMAGESTATUS_STEREO       0x03
+#define MB_IMAGESTATUS_IMAGELIST    0x04
+#define mb_image_check_none(S) ((int)(S == MB_IMAGESTATUS_NONE))
+#define mb_image_check_single(S) ((int)(S == MB_IMAGESTATUS_SINGLE))
+#define mb_image_check_left(S) ((int)(S & MB_IMAGESTATUS_LEFT))
+#define mb_image_check_right(S) ((int)(S & MB_IMAGESTATUS_RIGHT))
+#define mb_image_check_stereo(S) ((int)(S == MB_IMAGESTATUS_STEREO))
 
 /* MBIO maximum notice value */
 #define MB_NOTICE_MAX (MB_DATA_KINDS - MB_ERROR_MIN + MB_PROBLEM_MAX + 1)
@@ -276,6 +290,7 @@ static char *notice_msg[] = {
     "MB_DATA_ALTITUDE (60): HYSWEEP single beam echosounder",
     "MB_DATA_GEN_SENS (61): WASSP generic sensor data",
     "MB_DATA_WC_PICKS (62): WASSP water column picks",
+    "MB_DATA_TIMESTAMP (63): JSTAR file timestamp",
 
     /* notices for nonfatal error messages */
     "MB_ERROR_TIME_GAP (ID=-1): Time gap in data",
