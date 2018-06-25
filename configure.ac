@@ -1,6 +1,6 @@
 dnl--------------------------------------------------------------------
-dnl    The MB-system:	configure.ac	12/7/2011
-dnl    $Id: configure.ac 2314 2017-08-24 19:52:17Z caress $
+dnl    The MB-system:    configure.ac    12/7/2011
+dnl    $Id: configure.ac 2339 2018-06-25 14:05:05Z caress $
 dnl
 dnl    Copyright (c) 2011-2017 by
 dnl    D. W. Caress (caress@lamont.ldgo.columbia.edu)
@@ -19,11 +19,11 @@ define([AC_CACHE_LOAD], )
 define([AC_CACHE_SAVE], )
 
 dnl Initialize and set version and version date
-AC_INIT([mbsystem],[5.5.2314],[http://listserver.mbari.org/sympa/arc/mbsystem],[mbsystem],[http://www.mbari.org/data/mbsystem/])
+AC_INIT([mbsystem],[5.5.2339],[http://listserver.mbari.org/sympa/arc/mbsystem],[mbsystem],[http://www.mbari.org/data/mbsystem/])
 
 AC_CONFIG_MACRO_DIR(m4)
 AC_LANG(C)
-AC_DEFINE(VERSION_DATE, "24 August 2017", [Set VERSION_DATE define in mb_config.h])
+AC_DEFINE(VERSION_DATE, "25 June 2018", [Set VERSION_DATE define in mb_config.h])
 
 dnl Check system arch
 AC_CANONICAL_HOST
@@ -31,8 +31,8 @@ AC_DISABLE_OPTION_CHECKING
 
 AS_ECHO([" "])
 AS_ECHO(["------------------------------------------------------------------------------"])
-AS_ECHO(["    The MB-system:	configure	12/7/2011"])
-AS_ECHO(["    $Id: configure.ac 2314 2017-08-24 19:52:17Z caress $"])
+AS_ECHO(["    The MB-system:    configure    12/7/2011"])
+AS_ECHO(["    $Id: configure.ac 2339 2018-06-25 14:05:05Z caress $"])
 AS_ECHO([" "])
 AS_ECHO(["    Copyright (c) 2011-2017 by"])
 AS_ECHO(["    D. W. Caress (caress@lamont.ldgo.columbia.edu)"])
@@ -98,6 +98,7 @@ AS_ECHO(["        --with-motif-include  - location of Motif headers (optional)"]
 AS_ECHO(["        --with-opengl-lib     - location of OpenGL libs (optional)"])
 AS_ECHO(["        --with-opengl-include - location of OpenGL headers (optional)"])
 AS_ECHO(["        --with-otps-dir       - location of OTPS installation (optional)"])
+AS_ECHO(["        --enable-mbtrn        - enable building terrain relative navigation (TRN) tools (optional)"])
 AS_ECHO([" "])
 AS_ECHO(["    After configure you can run the make utility in the usual fashion"])
 AS_ECHO(["        make"])
@@ -133,13 +134,13 @@ LT_LIB_M
 dnl Check Endian size
 BYTESWAP=no
 AC_C_BIGENDIAN([BYTESWAP=no], [BYTESWAP=yes],
-	AC_MSG_ERROR(Unknown endian state),
-	AC_MSG_ERROR(Universial endianess not supported)
+    AC_MSG_ERROR(Unknown endian state),
+    AC_MSG_ERROR(Universial endianess not supported)
 )
 if test BYTESWAP == "no" ; then
-	AC_DEFINE(ENDIAN_BIG, 1, [Machine is bigendian, (Byteswapping off)])
+    AC_DEFINE(ENDIAN_BIG, 1, [Machine is bigendian, (Byteswapping off)])
 else
-	AC_DEFINE(BYTESWAPPED, 1, [Machine is littleendian, (Byteswapping on)])
+    AC_DEFINE(BYTESWAPPED, 1, [Machine is littleendian, (Byteswapping on)])
 fi
 
 dnl Check for headers
@@ -157,41 +158,49 @@ AC_CHECK_HEADER(malloc.h, AC_DEFINE(HAVE_MALLOC_H, 1, [Have malloc.h]))
 dnl Parse host_os from CANONICAL and deterimine
 dnl if solaris flag required
 case "${host_os}" in
-	solaris*|sunos*) CFLAGS="${CFLAGS} -DSUN" ;;
-	*) AS_ECHO(["Build does not require -DSUN CFLAG"]) ;;
+    solaris*|sunos*) CFLAGS="${CFLAGS} -DSUN" ;;
+    *) AS_ECHO(["Build does not require -DSUN CFLAG"]) ;;
 esac
 
 dnl check for win32 flag
 case "${host_os}" in
-	*mingw32*|cygwin*)
-	AC_DEFINE(WIN32, 1, [Turned on WIN32 define in config])
-	AS_ECHO(["Added WIN32 define to mb_config.h"])
-	;;
-	*)
-	AS_ECHO(["Not WIN32 system"])
-	;;
+    *mingw32*|cygwin*)
+#    AC_DEFINE(WIN32, 1, [Turned on WIN32 define in config])
+    AS_ECHO(["Identified WIN32 but with Cygwin - no WIN32 define added to mb_config.h"])
+    ;;
+    *)
+    AS_ECHO(["Not WIN32 system"])
+    ;;
 esac
 
-dnl check for RPC XDR headers needed by mbio lib
-AC_CHECK_HEADERS(rpc/rpc.h)
+dnl Check for RPC and XDR headers needed by MBIO library
+AC_CHECK_HEADERS(rpc/rpc.h, , [AC_CHECK_HEADERS(tirpc/rpc/rpc.h)], )
 AC_CHECK_HEADERS(rpc/types.h, ,
-                 [AC_MSG_ERROR([Required header <rpc/types.h> not found, check include path and intsalled devel packages])],)
+    [AC_CHECK_HEADERS(tirpc/rpc/types.h, , [AC_MSG_ERROR([Required header <rpc/types.h> not found, check include path and installed development packages])],)],)
 
-dnl for win32
-dnl AC_CHECK_LIB(uuid, main)
-dnl AC_CHECK_LIB(ole32, main)
-dnl AC_CHECK_LIB(gw32c, main)
-dnl AC_CHECK_LIB(wsock32, main)
-AC_CHECK_LIB(ws2_32, main)
+dnl Check for WIN32 libraries
+# AC_CHECK_LIB(uuid, main)
+# AC_CHECK_LIB(ole32, main)
+# AC_CHECK_LIB(gw32c, main)
+# AC_CHECK_LIB(wsock32, main)
+# AC_CHECK_LIB(ws2_32, main)
 
+dnl Look for library containing the XDR functions
 AC_CHECK_FUNC(xdrmem_create, XDR_LIB=, [
- AC_CHECK_LIB(sun, xdrmem_create, XDR_LIB=-lsun, [
-  AC_CHECK_LIB(nsl, xdrmem_create, XDR_LIB=-lnsl, [
-   AC_CHECK_LIB(rpclib, xdrmem_create, XDR_LIB=-lrpclib, [
-    AC_CHECK_LIB(xdr, xdrmem_create, XDR_LIB=-lxdr, [
-     AC_CHECK_LIB(portablexdr, xdrmem_create, XDR_LIB=-lportablexdr,
-   [ AC_MSG_ERROR([*** Unable to locate XDR functions.]) ], -lws2_32 )
-], -lws2_32 )])])])])
+  AC_CHECK_LIB(sun, xdrmem_create, XDR_LIB=-lsun, [
+    AC_CHECK_LIB(nsl, xdrmem_create, XDR_LIB=-lnsl, [
+      AC_CHECK_LIB(rpclib, xdrmem_create, XDR_LIB=-lrpclib, [
+        AC_CHECK_LIB(xdr, xdrmem_create, XDR_LIB=-lxdr, [
+          AC_CHECK_LIB(tirpc, xdrmem_create, XDR_LIB=-ltirpc, [
+            AC_CHECK_LIB(portablexdr, xdrmem_create, XDR_LIB=-lportablexdr, [
+              AC_MSG_ERROR([*** Unable to locate XDR functions.])
+            ], -lws2_32 )
+          ], -lws2_32 )
+        ])
+      ])
+    ])
+  ])
+])
 AC_SUBST(XDR_LIB)
 
 dnl--------------------------------------------------------------------
@@ -212,7 +221,7 @@ dnl--------------------------------------------------------------------
 
 dnl Use OTPS (OSU Tidal Prediction Software) location if specified with --with-otps-dir, use default otherwise
 AS_ECHO(["Use OTPS (OSU Tidal Prediction Software) location if specified with --with-otps-dir, use default otherwise"])
-OTPS_DIR="/usr/local/OTPSnc"
+OTPS_DIR="/usr/local/OTPS2"
 AC_ARG_WITH(otps_dir, [ --with-otps-dir=DIR    Location of OSU Tidal Prediction Software], [OTPS_DIR=${withval}])
 AC_SUBST(OTPS_DIR)
 
@@ -224,7 +233,7 @@ dnl Check for Proj.4 library libproj
 AS_ECHO(["Check for Proj.4 library libproj"])
 GOT_PROJ=no
 PROJ_SETTING=no
-AC_ARG_WITH(proj-lib, [  --with-proj-lib=DIR	Location of PROJ library],
+AC_ARG_WITH(proj-lib, [  --with-proj-lib=DIR    Location of PROJ library],
     [proj_libdir="${withval}"] [GOT_PROJ=yes], [GOT_PROJ=no])
 if test "$GOT_PROJ" = "yes" ; then
     dnl PROJ library location specified: $proj_libdir - check if libproj is there...
@@ -265,7 +274,7 @@ dnl Check if proj header location specified on the command line
 AS_ECHO(["Check if proj header location specified on the command line"])
 GOT_PROJ=no
 PROJ_SETTING=no
-AC_ARG_WITH(proj-include, [  --with-proj-include=DIR	Location of PROJ headers],
+AC_ARG_WITH(proj-include, [  --with-proj-include=DIR    Location of PROJ headers],
         [libproj_CPPFLAGS="-I${withval}"] [GOT_PROJ=yes], [GOT_PROJ=no])
 if test "$GOT_PROJ" = "yes" ; then
     dnl PROJ header location specified: $libproj_CPPFLAGS - check if proj_api.h is there...
@@ -286,7 +295,7 @@ else
     AC_CHECK_HEADER(proj_api.h, [PROJ_SETTING=yes], [PROJ_SETTING=no])
     if test "$PROJ_SETTING" = "yes" ; then
         GOT_PROJ=yes
-        AS_ECHO(["Using pre-installed PROJ headers..."])
+        AS_ECHO(["Found PROJ headers..."])
     else
         AS_ECHO(["Did not find PROJ headers anywhere, use --with-proj-include to set the location"])
         AC_MSG_ERROR([Did not find PROJ headers anywhere, use --with-proj-include to set the location])
@@ -307,48 +316,48 @@ dnl
 
 if test "X$with_netcdf_config" != "X" ; then
     NC_CONF="$with_netcdf_config/nc-config"
-	AC_MSG_CHECKING(for netCDF nc-config using --with-netcdf-config=$with_netcdf_config )
+    AC_MSG_CHECKING(for netCDF nc-config using --with-netcdf-config=$with_netcdf_config )
     AC_MSG_RESULT($NC_CONF)
 else
-	AC_PATH_PROG([NC_CONF], [nc-config] )
+    AC_PATH_PROG([NC_CONF], [nc-config] )
 fi
 
 if test -x "$NC_CONF" ; then
-	AC_MSG_CHECKING(for netCDF includes)
-	libnetcdf_CPPFLAGS=-I`$NC_CONF --includedir | sed -e 's/^-I//'`
-	AC_MSG_RESULT($libnetcdf_CPPFLAGS)
-	AC_MSG_CHECKING(for netCDF libs)
-	libnetcdf_LIBS=`$NC_CONF --libs`
-	AC_MSG_RESULT($libnetcdf_LIBS)
-	NETCDF_LIB=`echo $libnetcdf_LIBS | sed 's/^-L//;s/\ .*//'`
+    AC_MSG_CHECKING(for netCDF includes)
+    libnetcdf_CPPFLAGS=-I`$NC_CONF --includedir | sed -e 's/^-I//'`
+    AC_MSG_RESULT($libnetcdf_CPPFLAGS)
+    AC_MSG_CHECKING(for netCDF libs)
+    libnetcdf_LIBS=`$NC_CONF --libs`
+    AC_MSG_RESULT($libnetcdf_LIBS)
+    NETCDF_LIB=`echo $libnetcdf_LIBS | sed 's/^-L//;s/\ .*//'`
     libnetcdf_LDFLAGS="-L$NETCDF_LIB"
 else
-	if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
-		AC_PATH_PROG([NETCDF], [ncdump], [/usr/local/netcdf/bin/ncdump])
-		NETCDF=`dirname $NETCDF`
-		NETCDF=`dirname $NETCDF`
-	else
-		NETCDF=$enable_netcdf
-	fi
-	AC_MSG_CHECKING(for netCDF include directory)
-	if test "X$NETCDF_INC" = "X"; then
-		NETCDF_INC=$NETCDF/include
-	fi
-	AC_MSG_RESULT($NETCDF_INC)
-	if test ! -f $NETCDF_INC/netcdf.h; then
-		AC_MSG_WARN([[netcdf.h can not be found in $NETCDF_INC]])
-	fi
-	AC_MSG_CHECKING(for netCDF library directory)
-	if test "X$NETCDF_LIB" = "X"; then
-		NETCDF_LIB=$NETCDF/lib
-	fi
-	AC_MSG_RESULT($NETCDF_LIB)
-	if test ! -d $NETCDF_LIB; then
-		AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
-	fi
-	libnetcdf_LIBS="-L$NETCDF_LIB -R $NETCDF_LIB -lnetcdf"
+    if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
+        AC_PATH_PROG([NETCDF], [ncdump], [/usr/local/netcdf/bin/ncdump])
+        NETCDF=`dirname $NETCDF`
+        NETCDF=`dirname $NETCDF`
+    else
+        NETCDF=$enable_netcdf
+    fi
+    AC_MSG_CHECKING(for netCDF include directory)
+    if test "X$NETCDF_INC" = "X"; then
+        NETCDF_INC=$NETCDF/include
+    fi
+    AC_MSG_RESULT($NETCDF_INC)
+    if test ! -f $NETCDF_INC/netcdf.h; then
+        AC_MSG_WARN([[netcdf.h can not be found in $NETCDF_INC]])
+    fi
+    AC_MSG_CHECKING(for netCDF library directory)
+    if test "X$NETCDF_LIB" = "X"; then
+        NETCDF_LIB=$NETCDF/lib
+    fi
+    AC_MSG_RESULT($NETCDF_LIB)
+    if test ! -d $NETCDF_LIB; then
+        AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
+    fi
+    libnetcdf_LIBS="-L$NETCDF_LIB -R $NETCDF_LIB -lnetcdf"
     libnetcdf_LDFLAGS="-L$NETCDF_LIB"
-	libnetcdf_CPPFLAGS="-I$NETCDF_INC"
+    libnetcdf_CPPFLAGS="-I$NETCDF_INC"
 fi
 if test ! -x "$NC_CONF" && test ! -d $NETCDF_LIB; then
     AC_MSG_ERROR(["Did not find nc-config program or netCDF installation, use --with-nc-config to set the location"])
@@ -367,21 +376,21 @@ dnl--------------------------------------------------------------------
 
 if test "X$with_gdal_config" != "X" ; then
     GDAL_CONF="$with_gdal_config/gdal-config"
-	AC_MSG_CHECKING(for GDAL gdal-config using --with-gdal-config=$with_gdal_config )
+    AC_MSG_CHECKING(for GDAL gdal-config using --with-gdal-config=$with_gdal_config )
     AC_MSG_RESULT($GDAL_CONF)
 else
-	AC_PATH_PROG([GDAL_CONF], [gdal-config])
+    AC_PATH_PROG([GDAL_CONF], [gdal-config])
 fi
 
 if test -x "$GDAL_CONF" ; then
-	AC_MSG_CHECKING(for GDAL includes)
-	GDAL_INC=`$GDAL_CONF --cflags`
-	AC_MSG_RESULT($GDAL_INC)
-	AC_MSG_CHECKING(for GDAL libs)
-	GDAL_LIB=`$GDAL_CONF --libs`
-	DEP_LIBS=`$GDAL_CONF --dep-libs`
-	AC_MSG_RESULT($GDAL_LIB)
-	GDAL_LIB_PATH=`echo $GDAL_LIB | sed 's/^-L//;s/\ .*//'`
+    AC_MSG_CHECKING(for GDAL includes)
+    GDAL_INC=`$GDAL_CONF --cflags`
+    AC_MSG_RESULT($GDAL_INC)
+    AC_MSG_CHECKING(for GDAL libs)
+    GDAL_LIB=`$GDAL_CONF --libs`
+    DEP_LIBS=`$GDAL_CONF --dep-libs`
+    AC_MSG_RESULT($GDAL_LIB)
+    GDAL_LIB_PATH=`echo $GDAL_LIB | sed 's/^-L//;s/\ .*//'`
 
     libgdal_CPPFLAGS="$GDAL_INC"
     libgdal_LIBS="-L$GDAL_LIB_PATH -R $GDAL_LIB_PATH -lgdal"
@@ -403,26 +412,26 @@ dnl--------------------------------------------------------------------
 
 if test "X$with_gmt_config" != "X" ; then
     GMT_CONF="$with_gmt_config/gmt-config"
-	AC_MSG_CHECKING(for GMT gmt-config using --with-gmt-config=$with_gmt_config )
+    AC_MSG_CHECKING(for GMT gmt-config using --with-gmt-config=$with_gmt_config )
     AC_MSG_RESULT($GMT_CONF)
 else
-	AC_PATH_PROG([GMT_CONF], [gmt-config])
+    AC_PATH_PROG([GMT_CONF], [gmt-config])
 fi
 if test -x "$GMT_CONF" ; then
-	AC_MSG_CHECKING(for GMT includes)
-	GMT_INC=`$GMT_CONF --cflags`
-	AC_MSG_RESULT($GMT_INC)
-	AC_MSG_CHECKING(for GMT libs)
-	GMT_LIB=`$GMT_CONF --libs`
-	DEP_LIBS=`$GMT_CONF --dep-libs`
-	AC_MSG_RESULT($GMT_LIB)
-	GMT_LIB_PATH=`echo $GMT_LIB | sed 's/^-L//;s/\ .*//'`
-	rpath="$GMT_LIB_PATH"
-	AC_MSG_CHECKING(for 32/64-bit GMT5 installation)
-	bits=`$GMT_CONF --bits`
-	GCC_64="-m${bits}"
-	LDFLAGS="$LDFLAGS -m${bits}"
-	AC_MSG_RESULT(found ${bits}-bit)
+    AC_MSG_CHECKING(for GMT includes)
+    GMT_INC=`$GMT_CONF --cflags`
+    AC_MSG_RESULT($GMT_INC)
+    AC_MSG_CHECKING(for GMT libs)
+    GMT_LIB=`$GMT_CONF --libs`
+    DEP_LIBS=`$GMT_CONF --dep-libs`
+    AC_MSG_RESULT($GMT_LIB)
+    GMT_LIB_PATH=`echo $GMT_LIB | sed 's/^-L//;s/\ .*//'`
+    rpath="$GMT_LIB_PATH"
+    AC_MSG_CHECKING(for 32/64-bit GMT5 installation)
+    bits=`$GMT_CONF --bits`
+    GCC_64="-m${bits}"
+    LDFLAGS="$LDFLAGS -m${bits}"
+    AC_MSG_RESULT(found ${bits}-bit)
     AC_MSG_CHECKING(for GMT plugin location)
     GMT_PLUGINDIR=`$GMT_CONF --plugindir`
     AC_MSG_RESULT($GMT_PLUGINDIR)
@@ -449,8 +458,8 @@ AS_ECHO(["Check for FFTW library libfftw3"])
 GOT_FFTW=no
 FFTW_SETTING=no
 dnl First check if fftw location specified on the command line
-AC_ARG_WITH(fftw-lib, [  --with-fftw-lib=DIR	Location of FFTW library],
-	[fftw_libdir="${withval}"] [GOT_FFTW=yes], [GOT_FFTW=no])
+AC_ARG_WITH(fftw-lib, [  --with-fftw-lib=DIR    Location of FFTW library],
+    [fftw_libdir="${withval}"] [GOT_FFTW=yes], [GOT_FFTW=no])
 if test "$GOT_FFTW" = "yes" ; then
     dnl FFTW library location specified: $fftw_libdir - check if libfftw3 is there...
     AS_ECHO(["FFTW library location specified: $fftw_libdir - check if libfftw3 is there..."])
@@ -491,8 +500,8 @@ AS_ECHO(["Check for FFTW headers"])
 GOT_FFTW=no
 FFTW_SETTING=no
 dnl First check if fftw3 location specified on the command line
-AC_ARG_WITH(fftw-include, [  --with-fftw-include=DIR	Location of FFTW headers],
-	[libfftw_CPPFLAGS="-I${withval}"] [GOT_FFTW=yes], [GOT_FFTW=no])
+AC_ARG_WITH(fftw-include, [  --with-fftw-include=DIR    Location of FFTW headers],
+    [libfftw_CPPFLAGS="-I${withval}"] [GOT_FFTW=yes], [GOT_FFTW=no])
 if test "$GOT_FFTW" = "yes" ; then
     dnl FFTW header location specified: $libfftw_CPPFLAGS - check if fftw3.h is there...
     AS_ECHO(["FFTW header location specified: $libfftw_CPPFLAGS - check if fftw3.h is there..."])
@@ -504,7 +513,7 @@ if test "$GOT_FFTW" = "yes" ; then
     CPPFLAGS=$save_CPPFLAGS
     CFLAGS=$save_CFLAGS
     if test "$FFTW_SETTING" = "no"; then
-	AC_MSG_ERROR([Did not find fftw3.h according to --with-fftw-include - check the installation!])
+    AC_MSG_ERROR([Did not find fftw3.h according to --with-fftw-include - check the installation!])
     fi
 else
     dnl Looking for FFTW headers in the usual places...
@@ -555,7 +564,7 @@ if test "$GOT_X11" = "yes" ; then
     
     dnl Check for Motif library libXm
     AS_ECHO(["Check for Motif library libXm"])
-    AC_ARG_WITH(motif-lib, [  --with-motif-lib=DIR	Location of MOTIF library],
+    AC_ARG_WITH(motif-lib, [  --with-motif-lib=DIR    Location of MOTIF library],
             [motif_libdir="${withval}"] [GOT_MOTIF=yes], [GOT_MOTIF=no])
     if test "$GOT_MOTIF" = "yes" ; then
         dnl Motif library location specified: $motif_libdir - check if libXm is there...
@@ -598,7 +607,7 @@ if test "$GOT_X11" = "yes" ; then
         GOT_MOTIF=no
         MOTIF_SETTING=no
         dnl First check if Motif location specified on the command line
-        AC_ARG_WITH(motif-include, [  --with-motif-include=DIR	Location of Motif headers],
+        AC_ARG_WITH(motif-include, [  --with-motif-include=DIR    Location of Motif headers],
                 [libmotif_CPPFLAGS="-I${withval}"] [GOT_MOTIF=yes], [GOT_MOTIF=no])
         if test "$GOT_MOTIF" = "yes" ; then
             dnl Motif header location specified: $libmotif_CPPFLAGS - check if Xm/Xm.h is there...
@@ -648,7 +657,7 @@ if test "$GOT_MOTIF" = "yes" ; then
     
     dnl Check for OpenGL libraries libGLU libGL
     AS_ECHO(["Check for OpenGL libraries libGLU libGL"])
-    AC_ARG_WITH(opengl-lib, [  --with-opengl-lib=DIR	Location of OpenGL library],
+    AC_ARG_WITH(opengl-lib, [  --with-opengl-lib=DIR    Location of OpenGL library],
             [opengl_libdir="${withval}"] [GOT_OPENGL=yes], [GOT_OPENGL=no])
     if test "$GOT_OPENGL" = "yes" ; then
         dnl OpenGL library location specified: $opengl_libdir - check if libGLU libGL is there...
@@ -697,7 +706,7 @@ if test "$GOT_MOTIF" = "yes" ; then
         GOT_OPENGL=no
         OPENGL_SETTING=no
         dnl First check if OpenGL location specified on the command line
-        AC_ARG_WITH(opengl-include, [  --with-opengl-include=DIR	Location of OpenGL headers],
+        AC_ARG_WITH(opengl-include, [  --with-opengl-include=DIR    Location of OpenGL headers],
                 [libopengl_CPPFLAGS="-I${withval}"] [GOT_OPENGL=yes], [GOT_OPENGL=no])
         if test "$GOT_OPENGL" = "yes" ; then
             dnl OpenGL header location specified: $libopengl_CPPFLAGS - check if Xm/Xm.h is there...
@@ -744,8 +753,27 @@ dnl--------------------------------------------------------------------
 dnl Add some variables to be exported to the src/mbio/mb_config.h file
 dnl--------------------------------------------------------------------
 
+AC_DEFINE_UNQUOTED(MBSYSTEM_CONFIG_DEFINED, 1, [Set MBSYSTEM_CONFIG_DEFINED define in mb_config.h])
 AC_DEFINE_UNQUOTED(MBSYSTEM_INSTALL_PREFIX, "$prefix", [Set MBSYSTEM_INSTALL_PREFIX define in mb_config.h])
 AC_DEFINE_UNQUOTED(MBSYSTEM_OTPS_LOCATION, "$OTPS_DIR", [Set MBSYSTEM_OTPS_LOCATION define in mb_config.h])
+
+
+dnl--------------------------------------------------------------------
+dnl MBTRN Section - optionally build terrain relative navigation (TRN) tools
+dnl--------------------------------------------------------------------
+
+dnl Check if the mbtrn tools should be built
+AS_ECHO(["Check if the mbtrn tools should be built"])
+AC_ARG_ENABLE(mbtrn, [AS_HELP_STRING([--enable-mbtrn], [build mbtrn tools])],
+        [build_mbtrn=yes], [build_mbtrn=no])
+AM_CONDITIONAL([BUILD_MBTRN], [test x$build_mbtrn = xyes])
+if test "$build_mbtrn" = "yes" ; then
+    dnl Building mbtrn tools
+    AS_ECHO(["Building mbtrn tools"])
+else
+    dnl Not building mbtrn tools
+    AS_ECHO(["Not building mbtrn tools"])
+fi
 
 dnl--------------------------------------------------------------------
 dnl Generate Makefiles
@@ -754,17 +782,28 @@ dnl--------------------------------------------------------------------
 AS_ECHO([" "])
 AS_ECHO(["About to create Makefiles..."])
 AC_CONFIG_FILES([Makefile src/Makefile src/mbio/Makefile \
-	  src/surf/Makefile \
-	  src/bsio/Makefile \
-          src/gsf/Makefile \
-          src/mbaux/Makefile \
-	  src/utilities/Makefile src/gmt/Makefile \
-	  src/macros/Makefile src/mbedit/Makefile src/mbnavedit/Makefile \
-	  src/mbvelocitytool/Makefile src/mbnavadjust/Makefile \
-	  src/otps/Makefile \
-	  src/mbview/Makefile  src/mbgrdviz/Makefile  src/mbeditviz/Makefile  \
-	  src/man/Makefile src/man/man1/Makefile src/man/man3/Makefile \
-	  src/html/Makefile src/ps/Makefile src/share/Makefile])
+      src/surf/Makefile \
+      src/bsio/Makefile \
+      src/gsf/Makefile \
+      src/mbaux/Makefile \
+      src/utilities/Makefile \
+      src/gmt/Makefile \
+      src/macros/Makefile \
+      src/mbedit/Makefile \
+      src/mbnavedit/Makefile \
+      src/mbvelocitytool/Makefile \
+      src/mbnavadjust/Makefile \
+      src/otps/Makefile \
+      src/mbtrn/Makefile \
+      src/mbview/Makefile \
+      src/mbgrdviz/Makefile \
+      src/mbeditviz/Makefile  \
+      src/man/Makefile \
+      src/man/man1/Makefile \
+      src/man/man3/Makefile \
+      src/html/Makefile \
+      src/ps/Makefile \
+      src/share/Makefile])
 AC_OUTPUT
 
 dnl--------------------------------------------------------------------
@@ -777,19 +816,19 @@ AS_ECHO(["----------------------------------------------------------------------
 AS_ECHO(["MB-System will be installed in: ${prefix}"])
 AS_ECHO(["Installation host:              ${host}"])
 if test "x$enable_static" = xyes ; then
-	AS_ECHO(["Building Static Libs: Yes"])
+    AS_ECHO(["Building Static Libs: Yes"])
 else
-	AS_ECHO(["Building Static Libs: No"])
+    AS_ECHO(["Building Static Libs: No"])
 fi
 if test "x$enable_shared" = xyes ; then
-	AS_ECHO(["Building Shared Libs: Yes"])
+    AS_ECHO(["Building Shared Libs: Yes"])
 else
-	AS_ECHO(["Building Shared Libs: No"])
+    AS_ECHO(["Building Shared Libs: No"])
 fi
 if test $BYTESWAP = "yes" ; then
-	AS_ECHO(["Byteswapping: Enabled"])
+    AS_ECHO(["Byteswapping: Enabled"])
 else
-	AS_ECHO(["Byteswapping: Disabled"])
+    AS_ECHO(["Byteswapping: Disabled"])
 fi
 AS_ECHO(["libgmt_CPPFLAGS:  $libgmt_CPPFLAGS"])
 AS_ECHO(["libgmt_LIBS:      $libgmt_LIBS"])
@@ -803,21 +842,26 @@ AS_ECHO(["libproj_LIBS:        $libproj_LIBS"])
 AS_ECHO(["libproj_LDFLAGS:     $libproj_LDFLAGS"])
 
 if test "$GOT_FFTW" = "yes" ; then
-	AS_ECHO(["FFTW Support: Enabled"])
+    AS_ECHO(["FFTW Support: Enabled"])
 else
-	AS_ECHO(["FFTW Support: Disabled"])
+    AS_ECHO(["FFTW Support: Disabled"])
 fi
 if test "$GOT_MOTIF" = "yes" ; then
-	AS_ECHO(["Motif Support: Enabled"])
+    AS_ECHO(["Motif Support: Enabled"])
 else
-	AS_ECHO(["Motif Support: Disabled"])
+    AS_ECHO(["Motif Support: Disabled"])
 fi
 if test "$GOT_OPENGL" = "yes" ; then
-	AS_ECHO(["OpenGL Support: Enabled"])
+    AS_ECHO(["OpenGL Support: Enabled"])
 else
-	AS_ECHO(["OpenGL Support: Disabled"])
+    AS_ECHO(["OpenGL Support: Disabled"])
 fi
 AS_ECHO(["Using $OTPS_DIR for OSU Tidal Prediction Software"])
+if test "$build_mbtrn" = "yes" ; then
+    AS_ECHO(["Build mbtrn tools: Enabled"])
+else
+    AS_ECHO(["Build mbtrn tools: Disabled"])
+fi
 
 AS_ECHO(["------------------------------------------------------------------------------"])
 AS_ECHO(["Key Variables:"])
