@@ -1,4 +1,3 @@
-/* src/mbio/mb_config.h.  Generated from mb_config.h.in by configure.  */
 /* src/mbio/mb_config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Machine is littleendian, (Byteswapping on) */
@@ -8,97 +7,113 @@
 /* #undef ENDIAN_BIG */
 
 /* Turned on OpenGL define in config */
-#define GOT_GL 1
+#undef GOT_GL
+
+/* Turned on Motif define in config */
+//#undef GOT_MOTIF
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the <GL/glu.h> header file. */
+#undef HAVE_GL_GLU_H
+
+/* Define to 1 if you have the <GL/glx.h> header file. */
+#undef HAVE_GL_GLX_H
+
+/* Define to 1 if you have the <GL/gl.h> header file. */
+#undef HAVE_GL_GL_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
+//#undef HAVE_INTTYPES_H
 
 /* Define to 1 if you have the `m' library (-lm). */
-#define HAVE_LIBM 1
+#undef HAVE_LIBM
+
+/* Define to 1 if you have the `ws2_32' library (-lws2_32). */
+#undef HAVE_LIBWS2_32
 
 /* Have malloc.h */
-#define HAVE_MALLOC_H 1
+//#undef HAVE_MALLOC_H
 
 /* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
+//#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the <rpc/rpc.h> header file. */
-/* #undef HAVE_RPC_RPC_H */
+//#undef HAVE_RPC_RPC_H
+#define HAVE_RPC_RPC_H 1
 
 /* Define to 1 if you have the <rpc/types.h> header file. */
+//#undef HAVE_RPC_TYPES_H
 #define HAVE_RPC_TYPES_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
+//#undef HAVE_STDINT_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
+//#undef HAVE_STDLIB_H
 
 /* Define to 1 if you have the <strings.h> header file. */
-#define HAVE_STRINGS_H 1
+//#undef HAVE_STRINGS_H
 
 /* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
+#undef HAVE_STRING_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#define HAVE_SYS_STAT_H 1
+#undef HAVE_SYS_STAT_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
-
-/* Define to 1 if you have the <tirpc/rpc/rpc.h> header file. */
-/* #undef HAVE_TIRPC_RPC_RPC_H */
-
-/* Define to 1 if you have the <tirpc/rpc/types.h> header file. */
-/* #undef HAVE_TIRPC_RPC_TYPES_H */
+#undef HAVE_SYS_TYPES_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#define HAVE_UNISTD_H 1
+#undef HAVE_UNISTD_H
 
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
-#define LT_OBJDIR ".libs/"
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
 
-/* Set MBSYSTEM_CONFIG_DEFINED define in mb_config.h */
-#define MBSYSTEM_CONFIG_DEFINED 1
-
-/* Set MBSYSTEM_INSTALL_PREFIX define in mb_config.h */
-#define MBSYSTEM_INSTALL_PREFIX "NONE"
-
-/* Set MBSYSTEM_OTPS_LOCATION define in mb_config.h */
-#define MBSYSTEM_OTPS_LOCATION "/usr/local/OTPS2"
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
 
 /* Name of package */
-#define PACKAGE "mbsystem"
+#undef PACKAGE
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "http://listserver.mbari.org/sympa/arc/mbsystem"
+#undef PACKAGE_BUGREPORT
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "mbsystem"
+#undef PACKAGE_NAME
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "mbsystem 5.5.2339"
+#undef PACKAGE_STRING
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "mbsystem"
+#undef PACKAGE_TARNAME
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "http://www.mbari.org/data/mbsystem/"
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
+//#undef PACKAGE_VERSION
 #define PACKAGE_VERSION "5.5.2339"
 
 /* Define to 1 if you have the ANSI C header files. */
-#define STDC_HEADERS 1
+#undef STDC_HEADERS
 
 /* Version number of package */
+//#undef VERSION
 #define VERSION "5.5.2339"
 
 /* Set VERSION_DATE define in mb_config.h */
+//#undef VERSION_DATE
 #define VERSION_DATE "25 June 2018"
+
+/* Turned on WIN32 define in config */
+//#undef WIN32
+
+/* Build with GSF */
+//#undef WITH_GSF
+#define WITH_GSF
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -108,10 +123,10 @@
 # endif
 #else
 # ifndef WORDS_BIGENDIAN
-/* #  undef WORDS_BIGENDIAN */
+#  undef WORDS_BIGENDIAN
 # endif
 #endif
 
 /* Define to the type of a signed integer type of width exactly 8 bits if such
    a type exists and the standard includes do not define it. */
-/* #undef int8_t */
+//#undef int8_t
