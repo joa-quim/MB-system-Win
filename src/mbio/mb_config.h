@@ -75,6 +75,9 @@
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
 #undef NO_MINUS_C_MINUS_O
 
+/* Build libmbtrn and mbtrnpreprocess */
+//#define MBTRN_ENABLED 1
+
 /* Name of package */
 #undef PACKAGE
 
@@ -85,7 +88,7 @@
 #undef PACKAGE_NAME
 
 /* Define to the full name and version of this package. */
-#undef PACKAGE_STRING
+#define PACKAGE_STRING "mbsystem 5.5.2341"
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
@@ -94,19 +97,16 @@
 #undef PACKAGE_URL
 
 /* Define to the version of this package. */
-//#undef PACKAGE_VERSION
-#define PACKAGE_VERSION "5.5.2339"
+#define PACKAGE_VERSION "5.5.2341"
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Version number of package */
-//#undef VERSION
-#define VERSION "5.5.2339"
+#define VERSION "5.5.2341"
 
 /* Set VERSION_DATE define in mb_config.h */
-//#undef VERSION_DATE
-#define VERSION_DATE "25 June 2018"
+#define VERSION_DATE "28 June 2018"
 
 /* Turned on WIN32 define in config */
 //#undef WIN32

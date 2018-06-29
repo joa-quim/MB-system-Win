@@ -61,6 +61,9 @@ clean:
 	cd src/mbvelocitytool
 	$(MAKE) /f makefile.vc clean
 	cd ../..
+	cd src/mbtrn
+	$(MAKE) /f makefile.vc clean
+	cd ../..
 	cd lib && del *.exp
 	cd ../..
 
@@ -225,6 +228,23 @@ mbnavedit_dir:
 
 mbvelocitool_dir:
 	cd src/mbvelocitytool
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbtrn_dir:
+	cd src/mbtrn
+	copy /Y cbuffer.h ..\..\include
+	copy /Y iowrap.h ..\..\include
+	copy /Y iowrap-posix.h ..\..\include
+	copy /Y iowrap-win.h ..\..\include
+	copy /Y mbtrn.h ..\..\include
+	copy /Y mbtrn-server.h ..\..\include
+	copy /Y mbtrn-test.h ..\..\include
+	copy /Y mconfig.h ..\..\include
+	copy /Y mdebug.h ..\..\include
+	copy /Y merror.h ..\..\include
+	copy /Y mlist.h ..\..\include
+	copy /Y r7kc.h ..\..\include
 	$(MAKE) /f makefile.vc
 	cd ../..
 

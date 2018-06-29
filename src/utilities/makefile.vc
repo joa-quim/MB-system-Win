@@ -24,7 +24,8 @@ all: mbhsdump.exe mbformat.exe mbdefaults.exe mbdatalist.exe mbinfo.exe mbset.ex
 	mbstripnan.exe mb7k2jstar.exe mb7kpreprocess.exe mbrolltimelag.exe mbauvloglist.exe mb7k2ss.exe \
 	mbabsorption.exe mbdumpesf.exe mbtime.exe mbctdlist.exe mbfilter.exe mbroutetime.exe \
 	mbhysweeppreprocess.exe mbkongsbergpreprocess.exe \
-	mbinsreprocess.exe mbpreprocess.exe mbrphsbias.exe mbsslayout.exe mbswplspreprocess.exe
+	mbinsreprocess.exe mbpreprocess.exe mbrphsbias.exe mbsslayout.exe mbswplspreprocess.exe \
+	mbmakeplatform.exe mbminirovnav.exe mbsvpselect.exe mbgpstide.exe
 #	mbsvpselect.exe  
 
 
@@ -126,6 +127,14 @@ mbhysweeppreprocess.exe:	mbhysweeppreprocess.c
 	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbhysweeppreprocess.c $(LDFLAGS) /I$(INCDIR)
 mbkongsbergpreprocess.exe:	mbkongsbergpreprocess.c
 	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbkongsbergpreprocess.c $(LDFLAGS) /I$(INCDIR)
+mbmakeplatform.exe:	mbmakeplatform.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbmakeplatform.c $(LDFLAGS) /I$(INCDIR)
+mbminirovnav.exe:	mbminirovnav.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbminirovnav.c $(LDFLAGS) /I$(INCDIR)
+mbsvpselect.exe:	mbsvpselect.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbsvpselect.c $(LDFLAGS) /I$(INCDIR)
+mbgpstide.exe:	mbgpstide.c
+	$(CC) $(CFLAGS) $(SHUTUPFLAGS) mbgpstide.c $(LDFLAGS) /I$(INCDIR)
 
 # cleanup
 clean:

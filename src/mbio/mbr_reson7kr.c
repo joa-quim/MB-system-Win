@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_reson7kr.c	4/4/2004
- *	$Id: mbr_reson7kr.c 2335 2018-05-06 23:24:33Z caress $
+ *	$Id: mbr_reson7kr.c 2340 2018-06-27 01:38:31Z caress $
  *
  *    Copyright (c) 2004-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -189,7 +189,7 @@ int mbr_reson7kr_wr_soundvelocity(int verbose, int *bufferalloc, char **bufferpt
 int mbr_reson7kr_wr_absorptionloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 int mbr_reson7kr_wr_spreadingloss(int verbose, int *bufferalloc, char **bufferptr, void *store_ptr, int *size, int *error);
 
-static char rcs_id[] = "$Id: mbr_reson7kr.c 2335 2018-05-06 23:24:33Z caress $";
+static char rcs_id[] = "$Id: mbr_reson7kr.c 2340 2018-06-27 01:38:31Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_reson7kr(int verbose, void *mbio_ptr, int *error) {
@@ -2236,11 +2236,23 @@ store->read_beam,store->read_verticaldepth,store->read_tvg,store->read_image);
 		fprintf(stderr, "RESON7KR DATA READ: type:%d status:%d error:%d\n\n", store->kind, status, *error);
 #endif
 
-	/* get file position */
-	if (*save_flag == MB_YES)
-		mb_io_ptr->file_bytes = ftell(mbfp) - *size;
-	else
-		mb_io_ptr->file_bytes = ftell(mbfp);
+	/* get file position - check file and socket, use appropriate ftelln */
+    if (mb_io_ptr->mbfp != NULL) {
+         if (*save_flag == MB_YES)
+            mb_io_ptr->file_bytes = ftell(mbfp) - *size;
+        else
+            mb_io_ptr->file_bytes = ftell(mbfp);
+    }
+#ifdef MBTRN_ENABLED
+    else if (mb_io_ptr->mbsp != NULL) {
+        if (*save_flag == MB_YES)
+            mb_io_ptr->file_bytes = mbtrn_reader_tell(mb_io_ptr->mbsp) - *size;
+        else
+            mb_io_ptr->file_bytes = mbtrn_reader_tell(mb_io_ptr->mbsp);
+    }else{
+        fprintf(stderr,"ERROR - both file and socket input pointers are NULL\n");
+    }
+#endif
 
 	/* print output debug statements */
 	if (verbose >= 2) {

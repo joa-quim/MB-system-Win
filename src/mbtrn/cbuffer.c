@@ -379,6 +379,8 @@ int cbuf_test()
     cbuffer_t *b = cbuf_new(cap);
     uint32_t avail = cbuf_available(b);
     uint32_t space = cbuf_space(b);
+    byte wdata[32];
+    byte rdata[32];
 
     MDEBUG("test start:\n");
     cbuf_show(b,true,5);
@@ -389,8 +391,6 @@ int cbuf_test()
 
   
 	// init IO buffers
-    byte wdata[rwcap];
-    byte rdata[rwcap];
     memset(wdata,0,rwcap);
     memset(rdata,0,rwcap);
     for (uint32_t i=0;i<rwcap; i++) {

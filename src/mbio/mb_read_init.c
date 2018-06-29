@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_read_init.c	1/25/93
- *    $Id: mb_read_init.c 2331 2018-04-10 17:49:20Z caress $
+ *    $Id: mb_read_init.c 2340 2018-06-27 01:38:31Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -40,7 +40,7 @@
 #include "gsf.h"
 #include "netcdf.h"
 
-static char rcs_id[] = "$Id: mb_read_init.c 2331 2018-04-10 17:49:20Z caress $";
+static char rcs_id[] = "$Id: mb_read_init.c 2340 2018-06-27 01:38:31Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_read_init(int verbose, char *file, int format, int pings, int lonflip, double bounds[4], int btime_i[7], int etime_i[7],
@@ -762,6 +762,8 @@ int mb_input_init(int verbose, char *file, int format,
 		return (status);
 	}
 
+    mb_io_ptr->mbsp = NULL;
+
 	/* initialize file access for the mbio descriptor */
 	mb_io_ptr->filemode = MB_FILEMODE_READ;
 	mb_io_ptr->mbfp = NULL;
@@ -781,7 +783,6 @@ int mb_input_init(int verbose, char *file, int format,
 	mb_io_ptr->xdrs = NULL;
 	mb_io_ptr->xdrs2 = NULL;
 	mb_io_ptr->xdrs3 = NULL;
-    mb_io_ptr->mbsp = NULL;
 
 	/* load control parameters into the mbio descriptor */
 	mb_io_ptr->format = format;
@@ -960,7 +961,7 @@ int mb_input_init(int verbose, char *file, int format,
     mb_io_ptr->mb_io_input_read = input_read;
     mb_io_ptr->mb_io_input_close = input_close;
 	mb_io_ptr->filetype = MB_FILETYPE_INPUT;
-    status = (mb_io_ptr->mb_io_input_open)(verbose, mbio_ptr, path, error);
+    status = (mb_io_ptr->mb_io_input_open)(verbose, *mbio_ptr, path, error);
 
 	/* if error terminate */
 	if (status == MB_FAILURE) {
