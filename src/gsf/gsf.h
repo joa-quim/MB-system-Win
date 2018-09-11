@@ -420,10 +420,14 @@ typedef struct t_gsfDataID {
 #ifndef __APPLE__
 
 #ifndef __CYGWIN__
+
+#ifndef _MSC_VER || _MSC_VER < 1900		// Otherwise VC14+ error. JL
+
 struct timespec {
 	time_t tv_sec;
 	long tv_nsec;
 };
+#endif
 #endif
 #endif
 #endif
