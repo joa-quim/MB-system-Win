@@ -421,7 +421,7 @@ typedef struct t_gsfDataID {
 
 #ifndef __CYGWIN__
 
-#ifndef _MSC_VER || _MSC_VER < 1900		// Otherwise VC14+ error. JL
+#ifdef _MSC_VER || _MSC_VER < 1900		// Otherwise VC14+ error. JL
 
 struct timespec {
 	time_t tv_sec;
