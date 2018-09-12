@@ -3,8 +3,6 @@
 # Load file with the Bitage setting
 !INCLUDE Bitage.txt
 
-# Attention, the FREETYPELIB lib has different names between 32 and 64 Bits
-
 MOTIFINCDIR = C:/programs/compa_libs/Xm/compileds/VC12_$(BITS)/include
 X11INC      = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/include
 
