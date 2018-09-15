@@ -798,7 +798,7 @@ int mbview_plotlow(size_t instance) {
 		if (view->message_on == MB_YES && view->plot_recursion == 0)
 			do_mbview_status("Done.", instance);
 		if (mbv_verbose >= 2)
-			fprintf(stderr, "Done with mbview_plotlow %ld  recursion:%d\n\n", instance, view->plot_recursion);
+			fprintf(stderr, "Done with mbview_plotlow %zd  recursion:%d\n\n", instance, view->plot_recursion);
 	}
 
 	/* print output debug statements */
@@ -860,7 +860,7 @@ int mbview_plotlowhigh(size_t instance) {
 		if (view->message_on == MB_YES && view->plot_recursion == 0)
 			do_mbview_status("Done.", instance);
 		if (mbv_verbose >= 2)
-			fprintf(stderr, "Done with mbview_plotlowhigh %ld  recursion:%d\n\n", instance, view->plot_recursion);
+			fprintf(stderr, "Done with mbview_plotlowhigh %zd  recursion:%d\n\n", instance, view->plot_recursion);
 	}
 
 	/* print output debug statements */
@@ -919,7 +919,7 @@ int mbview_plothigh(size_t instance) {
 		if (view->message_on == MB_YES && view->plot_recursion == 0)
 			do_mbview_status("Done.", instance);
 		if (mbv_verbose >= 2)
-			fprintf(stderr, "Done with mbview_plothigh %ld  recursion:%d\n\n", instance, view->plot_recursion);
+			fprintf(stderr, "Done with mbview_plothigh %zd  recursion:%d\n\n", instance, view->plot_recursion);
 	}
 
 	/* print output debug statements */
@@ -978,7 +978,7 @@ int mbview_plotfull(size_t instance) {
 		if (view->message_on == MB_YES && view->plot_recursion == 0)
 			do_mbview_status("Done.", instance);
 		if (mbv_verbose >= 2)
-			fprintf(stderr, "Done with mbview_plotfull %ld  recursion:%d\n\n", instance, view->plot_recursion);
+			fprintf(stderr, "Done with mbview_plotfull %zd  recursion:%d\n\n", instance, view->plot_recursion);
 	}
 
 	/* print output debug statements */
