@@ -10,46 +10,44 @@
 # LICENSING
 #	Public domain
 
-# In X11decs.opt, FREETYPELIB lib has different names between 32 and 64 Bits (now automatically set)
 
 # Load file with the Bitage setting
 !INCLUDE Bitage.txt
 
 # The Visual Studio VC version. This is mostly to my (JL) private use as my dependencies
 # are all stored at directories that have encoded in their names the compiler version and Bitage 
-VC=12
 
 LIB_CC=VC$(VC)_$(BITS)
 
 # The compiler
 CC = cl
 
-# Set the GMT version. Currently either '5.4' or 'trunk'. This is used to set the path to GMT include & lib dirs
-GMTver=trunk
+# Set the GMT version. Either '5' or '6'. This is used to set the path to GMT include & lib dirs
+GMTver=6
 
 # Uncomment for debug build
 #DEBUG=yes
 
 # GMT & Netcdf include directories
 NETCDFINCDIR = c:/programs/compa_libs/netcdf_GIT/compileds/$(LIB_CC)/include
-GMTINCDIR    = c:/progs_cygw/GMTdev/gmt5/$(GMTver)/WIN$(BITS)/include/gmt
+GMTINCDIR    = c:/progs_cygw/GMTdev/gmt5/compileds/gmt$(GMTver)/$(LIB_CC)/include/gmt
 
 ### set projlib
-GDALINCDIR = C:/programs/compa_libs/gdal/compileds/VC12_$(BITS)/include
-PROJINCDIR = C:/programs/compa_libs/proj4/compileds/$(LIB_CC)/include/
+GDALINCDIR = C:/programs/compa_libs/gdal/compileds/$(LIB_CC)/include
+PROJINCDIR = C:/programs/compa_libs/proj4_GIT/compileds/$(LIB_CC)/include/
 FFTW3LIB   = C:/programs/compa_libs/fftw-3.3.4/compileds/$(LIB_CC)/lib/libfftw-3.3.lib 
 FFTW3INC   = C:/programs/compa_libs/fftw-3.3.4/compileds/$(LIB_CC)/include
 ONCRPCLIB  = C:/programs/compa_libs/oncrpc/compileds/$(LIB_CC)/lib/oncrpc.lib 
 ONCRPCINC  = C:/programs/compa_libs/oncrpc/compileds/$(LIB_CC)/include
-GETOPTLIB  = C:/programs/compa_libs/getopt/compileds/VC10_$(BITS)/lib/getopt.lib 
-GETOPTINC  = C:/programs/compa_libs/getopt/compileds/VC10_$(BITS)/include
-PTHREADINC = C:/programs/compa_libs/pthreads/compileds/VC12_$(BITS)/include
-PTHREADLIB = C:/programs/compa_libs/pthreads/compileds/VC12_$(BITS)/pthreadVC2.lib
+GETOPTLIB  = C:/programs/compa_libs/getopt/compileds/$(LIB_CC)/lib/getopt.lib 
+GETOPTINC  = C:/programs/compa_libs/getopt/compileds/$(LIB_CC)/include
+PTHREADINC = C:/programs/compa_libs/pthreads/compileds/$(LIB_CC)/include
+PTHREADLIB = C:/programs/compa_libs/pthreads/compileds/$(LIB_CC)/pthreadVC2.lib
 
-PROJLIB   = C:/programs/compa_libs/proj4/compileds/$(LIB_CC)/lib/proj.lib
+PROJLIB   = C:/programs/compa_libs/proj4_GIT/compileds/$(LIB_CC)/lib/proj.lib
 NETCDFLIB = C:/programs/compa_libs/netcdf_GIT/compileds/$(LIB_CC)/lib/netcdf.lib
-GMTLIB    = c:/progs_cygw/GMTdev/gmt5/$(GMTver)/WIN$(BITS)/lib/gmt.lib 
-PSLLIB    = c:/progs_cygw/GMTdev/gmt5/$(GMTver)/WIN$(BITS)/lib/postscriptlight.lib 
+GMTLIB    = c:/progs_cygw/GMTdev/gmt5/compileds/gmt$(GMTver)/$(LIB_CC)/lib/gmt.lib 
+PSLLIB    = c:/progs_cygw/GMTdev/gmt5/compileds/gmt$(GMTver)/$(LIB_CC)/lib/postscriptlight.lib 
 
 # Preprocessors (shouldn't need to change these)   
 PREPROCS = -DWIN32 -DDLL_GMT -DDLL_PSL -DOTHER -DBYTESWAPPED
