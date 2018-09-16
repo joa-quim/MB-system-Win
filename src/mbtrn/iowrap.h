@@ -93,7 +93,9 @@
 #include <stdbool.h>
 #include "iowrap-posix.h"
 #include "merror.h"
+#if _MSC_VER < 1900
 #	define snprintf _snprintf
+#endif
 #define IOW_ADDR_LEN sizeof(struct sockaddr_in)
 #ifdef _WIN64
 //define something for Windows (64-bit only)
