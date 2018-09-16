@@ -1,2 +1,5 @@
 # Sets the 'Bitage'. DLLs will have this as suffix but other .vc files uses this as well
-BITS=64
+BITS=32
+
+# The VS version (12 = VS2013; 14 >= VS2015)
+VC=14
