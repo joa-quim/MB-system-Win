@@ -3,36 +3,40 @@
 # Load file with the Bitage setting
 !INCLUDE Bitage.txt
 
-MOTIFINCDIR = C:/programs/compa_libs/Xm/compileds/VC12_$(BITS)/include
-X11INC      = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/include
+LIB_CC=VC$(VC)_$(BITS)
 
-# MOTIFLIB1   = C:\programs\compa_libs\motif-2.3.4\lib\Xm\.libs\libXm.a
+MOTIFINCDIR = C:/programs/compa_libs/Xm/compileds/VC12_$(BITS)/include
+X11INC      = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/include
+
 MOTIFLIB1   = C:/programs/compa_libs/Xm/compileds/VC12_$(BITS)/lib/libXm.lib
 MOTIFLIB2   = C:/programs/compa_libs/Xm/compileds/VC12_$(BITS)/lib/libMrm.lib
 # MOTIFLIB1   = C:/programs/compa_libs/motif-2.3.4/compileds/VC12_64/lib/libXm.lib
 # MOTIFLIB2   = C:/programs/compa_libs/motif-2.3.4/compileds/VC12_64/lib/libXm.lib
 M3   = C:/programs/compa_libs/Xm/compileds/VC12_$(BITS)/lib/regexp.lib
 
-XTLIB       = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libXt.lib
-XFTLIB      = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libXft.lib
-XEXTLIB     = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libXext.lib
-X11LIB      = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libX11.lib
-XRENDERLIB  = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libXrender.lib
-FONTCONFLIB = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libfontconfig.lib
+XTLIB       = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/libXt.lib
+XFTLIB      = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/libXft.lib
+XEXTLIB     = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/libXext.lib
+X11LIB      = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/libX11.lib
+XRENDERLIB  = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/libXrender.lib
+FONTCONFLIB = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/libfontconfig.lib
 
-# FREETYPELIB = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/freetype.lib
-# FREETYPELIB = C:/programs/compa_libs/freetype-2.5.1/compileds/VC12_$(BITS)/lib/freetype.lib
+# FREETYPELIB = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/freetype.lib
+# FREETYPELIB = C:/programs/compa_libs/freetype-2.5.1/compileds/$(LIB_CC)/lib/freetype.lib
 !IF $(BITS) == 64
-FREETYPELIB = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/freetype255MT.lib
+!IF $(VC)   == 14
+FREETYPELIB = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/freetype291MT.lib
 !ELSE
-FREETYPELIB = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/freetype2501MT.lib
+FREETYPELIB = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/freetype255MT.lib
+!ENDIF
+!ELSE
+FREETYPELIB = C:/programs/compa_libs/X11/compileds/$(LIB_CC)/lib/freetype2501MT.lib
 !ENDIF
 
-# XML2LIB     = C:/programs/compa_libs/X11/compileds/VC12_$(BITS)/lib/libxml2-2.lib
-XML2LIB     = C:/programs/compa_libs/libxml2-2.9.1/compileds/VC12_$(BITS)/lib/libxml2.lib
-PNGLIB      = C:/programs/compa_libs/lpng166/compileds/VC12_$(BITS)/lib/png.lib
-JPGLIB      = C:/programs/compa_libs/jpeg-6b/compileds/VC12_$(BITS)/lib/libjpeg.lib
-ICONVLIB    = C:/programs/compa_libs/libiconv-1.14/compileds/VC12_$(BITS)/lib/libiconv.lib
+XML2LIB     = C:/programs/compa_libs/libxml2-2.9.1/compileds/$(LIB_CC)/lib/libxml2.lib
+PNGLIB      = C:/programs/compa_libs/lpng166/compileds/$(LIB_CC)/lib/png.lib
+JPGLIB      = C:/programs/compa_libs/jpeg-6b/compileds/$(LIB_CC)/lib/libjpeg.lib
+ICONVLIB    = C:/programs/compa_libs/libiconv-1.14/compileds/$(LIB_CC)/lib/libiconv.lib
 DIRENTLIB   = C:/programs/octave_build2/VC10_$(BITS)/lib/dirent.lib 
 MOTIFLIBS   = $(MOTIFLIB1) $(MOTIFLIB2) $(XTLIB) $(XFTLIB) $(XEXTLIB) $(X11LIB) $(XRENDERLIB) \
               $(FONTCONFLIB) $(FREETYPELIB) $(XML2LIB) $(PNGLIB) $(JPGLIB) $(ICONVLIB)
