@@ -14,7 +14,7 @@
 !INCLUDE ..\..\X11decs.opt
 
 
-LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbview_static.lib $(MOTIFLIBS) Opengl32.lib GlU32.Lib Gdi32.lib
+LDFLAGS = -nologo Ws2_32.lib $(MBLIBS) $(NETCDFLIB) $(GMTLIB) $(PSLLIB) $(PROJLIB) $(ONCRPCLIB) $(GETOPTLIB) $(LDEBUG) $(LIBDIR)/mbio.lib $(LIBDIR)/sapi.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbaux.lib $(LIBDIR)/mbbsio.lib $(LIBDIR)/mbgsf.lib $(LIBDIR)/mbview_static.lib $(MOTIFLIBS) Opengl32.lib GlU32.Lib Gdi32.lib $(DIRENTLIB)
 
 
 OBJS =  mbgrdviz_main.obj mbgrdviz_callbacks.obj mbgrdviz_creation.obj
