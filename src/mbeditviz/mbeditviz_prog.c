@@ -43,6 +43,12 @@
 #include "mbsys_singlebeam.h"
 
 /* mbview include file */
+
+/* Need to include windows.h BEFORE the the Xm stuff otherwise VC14+ barf with conflicts */
+#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+#include <windows.h>
+#endif
+
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
 #include "mbview.h"
@@ -50,6 +56,11 @@
 /* mbeditviz include file - define globals here */
 #define MBEDITVIZ_DECLARE_GLOBALS
 #include "mbeditviz.h"
+
+/* No isinf() os VS, so make one */
+#ifdef _MSC_VER
+#	define isinf(x) (!_finite(x))
+#endif
 
 /* id variables */
 static char rcs_id[] = "$Id: mbeditviz_prog.c 2332 2018-04-18 02:28:06Z caress $";
