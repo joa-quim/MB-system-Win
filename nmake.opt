@@ -26,7 +26,7 @@ CC = cl
 GMTver=6
 
 # Uncomment for debug build
-#DEBUG=yes
+DEBUG=yes
 
 # GMT & Netcdf include directories
 NETCDFINCDIR = c:/programs/compa_libs/netcdf_GIT/compileds/$(LIB_CC)/include
@@ -67,4 +67,4 @@ BINDIR = ../../bin$(BITS)
 LIBDIR = ../../lib$(BITS)
 INCDIR = ../../include
 # 
-CFLAGS = -nologo -MD -W1 $(OPTIM) $(PREPROCS) /I$(GETOPTINC) /I$(GMTINCDIR) /I$(GDALINCDIR) /I$(NETCDFINCDIR) /I$(ONCRPCINC) /I$(PTHREADINC) /I..
+CFLAGS = -nologo -MD -W3 $(OPTIM) $(PREPROCS) /I$(GETOPTINC) /I$(GMTINCDIR) /I$(GDALINCDIR) /I$(NETCDFINCDIR) /I$(ONCRPCINC) /I$(PTHREADINC) /I..
