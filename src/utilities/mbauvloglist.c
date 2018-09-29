@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbauvloglist.c	8/14/2006
- *    $Id: mbauvloglist.c 2329 2018-02-12 06:48:39Z caress $
+ *    $Id: mbauvloglist.c 2346 2018-08-13 21:09:14Z caress $
  *
  *    Copyright (c) 2006-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -39,8 +39,8 @@
 #include "mb_aux.h"
 
 /* local defines */
-#define NFIELDSMAX 50
-#define MAX_OPTIONS 50
+#define NFIELDSMAX 512
+#define MAX_OPTIONS 512
 #define TYPE_UNKNOWN 0
 #define TYPE_TIMETAG 1
 #define TYPE_INTEGER 2
@@ -104,7 +104,7 @@ double calcTemp(struct ctd_calibration_struct *calibration_ptr,
 double calcCond(struct ctd_calibration_struct *calibration_ptr,
 				double cFreq, double temp, double pressure);
 
-static char rcs_id[] = "$Id: mbauvloglist.c 2329 2018-02-12 06:48:39Z caress $";
+static char rcs_id[] = "$Id: mbauvloglist.c 2346 2018-08-13 21:09:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -462,7 +462,8 @@ int main(int argc, char **argv) {
 
 	nfields = 0;
 	recordsize = 0;
-	while ((result = fgets(buffer, MB_PATH_MAXLINE, fp)) == buffer && strncmp(buffer, "# begin", 7) != 0) {
+	while ((result = fgets(buffer, MB_PATH_MAXLINE, fp)) == buffer &&
+           strncmp(buffer, "# begin", 7) != 0) {
 		nscan = sscanf(buffer, "# %s %s %s", type, fields[nfields].name, fields[nfields].format);
 		if (nscan == 2) {
 			if (printheader == MB_YES)

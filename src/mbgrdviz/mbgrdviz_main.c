@@ -2,7 +2,7 @@
 /* Begin user code block <abstract> */
 /*--------------------------------------------------------------------
  *    The MB-system:	mbgrdviz_main.c		10/9/2002
- *    $Id: mbgrdviz_main.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbgrdviz_main.c 2344 2018-08-03 17:33:13Z caress $
  *
  *    Copyright (c) 2002-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -127,10 +127,10 @@ int do_mbgrdviz_opennav(size_t instance, int swathbounds, char *input_file_ptr);
 int do_mbgrdviz_readnav(size_t instance, char *swathfile, int pathstatus, char *pathraw, char *pathprocessed, int format,
                         int formatorg, double weight, int *error);
 int do_mbgrdviz_readgrd(size_t instance, char *grdfile, int *grid_projection_mode, char *grid_projection_id, float *nodatavalue,
-                        int *nxy, int *nx, int *ny, double *min, double *max, double *xmin, double *xmax, double *ymin,
+                        int *nxy, int *n_columns, int *n_rows, double *min, double *max, double *xmin, double *xmax, double *ymin,
                         double *ymax, double *dx, double *dy, float **data);
 int do_mbgrdviz_opentest(size_t instance, double factor1, double factor2, double factor3, int *grid_projection_mode,
-                         char *grid_projection_id, float *nodatavalue, int *nxy, int *nx, int *ny, double *min, double *max,
+                         char *grid_projection_id, float *nodatavalue, int *nxy, int *n_columns, int *n_rows, double *min, double *max,
                          double *xmin, double *xmax, double *ymin, double *ymax, double *dx, double *dy, float **data);
 void do_mbgrdviz_open_region(Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbgrdviz_open_mbeditviz(Widget w, XtPointer client_data, XtPointer call_data);
@@ -155,7 +155,7 @@ void do_mbgrdviz_realtimesetup_updaterate(Widget w, XtPointer client_data, XtPoi
 void do_mbgrdviz_realtimesetup_path_test(Widget w, XtPointer client_data, XtPointer call_data);
 void do_mbgrdviz_realtimesetup_pathmode(Widget w, XtPointer client_data, XtPointer call_data);
 
-static char rcs_id[] = "$Id: mbgrdviz_main.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbgrdviz_main.c 2344 2018-08-03 17:33:13Z caress $";
 static char program_name[] = "MBgrdviz";
 static char help_message[] = "MBgrdviz provides simple interactive 2D/3Dvizualization of GMT grids.";
 static char usage_message[] = "mbgrdviz [-Igrdfile -T -V -H]";

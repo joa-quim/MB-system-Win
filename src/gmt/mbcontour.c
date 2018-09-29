@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbcontour.c	5/30/93
- *    $Id: mbcontour.c 2324 2018-01-19 03:04:33Z caress $
+ *    $Id: mbcontour.c 2344 2018-08-03 17:33:13Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -226,7 +226,7 @@ void mbcontour_newpen(int ipen);
 void mbcontour_justify_string(double height, char *string, double *s);
 void mbcontour_plot_string(double x, double y, double hgt, double angle, char *label);
 
-static char svn_id[] = "$Id: mbcontour.c 2324 2018-01-19 03:04:33Z caress $";
+static char svn_id[] = "$Id: mbcontour.c 2344 2018-08-03 17:33:13Z caress $";
 
 /*--------------------------------------------------------------------*/
 
@@ -317,7 +317,7 @@ int GMT_mbcontour_usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Message(API, GMT_TIME_NONE, "\t[-I<inputfile>] [-L<lonflip>] [-N<cptfile>]\n");
 	GMT_Message(API, GMT_TIME_NONE, "\t[-S<speed>] [-T<timegap>] [-W] [-Z<mode>]\n");
 	GMT_Message(API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message(API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT,
+	GMT_Message(API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT,
 	            GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS)
@@ -338,7 +338,7 @@ int GMT_mbcontour_usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Message(API, GMT_TIME_NONE,
 	            "\t-p<pings> Sets the ping averaging of the input data [Default = 1, i.e. no ping average].\n");
 	GMT_Option(API, "R");
-	GMT_Option(API, "U,V,X,c,.");
+	GMT_Option(API, "U,V,X,.");
 
 	return (EXIT_FAILURE);
 }

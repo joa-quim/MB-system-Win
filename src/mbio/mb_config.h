@@ -88,7 +88,7 @@
 #undef PACKAGE_NAME
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "mbsystem 5.5.2341"
+#define PACKAGE_STRING "mbsystem 5.5.2350"
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
@@ -97,16 +97,16 @@
 #undef PACKAGE_URL
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "5.5.2341"
+#define PACKAGE_VERSION "5.5.2350"
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Version number of package */
-#define VERSION "5.5.2341"
+#define VERSION "5.5.2350"
 
 /* Set VERSION_DATE define in mb_config.h */
-#define VERSION_DATE "28 June 2018"
+#define VERSION_DATE "6 September 2018"
 
 /* Turned on WIN32 define in config */
 //#undef WIN32

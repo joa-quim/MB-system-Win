@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_write_init.c	1/25/93
- *    $Id: mb_write_init.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mb_write_init.c 2345 2018-08-10 06:02:58Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -39,7 +39,7 @@
 #include "gsf.h"
 #include "netcdf.h"
 
-static char rcs_id[] = "$Id: mb_write_init.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mb_write_init.c 2345 2018-08-10 06:02:58Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_write_init(int verbose, char *file, int format, void **mbio_ptr, int *beams_bath, int *beams_amp, int *pixels_ss,
@@ -198,6 +198,8 @@ int mb_write_init(int verbose, char *file, int format, void **mbio_ptr, int *bea
 	mb_io_ptr->save12 = 0;
 	mb_io_ptr->save13 = 0;
 	mb_io_ptr->save14 = 0;
+	mb_io_ptr->save15 = 0;
+	mb_io_ptr->save16 = 0;
 	mb_io_ptr->saved1 = 0;
 	mb_io_ptr->saved2 = 0;
 	mb_io_ptr->saved3 = 0;

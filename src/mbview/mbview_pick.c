@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_pick.c	9/29/2003
- *    $Id: mbview_pick.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbview_pick.c 2344 2018-08-03 17:33:13Z caress $
  *
  *    Copyright (c) 2003-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -77,7 +77,7 @@
 static char value_text[MB_PATH_MAXLINE];
 static char value_list[MB_PATH_MAXLINE];
 
-static char rcs_id[] = "$Id: mbview_pick.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbview_pick.c 2344 2018-08-03 17:33:13Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_clearpicks(size_t instance) {
@@ -549,8 +549,8 @@ int mbview_picksize(size_t instance) {
 	/* resize and redrape pick marks if required */
 	if (data->pickinfo_mode == MBV_PICK_ONEPOINT || data->pickinfo_mode == MBV_PICK_TWOPOINT) {
 		/* set size of 'X' marks in gl units for 3D case */
-		scalefactor = MIN(((double)(data->viewbounds[1] - data->viewbounds[0])) / ((double)data->primary_nx),
-		                  ((double)(data->viewbounds[3] - data->viewbounds[2])) / ((double)data->primary_ny));
+		scalefactor = MIN(((double)(data->viewbounds[1] - data->viewbounds[0])) / ((double)data->primary_n_columns),
+		                  ((double)(data->viewbounds[3] - data->viewbounds[2])) / ((double)data->primary_n_rows));
 		xlength = 0.05 * scalefactor;
 
 		/* set pick location x marker */

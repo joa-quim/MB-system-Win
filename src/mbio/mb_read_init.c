@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_read_init.c	1/25/93
- *    $Id: mb_read_init.c 2340 2018-06-27 01:38:31Z caress $
+ *    $Id: mb_read_init.c 2345 2018-08-10 06:02:58Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -40,7 +40,7 @@
 #include "gsf.h"
 #include "netcdf.h"
 
-static char rcs_id[] = "$Id: mb_read_init.c 2340 2018-06-27 01:38:31Z caress $";
+static char rcs_id[] = "$Id: mb_read_init.c 2345 2018-08-10 06:02:58Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mb_read_init(int verbose, char *file, int format, int pings, int lonflip, double bounds[4], int btime_i[7], int etime_i[7],
@@ -234,6 +234,8 @@ int mb_read_init(int verbose, char *file, int format, int pings, int lonflip, do
 	mb_io_ptr->save12 = 0;
 	mb_io_ptr->save13 = 0;
 	mb_io_ptr->save14 = 0;
+	mb_io_ptr->save15 = 0;
+	mb_io_ptr->save16 = 0;
 	mb_io_ptr->saved1 = 0;
 	mb_io_ptr->saved2 = 0;
 	mb_io_ptr->saved3 = 0;

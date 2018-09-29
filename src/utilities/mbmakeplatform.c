@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbmakeplatform.c	9/5/2015
- *    $Id: mbmakeplatform.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbmakeplatform.c 2345 2018-08-10 06:02:58Z caress $
  *
  *    Copyright (c) 2015-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -22,7 +22,7 @@
  */
 
 /* source file version string */
-static char version_id[] = "$Id: mbmakeplatform.c 2308 2017-06-04 19:55:48Z caress $";
+static char version_id[] = "$Id: mbmakeplatform.c 2345 2018-08-10 06:02:58Z caress $";
 
 /* standard include files */
 #include <stdio.h>
@@ -621,6 +621,9 @@ int main(int argc, char **argv) {
 	bounds[1] = 360.0;
 	bounds[2] = -90.0;
 	bounds[3] = 90.0;
+    
+	/* initialize platform structure */
+	status = mb_platform_init(verbose, (void **)&platform, &error);
 
 	/* initialize tmp_sensor and tmp_offsets */
 	memset(&tmp_sensor, 0, sizeof(struct mb_sensor_struct));
@@ -981,11 +984,6 @@ int main(int argc, char **argv) {
 				/* set output platform file */
 				strcpy(output_platform_file, optarg);
 				output_platform_file_defined = MB_YES;
-
-				/* if input platform file not already read, initialize platform structure */
-				if (input_platform_file_defined == MB_NO && input_swath_platform_defined == MB_NO) {
-					status = mb_platform_init(verbose, (void **)&platform, &error);
-				}
 			}
 
 			/*-------------------------------------------------------
@@ -2178,7 +2176,7 @@ int main(int argc, char **argv) {
 		}
 
 		if (sensor_mode == SENSOR_MODIFY || sensor_mode == SENSOR_ADD) {
-			if (sensor_id < 0 || sensor_id > platform->num_sensors) {
+			if (platform == NULL || sensor_id < 0 || sensor_id > platform->num_sensors) {
 				sensor_id = -1;
 				sensor_mode = SENSOR_OFF;
 			}

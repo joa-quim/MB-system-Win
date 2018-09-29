@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbsys_reson7k.h	3/3/2004
- *	$Id: mbsys_reson7k.h 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbsys_reson7k.h 2345 2018-08-10 06:02:58Z caress $
  *
  *    Copyright (c) 2004-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -142,7 +142,7 @@
 #define R7KRECID_7kDataStorageStatus 7052
 #define R7KRECID_7kCalibratedSnippetData 7058
 #define R7KRECID_7kFileHeader 7200
-#define R7KRECID_7kTrigger 7300
+#define R7KRECID_7kFileCatalog 7300
 #define R7KRECID_7kTriggerSequenceSetup 7301
 #define R7KRECID_7kTriggerSequenceDone 7302
 #define R7KRECID_7kTimeMessage 7400
@@ -156,6 +156,7 @@
 #define R7KRECID_7kSoundVelocity 7610
 #define R7KRECID_7kAbsorptionLoss 7611
 #define R7KRECID_7kSpreadingLoss 7612
+#define R7KRECID_7kFiller 7777
 #define R7KRECID_8100SonarData 8100
 
 /* 11000-11199 reserved for Payload Controller command records */
@@ -340,7 +341,7 @@ in a Bluefin data record */
 /*---------------------------------------------------------------*/
 
 /* Structure size definitions */
-#define MBSYS_RESON7K_BUFFER_STARTSIZE 32768
+#define MBSYS_RESON7K_BUFFER_STARTSIZE 600000 //65536
 #define MBSYS_RESON7K_MAX_DEVICE 10
 #define MBSYS_RESON7K_MAX_RECEIVERS 1024
 #define MBSYS_RESON7K_MAX_BEAMS 1024

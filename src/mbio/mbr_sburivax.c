@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbr_sburivax.c	2/2/93
- *	$Id: mbr_sburivax.c 2308 2017-06-04 19:55:48Z caress $
+ *	$Id: mbr_sburivax.c 2346 2018-08-13 21:09:14Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -60,7 +60,7 @@ int mbr_dem_sburivax(int verbose, void *mbio_ptr, int *error);
 int mbr_rt_sburivax(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 int mbr_wt_sburivax(int verbose, void *mbio_ptr, void *store_ptr, int *error);
 
-static char rcs_id[] = "$Id: mbr_sburivax.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbr_sburivax.c 2346 2018-08-13 21:09:14Z caress $";
 
 /*--------------------------------------------------------------------*/
 int mbr_register_sburivax(int verbose, void *mbio_ptr, int *error) {
@@ -324,6 +324,7 @@ int mbr_rt_sburivax(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 	struct mbsys_sb_struct *store;
 	char *datacomment;
 	short dummy;
+    double tmplon;
 	int i;
 	int id;
 
@@ -418,6 +419,12 @@ int mbr_rt_sburivax(int verbose, void *mbio_ptr, void *store_ptr, int *error) {
 		store->kind = dataplus->kind;
 
 		/* position */
+        if (data->lon2u < 0) {
+            /* if longitude stored with negative values wrap into positive 0-360 domain */
+            tmplon = 360.0 + data->lon2u / 60. + data->lon2b / 600000.;
+            data->lon2u = (short)(60.0 * tmplon);
+            data->lon2b = (short)(600000.0 * (tmplon - data->lon2u / 60.0));
+        }
 		store->lon2u = data->lon2u;
 		store->lon2b = data->lon2b;
 		store->lat2u = data->lat2u;

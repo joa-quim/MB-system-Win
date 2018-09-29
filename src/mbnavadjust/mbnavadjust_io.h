@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbnavadjust_io.h	4/18/2014
- *    $Id: mbnavadjust_io.h 2337 2018-06-25 08:14:52Z caress $
+ *    $Id: mbnavadjust_io.h 2349 2018-09-07 01:42:54Z caress $
 
  *    Copyright (c) 2014-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -76,6 +76,7 @@
 #define MBNA_VIEW_LIST_BETTERCROSSINGS 7
 #define MBNA_VIEW_LIST_TRUECROSSINGS 8
 #define MBNA_VIEW_LIST_TIES 9
+#define MBNA_VIEW_LIST_TIESSORTED 10
 #define MBNA_VIEW_MODE_ALL 0
 #define MBNA_VIEW_MODE_SURVEY 1
 #define MBNA_VIEW_MODE_WITHSURVEY 2
@@ -185,6 +186,7 @@ struct mbna_section {
 	double snav_time_d[MBNA_SNAV_NUM];
 	double snav_lon[MBNA_SNAV_NUM];
 	double snav_lat[MBNA_SNAV_NUM];
+    double snav_sensordepth[MBNA_SNAV_NUM];
 	double snav_lon_offset[MBNA_SNAV_NUM];
 	double snav_lat_offset[MBNA_SNAV_NUM];
 	double snav_z_offset[MBNA_SNAV_NUM];
@@ -192,15 +194,29 @@ struct mbna_section {
 	int modelplot_start_count;
 	int contoursuptodate;
 	int global_tie_status;
+	int global_tie_inversion_status;
 	int global_tie_snav;
-	double global_tie_offset_x;
-	double global_tie_offset_y;
-	double global_tie_offset_x_m;
-	double global_tie_offset_y_m;
-	double global_tie_offset_z_m;
-	double global_tie_xsigma;
-	double global_tie_ysigma;
-	double global_tie_zsigma;
+	double offset_x;
+	double offset_y;
+	double offset_x_m;
+	double offset_y_m;
+	double offset_z_m;
+	double xsigma;
+	double ysigma;
+	double zsigma;
+    double inversion_offset_x;
+	double inversion_offset_y;
+	double inversion_offset_x_m;
+	double inversion_offset_y_m;
+	double inversion_offset_z_m;
+    double dx_m;
+    double dy_m;
+    double dz_m;
+    double sigma_m;
+    double dr1_m;
+    double dr2_m;
+    double dr3_m;
+    double rsigma_m;
 };
 struct mbna_file {
 	int status;
@@ -248,6 +264,14 @@ struct mbna_tie {
 	double inversion_offset_x_m;
 	double inversion_offset_y_m;
 	double inversion_offset_z_m;
+    double dx_m;
+    double dy_m;
+    double dz_m;
+    double sigma_m;
+    double dr1_m;
+    double dr2_m;
+    double dr3_m;
+    double rsigma_m;
 	int block_1;
 	int block_2;
 	int isurveyplotindex;
@@ -334,7 +358,7 @@ struct mbna_project {
 
 	int modelplot;
 	int modelplot_style;
-    
+    int modelplot_uptodate;
     
 	/* function pointers for contour plotting */
     void (*mbnavadjust_plot)(double xx, double yy, int ipen);
@@ -395,12 +419,16 @@ int mbnavadjust_crossing_overlap(int verbose, struct mbna_project *project, int 
 int mbnavadjust_crossing_overlapbounds(int verbose, struct mbna_project *project, int crossing_id, double offset_x,
                                        double offset_y, double *lonmin, double *lonmax, double *latmin, double *latmax,
                                        int *error);
+int mbnavadjust_crossing_focuspoint(int verbose, struct mbna_project *project, int crossing_id,
+                                    double offset_x, double offset_y, int *isnav1_focus, int *isnav2_focus,
+                                    double *lon_focus, double *lat_focus, int *error);
 int mbnavadjust_set_plot_functions(int verbose, struct mbna_project *project,
                              void *plot, void *newpen, void *setline,
                              void *justify_string, void *plot_string, int *error);
 int mbnavadjust_section_load(int verbose, struct mbna_project *project,
                              int file_id, int section_id,
                              void **swathraw_ptr, void **swath_ptr, int num_pings, int *error);
+int mbnavadjust_fix_section_sensordepth(int verbose, struct mbna_project *project, int *error);
 int mbnavadjust_section_translate(int verbose, struct mbna_project *project,
                                   int file_id, void *swathraw_ptr, void *swath_ptr,
                                   double zoffset, int *error);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mb_io.h	1/19/93
- *    $Id: mb_io.h 2340 2018-06-27 01:38:31Z caress $
+ *    $Id: mb_io.h 2345 2018-08-10 06:02:58Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -667,6 +667,8 @@ struct mb_io_struct {
 	int save12;
 	int save13;
 	int save14;
+    int save15;
+    int save16;
 	double saved1;
 	double saved2;
 	double saved3;

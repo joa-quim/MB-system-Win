@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbclean.c	2/26/93
- *    $Id: mbclean.c 2334 2018-04-18 15:33:43Z caress $
+ *    $Id: mbclean.c 2345 2018-08-10 06:02:58Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -114,15 +114,15 @@ struct bad_struct {
 /* edit output function */
 int mbclean_save_edit(int verbose, FILE *sofp, double time_d, int beam, int action, int *error);
 
-static char rcs_id[] = "$Id: mbclean.c 2334 2018-04-18 15:33:43Z caress $";
+static char rcs_id[] = "$Id: mbclean.c 2345 2018-08-10 06:02:58Z caress $";
 
 /*--------------------------------------------------------------------*/
 
 int main(int argc, char **argv) {
-	char program_name[] = "MBCLEAN";
-	char help_message[] = "MBCLEAN identifies and flags artifacts in swath sonar bathymetry data\nBad beams  are  indentified  "
-	                      "based  on  one simple criterion only: \nexcessive bathymetric slopes.   The default input and output "
-	                      "streams \nare stdin and stdout.";
+	char program_name[] = "mbclean";
+	char help_message[] = "Mbclean  identifies  and  flags  artifacts in swath sonar bathymetry data.\n"
+                            "Several algorithms are available for identifying  artifacts;  \n"
+                            "multiple  algorithms  can  be applied in a single pass.\n";
 	char usage_message[] = "mbclean [-Amax -Blow/high -Cslope/unit -Dmin/max \n"
 	                       "\t-Fformat -Gfraction_low/fraction_high -Iinfile -Krange_min \n"
 	                       "\t-Llonflip -Mmode -Ooutfile -Pmin_speed/max_speed -Q -Rmaxheadingrate \n"

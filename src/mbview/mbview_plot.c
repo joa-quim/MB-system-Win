@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_plot.c	9/26/2003
- *    $Id: mbview_plot.c 2320 2017-10-19 01:40:44Z caress $
+ *    $Id: mbview_plot.c 2344 2018-08-03 17:33:13Z caress $
  *
  *    Copyright (c) 2003-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -77,7 +77,7 @@
 static Cardinal ac;
 static Arg args[256];
 
-static char rcs_id[] = "$Id: mbview_plot.c 2320 2017-10-19 01:40:44Z caress $";
+static char rcs_id[] = "$Id: mbview_plot.c 2344 2018-08-03 17:33:13Z caress $";
 
 //#define MBV_DEBUG_GLX 1
 //#define MBV_GET_GLX_ERRORS 1
@@ -266,14 +266,14 @@ int mbview_drawdata(size_t instance, int rez) {
 	/* draw the triangle outlines */
 	/*
 	glColor3f(1.0, 0.0, 0.0);
-	for (i=0;i<data->primary_nx-1;i++)
+	for (i=0;i<data->primary_n_columns-1;i++)
 	{
-	for (j=0;j<data->primary_ny-1;j++)
+	for (j=0;j<data->primary_n_rows-1;j++)
 	    {
-	    k = i * data->primary_ny + j;
-	    l = (i + 1) * data->primary_ny + j;
-	    m = i * data->primary_ny + j + 1;
-	    n = (i + 1) * data->primary_ny + j + 1;
+	    k = i * data->primary_n_rows + j;
+	    l = (i + 1) * data->primary_n_rows + j;
+	    m = i * data->primary_n_rows + j + 1;
+	    n = (i + 1) * data->primary_n_rows + j + 1;
 	    if (data->primary_data[k] != data->primary_nodatavalue
 	        && data->primary_data[l] != data->primary_nodatavalue
 	        && data->primary_data[m] != data->primary_nodatavalue)
@@ -312,14 +312,14 @@ int mbview_drawdata(size_t instance, int rez) {
 
 	/* draw the triangles */
 	/*glBegin(GL_TRIANGLES);
-	for (i=0;i<data->primary_nx-stride;i+=stride)
+	for (i=0;i<data->primary_n_columns-stride;i+=stride)
 	{
-	for (j=0;j<data->primary_ny-stride;j+=stride)
+	for (j=0;j<data->primary_n_rows-stride;j+=stride)
 	    {
-	    k = i * data->primary_ny + j;
-	    l = (i + stride) * data->primary_ny + j;
-	    m = i * data->primary_ny + j + stride;
-	    n = (i + stride) * data->primary_ny + j + stride;
+	    k = i * data->primary_n_rows + j;
+	    l = (i + stride) * data->primary_n_rows + j;
+	    m = i * data->primary_n_rows + j + stride;
+	    n = (i + stride) * data->primary_n_rows + j + stride;
 	    if (data->primary_data[k] != data->primary_nodatavalue
 	        && data->primary_data[l] != data->primary_nodatavalue
 	        && data->primary_data[m] != data->primary_nodatavalue)
@@ -378,7 +378,7 @@ int mbview_drawdata(size_t instance, int rez) {
 	/* dump out of loop if plotting already done at a higher recursion */
 
 	/*if (view->plot_done == MB_YES)
-	    i = data->primary_nx;
+	    i = data->primary_n_columns;
 	}
 	glEnd();*/
 
@@ -388,8 +388,8 @@ int mbview_drawdata(size_t instance, int rez) {
 			on = MB_NO;
 			flip = MB_NO;
 			for (j = data->viewbounds[2]; j < data->viewbounds[3]; j += stride) {
-				k = i * data->primary_ny + j;
-				l = (i + stride) * data->primary_ny + j;
+				k = i * data->primary_n_rows + j;
+				l = (i + stride) * data->primary_n_rows + j;
 				if (flip == MB_NO) {
 					ikk = i;
 					kk = k;
@@ -482,7 +482,7 @@ int mbview_drawdata(size_t instance, int rez) {
 	
 			/* dump out of loop if plotting already done at a higher recursion */
 			if (view->plot_done == MB_YES)
-				i = data->primary_nx;
+				i = data->primary_n_columns;
 		}
 	}
 	
@@ -491,8 +491,8 @@ int mbview_drawdata(size_t instance, int rez) {
 			on = MB_NO;
 			flip = MB_NO;
 			for (j = data->viewbounds[2]; j < data->viewbounds[3]; j += stride) {
-				k = i * data->primary_ny + j;
-				l = (i + stride) * data->primary_ny + j;
+				k = i * data->primary_n_rows + j;
+				l = (i + stride) * data->primary_n_rows + j;
 				if (flip == MB_NO) {
 					ikk = i;
 					kk = k;
@@ -595,7 +595,7 @@ int mbview_drawdata(size_t instance, int rez) {
 	
 			/* dump out of loop if plotting already done at a higher recursion */
 			if (view->plot_done == MB_YES)
-				i = data->primary_nx;
+				i = data->primary_n_columns;
 		}
 	}
 #ifdef MBV_GET_GLX_ERRORS
@@ -1062,9 +1062,9 @@ int mbview_plot(size_t instance, int rez) {
 		/* get bounds of grid seen in current view */
 		if (rez == MBV_REZ_FULL && data->display_mode == MBV_DISPLAY_3D) {
 			data->viewbounds[0] = 0;
-			data->viewbounds[1] = data->primary_nx - 1;
+			data->viewbounds[1] = data->primary_n_columns - 1;
 			data->viewbounds[2] = 0;
-			data->viewbounds[3] = data->primary_ny - 1;
+			data->viewbounds[3] = data->primary_n_rows - 1;
 		}
 		else if (view->viewboundscount >= MBV_BOUNDSFREQUENCY) {
 			mbview_viewbounds(instance);
@@ -1204,9 +1204,9 @@ int mbview_findpoint(size_t instance, int xpixel, int ypixel, int *found, double
 		*found = MB_NO;
 		foundsave = MB_NO;
 		ijbounds[0] = 0;
-		ijbounds[1] = data->primary_nx;
+		ijbounds[1] = data->primary_n_columns;
 		ijbounds[2] = 0;
-		ijbounds[3] = data->primary_ny;
+		ijbounds[3] = data->primary_n_rows;
 		rez = MBV_REZ_LOW;
 		mbview_findpointrez(instance, rez, xpixel, ypixel, ijbounds, found, xgrid, ygrid, xlon, ylat, zdata, xdisplay, ydisplay,
 		                    zdisplay);
@@ -1420,11 +1420,11 @@ instance,xpixel,ypixel,ijbounds[0],ijbounds[1],ijbounds[2],ijbounds[3]);*/
 		if (rez == MBV_REZ_FULL)
 			stride = 1;
 		else if (rez == MBV_REZ_HIGH)
-			stride = MAX((int)ceil(((double)data->primary_nx) / ((double)data->hirez_dimension)),
-			             (int)ceil(((double)data->primary_ny) / ((double)data->hirez_dimension)));
+			stride = MAX((int)ceil(((double)data->primary_n_columns) / ((double)data->hirez_dimension)),
+			             (int)ceil(((double)data->primary_n_rows) / ((double)data->hirez_dimension)));
 		else
-			stride = MAX((int)ceil(((double)data->primary_nx) / ((double)data->lorez_dimension)),
-			             (int)ceil(((double)data->primary_ny) / ((double)data->lorez_dimension)));
+			stride = MAX((int)ceil(((double)data->primary_n_columns) / ((double)data->lorez_dimension)),
+			             (int)ceil(((double)data->primary_n_rows) / ((double)data->lorez_dimension)));
 
 		/* get number of grid cells used in picking */
 		npickx = (ni / stride);
@@ -1439,10 +1439,10 @@ instance,xpixel,ypixel,ijbounds[0],ijbounds[1],ijbounds[2],ijbounds[3]);*/
 		glBegin(GL_TRIANGLES);
 		for (i = imin; i < imax - stride; i += stride) {
 			for (j = jmin; j < jmax - stride; j += stride) {
-				k = i * data->primary_ny + j;
-				l = (i + stride) * data->primary_ny + j;
-				m = i * data->primary_ny + j + stride;
-				n = (i + stride) * data->primary_ny + j + stride;
+				k = i * data->primary_n_rows + j;
+				l = (i + stride) * data->primary_n_rows + j;
+				m = i * data->primary_n_rows + j + stride;
+				n = (i + stride) * data->primary_n_rows + j + stride;
 
 				rgb[0] = (float)floor(((double)((i - imin) / ipickstride))) / (MBV_PICK_DIVISION + 1.0);
 				rgb[1] = (float)floor(((double)((j - jmin) / jpickstride))) / (MBV_PICK_DIVISION + 1.0);
@@ -1503,10 +1503,10 @@ instance,xpixel,ypixel,ijbounds[0],ijbounds[1],ijbounds[2],ijbounds[3]);*/
 
 			i = imin + ipickstride * ((int)rint((MBV_PICK_DIVISION + 1.0) * rgba[0]));
 			j = jmin + jpickstride * ((int)rint((MBV_PICK_DIVISION + 1.0) * rgba[1]));
-			k = i * data->primary_ny + j;
-			l = (i + stride) * data->primary_ny + j;
-			m = i * data->primary_ny + j + stride;
-			n = (i + stride) * data->primary_ny + j + stride;
+			k = i * data->primary_n_rows + j;
+			l = (i + stride) * data->primary_n_rows + j;
+			m = i * data->primary_n_rows + j + stride;
+			n = (i + stride) * data->primary_n_rows + j + stride;
 			if (rint((MBV_PICK_DIVISION + 1.0) * rgba[2]) == (MBV_PICK_DIVISION + 1.0) / 4.0) {
 				*xgrid = data->primary_xmin + (3 * i + stride) * data->primary_dx / 3.0;
 				*ygrid = data->primary_ymin + (3 * j + stride) * data->primary_dy / 3.0;
@@ -1534,8 +1534,8 @@ instance,xpixel,ypixel,ijbounds[0],ijbounds[1],ijbounds[2],ijbounds[3]);*/
 				ijbounds[3] = j;
 			}
 			else {
-				ijbounds[1] = MIN(i + 2 * ipickstride - 1, data->primary_nx - 1);
-				ijbounds[3] = MIN(j + 2 * jpickstride - 1, data->primary_ny - 1);
+				ijbounds[1] = MIN(i + 2 * ipickstride - 1, data->primary_n_columns - 1);
+				ijbounds[3] = MIN(j + 2 * jpickstride - 1, data->primary_n_rows - 1);
 			}
 		}
 
@@ -1631,22 +1631,22 @@ int mbview_viewbounds(size_t instance) {
 			fprintf(stderr,"2D GL offsets: %f %f\n",
 			view->offset2d_x, view->offset2d_y);
 			fprintf(stderr,"2D primary grid corners: \n");
-			i = 0; j = 0; k = i * data->primary_ny + j;
+			i = 0; j = 0; k = i * data->primary_n_rows + j;
 			fprintf(stderr,"LL:%f %f\n",
 			data->primary_x[k],data->primary_y[k]);
-			i = data->primary_nx - 1; j = data->primary_ny - 1; k = i * data->primary_ny + j;
+			i = data->primary_n_columns - 1; j = data->primary_n_rows - 1; k = i * data->primary_n_rows + j;
 			fprintf(stderr,"LR:%f %f\n",
 			data->primary_x[k],data->primary_y[k]);
-			i = 0; j = 0; k = i * data->primary_ny + j;
+			i = 0; j = 0; k = i * data->primary_n_rows + j;
 			fprintf(stderr,"UL:%f %f\n",
 			data->primary_x[k],data->primary_y[k]);
-			i = data->primary_nx - 1; j = data->primary_ny - 1; k = i * data->primary_ny + j;
+			i = data->primary_n_columns - 1; j = data->primary_n_rows - 1; k = i * data->primary_n_rows + j;
 			fprintf(stderr,"UR:%f %f\n",
 			data->primary_x[k],data->primary_y[k]);*/
 
 			/* set stride for looping over data using rule for low rez plotting */
-			stride = MAX((int)ceil(((double)data->primary_nx) / ((double)data->lorez_dimension)),
-			             (int)ceil(((double)data->primary_ny) / ((double)data->lorez_dimension)));
+			stride = MAX((int)ceil(((double)data->primary_n_columns) / ((double)data->lorez_dimension)),
+			             (int)ceil(((double)data->primary_n_rows) / ((double)data->lorez_dimension)));
 
 			/* get 2D view bounds */
 			left2d = view->left - view->offset2d_x;
@@ -1655,12 +1655,12 @@ int mbview_viewbounds(size_t instance) {
 			top2d = view->top - view->offset2d_y;
 			found = MB_NO;
 			data->viewbounds[0] = 0;
-			data->viewbounds[1] = data->primary_nx - 1;
+			data->viewbounds[1] = data->primary_n_columns - 1;
 			data->viewbounds[2] = 0;
-			data->viewbounds[3] = data->primary_ny - 1;
-			for (i = 0; i < data->primary_nx; i += stride) {
-				for (j = 0; j < data->primary_ny; j += stride) {
-					k = i * data->primary_ny + j;
+			data->viewbounds[3] = data->primary_n_rows - 1;
+			for (i = 0; i < data->primary_n_columns; i += stride) {
+				for (j = 0; j < data->primary_n_rows; j += stride) {
+					k = i * data->primary_n_rows + j;
 					if (data->primary_data[k] != data->primary_nodatavalue && data->primary_x[k] >= left2d &&
 					    data->primary_x[k] <= right2d && data->primary_y[k] >= bottom2d && data->primary_y[k] <= top2d) {
 						if (found == MB_NO) {
@@ -1679,9 +1679,9 @@ int mbview_viewbounds(size_t instance) {
 					}
 				}
 			}
-			for (i = 0; i < data->primary_nx; i += data->primary_nx - 1) {
-				for (j = 0; j < data->primary_ny; j += data->primary_ny - 1) {
-					k = i * data->primary_ny + j;
+			for (i = 0; i < data->primary_n_columns; i += data->primary_n_columns - 1) {
+				for (j = 0; j < data->primary_n_rows; j += data->primary_n_rows - 1) {
+					k = i * data->primary_n_rows + j;
 					if (data->primary_data[k] != data->primary_nodatavalue && data->primary_x[k] >= left2d &&
 					    data->primary_x[k] <= right2d && data->primary_y[k] >= bottom2d && data->primary_y[k] <= top2d) {
 						if (found == MB_NO) {
@@ -1701,9 +1701,9 @@ int mbview_viewbounds(size_t instance) {
 				}
 			}
 			data->viewbounds[0] = MAX(data->viewbounds[0] - stride, 0);
-			data->viewbounds[1] = MIN(data->viewbounds[1] + stride, data->primary_nx - 1);
+			data->viewbounds[1] = MIN(data->viewbounds[1] + stride, data->primary_n_columns - 1);
 			data->viewbounds[2] = MAX(data->viewbounds[2] - stride, 0);
-			data->viewbounds[3] = MIN(data->viewbounds[3] + stride, data->primary_ny - 1);
+			data->viewbounds[3] = MIN(data->viewbounds[3] + stride, data->primary_n_rows - 1);
 		}
 
 		/* 3D case requires plotting */
@@ -1749,13 +1749,13 @@ int mbview_viewbounds(size_t instance) {
 				glEnable(GL_DEPTH_TEST);
 
 			/* set stride for looping over data using rule for low rez plotting */
-			stride = MAX((int)ceil(((double)data->primary_nx) / ((double)data->lorez_dimension)),
-			             (int)ceil(((double)data->primary_ny) / ((double)data->lorez_dimension)));
+			stride = MAX((int)ceil(((double)data->primary_n_columns) / ((double)data->lorez_dimension)),
+			             (int)ceil(((double)data->primary_n_rows) / ((double)data->lorez_dimension)));
 
 			/* get number of grid cells used in picking */
-			npickx = (data->primary_nx / stride);
+			npickx = (data->primary_n_columns / stride);
 			ipickstride = stride * (int)floor((npickx / MBV_PICK_DIVISION) + 1);
-			npicky = (data->primary_ny / stride);
+			npicky = (data->primary_n_rows / stride);
 			jpickstride = stride * (int)floor((npicky / MBV_PICK_DIVISION) + 1);
 
 			/*fprintf(stderr,"mbview_viewbounds: stride:%d npickx:%d npicky:%d ipickstride:%d jpickstride:%d\n",
@@ -1763,12 +1763,12 @@ int mbview_viewbounds(size_t instance) {
 
 			/* draw the triangles */
 			glBegin(GL_TRIANGLES);
-			for (i = 0; i < data->primary_nx - stride; i += stride) {
-				for (j = 0; j < data->primary_ny - stride; j += stride) {
-					k = i * data->primary_ny + j;
-					l = (i + stride) * data->primary_ny + j;
-					m = i * data->primary_ny + j + stride;
-					n = (i + stride) * data->primary_ny + j + stride;
+			for (i = 0; i < data->primary_n_columns - stride; i += stride) {
+				for (j = 0; j < data->primary_n_rows - stride; j += stride) {
+					k = i * data->primary_n_rows + j;
+					l = (i + stride) * data->primary_n_rows + j;
+					m = i * data->primary_n_rows + j + stride;
+					n = (i + stride) * data->primary_n_rows + j + stride;
 
 					rgb[0] = (float)floor(((double)(i / ipickstride))) / (MBV_PICK_DIVISION + 1.0);
 					rgb[1] = (float)floor(((double)(j / jpickstride))) / (MBV_PICK_DIVISION + 1.0);
@@ -1812,9 +1812,9 @@ int mbview_viewbounds(size_t instance) {
 			glReadBuffer(GL_BACK);
 			found = MB_NO;
 			data->viewbounds[0] = 0;
-			data->viewbounds[1] = data->primary_nx - 1;
+			data->viewbounds[1] = data->primary_n_columns - 1;
 			data->viewbounds[2] = 0;
-			data->viewbounds[3] = data->primary_ny - 1;
+			data->viewbounds[3] = data->primary_n_rows - 1;
 			iscreenstride = data->width / 20;
 			jscreenstride = data->height / 20;
 			for (xpixel = 0; xpixel < data->width; xpixel += iscreenstride) {
@@ -1861,8 +1861,8 @@ int mbview_viewbounds(size_t instance) {
 							ijbounds[3] = j;
 						}
 						else {
-							ijbounds[1] = MIN(i + 2 * ipickstride - 1, data->primary_nx - 1);
-							ijbounds[3] = MIN(j + 2 * jpickstride - 1, data->primary_ny - 1);
+							ijbounds[1] = MIN(i + 2 * ipickstride - 1, data->primary_n_columns - 1);
+							ijbounds[3] = MIN(j + 2 * jpickstride - 1, data->primary_n_rows - 1);
 						}
 						if (found == MB_NO) {
 							data->viewbounds[0] = ijbounds[0];
@@ -1886,9 +1886,9 @@ int mbview_viewbounds(size_t instance) {
 				}
 			}
 			data->viewbounds[0] = MAX(data->viewbounds[0] - stride, 0);
-			data->viewbounds[1] = MIN(data->viewbounds[1] + stride, data->primary_nx - 1);
+			data->viewbounds[1] = MIN(data->viewbounds[1] + stride, data->primary_n_columns - 1);
 			data->viewbounds[2] = MAX(data->viewbounds[2] - stride, 0);
-			data->viewbounds[3] = MIN(data->viewbounds[3] + stride, data->primary_ny - 1);
+			data->viewbounds[3] = MIN(data->viewbounds[3] + stride, data->primary_n_rows - 1);
 
 			/* reset buffer mode */
 			glReadBuffer(GL_FRONT);
@@ -2046,8 +2046,8 @@ int mbview_drapesegment_gc(size_t instance, struct mbview_linesegment_struct *se
 
 	/* get half characteristic distance between grid points
 	    from center of primary grid */
-	i = data->primary_nx / 2;
-	j = data->primary_ny / 2;
+	i = data->primary_n_columns / 2;
+	j = data->primary_n_rows / 2;
 	mbview_projectgrid2ll(instance, (double)(data->primary_xmin + i * data->primary_dx),
 	                      (double)(data->primary_ymin + j * data->primary_dy), &xlon1, &ylat1);
 	mbview_projectgrid2ll(instance, (double)(data->primary_xmin + (i + 1) * data->primary_dx),
@@ -2279,9 +2279,9 @@ int mbview_drapesegment_grid(size_t instance, struct mbview_linesegment_struct *
 			xgrid = data->primary_xmin + i * data->primary_dx;
 			ygrid = mm * xgrid + bb;
 			j = (int)((ygrid - data->primary_ymin) / data->primary_dy);
-			k = i * data->primary_ny + j;
-			l = i * data->primary_ny + j + 1;
-			if (i >= 0 && i < data->primary_nx - 1 && j >= 0 && j < data->primary_ny - 1 &&
+			k = i * data->primary_n_rows + j;
+			l = i * data->primary_n_rows + j + 1;
+			if (i >= 0 && i < data->primary_n_columns - 1 && j >= 0 && j < data->primary_n_rows - 1 &&
 			    data->primary_data[k] != data->primary_nodatavalue && data->primary_data[l] != data->primary_nodatavalue) {
 				/* interpolate zdata */
 				zdata = data->primary_data[k] + (ygrid - data->primary_ymin - j * data->primary_dy) / data->primary_dy *
@@ -2314,9 +2314,9 @@ int mbview_drapesegment_grid(size_t instance, struct mbview_linesegment_struct *
 			ygrid = data->primary_ymin + j * data->primary_dy;
 			xgrid = mm * ygrid + bb;
 			i = (int)((xgrid - data->primary_xmin) / data->primary_dx);
-			k = i * data->primary_ny + j;
-			l = (i + 1) * data->primary_ny + j;
-			if (i >= 0 && i < data->primary_nx - 1 && j >= 0 && j < data->primary_ny - 1 &&
+			k = i * data->primary_n_rows + j;
+			l = (i + 1) * data->primary_n_rows + j;
+			if (i >= 0 && i < data->primary_n_columns - 1 && j >= 0 && j < data->primary_n_rows - 1 &&
 			    data->primary_data[k] != data->primary_nodatavalue && data->primary_data[l] != data->primary_nodatavalue) {
 				/* interpolate zdata */
 				zdata = data->primary_data[k] + (xgrid - data->primary_xmin - i * data->primary_dx) / data->primary_dx *
@@ -2544,8 +2544,8 @@ int mbview_drapesegmentw_gc(size_t instance, struct mbview_linesegmentw_struct *
 
 	/* get half characteristic distance between grid points
 	    from center of primary grid */
-	i = data->primary_nx / 2;
-	j = data->primary_ny / 2;
+	i = data->primary_n_columns / 2;
+	j = data->primary_n_rows / 2;
 	mbview_projectgrid2ll(instance, (double)(data->primary_xmin + i * data->primary_dx),
 	                      (double)(data->primary_ymin + j * data->primary_dy), &xlon1, &ylat1);
 	mbview_projectgrid2ll(instance, (double)(data->primary_xmin + (i + 1) * data->primary_dx),
@@ -2722,20 +2722,20 @@ int mbview_drapesegmentw_grid(size_t instance, struct mbview_linesegmentw_struct
 	jend = (int)((ygridend - data->primary_ymin) / data->primary_dy);
 	if (istart < 0)
 		istart = 0;
-	if (istart >= data->primary_nx)
-		istart = data->primary_nx - 1;
+	if (istart >= data->primary_n_columns)
+		istart = data->primary_n_columns - 1;
 	if (iend < 0)
 		iend = 0;
-	if (iend >= data->primary_nx)
-		iend = data->primary_nx - 1;
+	if (iend >= data->primary_n_columns)
+		iend = data->primary_n_columns - 1;
 	if (jstart < 0)
 		jstart = 0;
-	if (jstart >= data->primary_nx)
-		jstart = data->primary_ny - 1;
+	if (jstart >= data->primary_n_columns)
+		jstart = data->primary_n_rows - 1;
 	if (jend < 0)
 		jend = 0;
-	if (jend >= data->primary_nx)
-		jend = data->primary_ny - 1;
+	if (jend >= data->primary_n_columns)
+		jend = data->primary_n_rows - 1;
 	/* fprintf(stderr,"mbview_drapesegmentw_grid: xgridstart:%f xgridend:%f ygridstart:%f ygridend:%f\n",
 	xgridstart,xgridend,ygridstart,ygridend);
 	fprintf(stderr,"mbview_drapesegmentw_grid: istart:%d iend:%d jstart:%d jend:%d\n",istart,iend,jstart,jend);*/
@@ -2804,9 +2804,9 @@ int mbview_drapesegmentw_grid(size_t instance, struct mbview_linesegmentw_struct
 			xgrid = data->primary_xmin + i * data->primary_dx;
 			ygrid = mm * xgrid + bb;
 			j = (int)((ygrid - data->primary_ymin) / data->primary_dy);
-			k = i * data->primary_ny + j;
-			l = i * data->primary_ny + j + 1;
-			if (i >= 0 && i < data->primary_nx - 1 && j >= 0 && j < data->primary_ny - 1 &&
+			k = i * data->primary_n_rows + j;
+			l = i * data->primary_n_rows + j + 1;
+			if (i >= 0 && i < data->primary_n_columns - 1 && j >= 0 && j < data->primary_n_rows - 1 &&
 			    data->primary_data[k] != data->primary_nodatavalue && data->primary_data[l] != data->primary_nodatavalue) {
 				/* interpolate zdata */
 				zdata = data->primary_data[k] + (ygrid - data->primary_ymin - j * data->primary_dy) / data->primary_dy *
@@ -2842,9 +2842,9 @@ int mbview_drapesegmentw_grid(size_t instance, struct mbview_linesegmentw_struct
 			ygrid = data->primary_ymin + j * data->primary_dy;
 			xgrid = mm * ygrid + bb;
 			i = (int)((xgrid - data->primary_xmin) / data->primary_dx);
-			k = i * data->primary_ny + j;
-			l = (i + 1) * data->primary_ny + j;
-			if (i >= 0 && i < data->primary_nx - 1 && j >= 0 && j < data->primary_ny - 1 &&
+			k = i * data->primary_n_rows + j;
+			l = (i + 1) * data->primary_n_rows + j;
+			if (i >= 0 && i < data->primary_n_columns - 1 && j >= 0 && j < data->primary_n_rows - 1 &&
 			    data->primary_data[k] != data->primary_nodatavalue && data->primary_data[l] != data->primary_nodatavalue) {
 				/* interpolate zdata */
 				zdata = data->primary_data[k] + (xgrid - data->primary_xmin - i * data->primary_dx) / data->primary_dx *

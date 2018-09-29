@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *    The MB-system:	mbview_vector.c	1/11/2012
- *    $Id: mbview_vector.c 2308 2017-06-04 19:55:48Z caress $
+ *    $Id: mbview_vector.c 2344 2018-08-03 17:33:13Z caress $
  *
  *    Copyright (c) 2012-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -70,7 +70,7 @@
 /*------------------------------------------------------------------------------*/
 
 /* local variables */
-static char rcs_id[] = "$Id: mbview_vector.c 2308 2017-06-04 19:55:48Z caress $";
+static char rcs_id[] = "$Id: mbview_vector.c 2344 2018-08-03 17:33:13Z caress $";
 
 /*------------------------------------------------------------------------------*/
 int mbview_getvectorcount(int verbose, size_t instance, int *nvector, int *error) {
@@ -777,8 +777,8 @@ int mbview_drawvector(size_t instance, int rez) {
 	if (shared.shareddata.vector_mode != MBV_VECTOR_OFF && data->vector_view_mode == MBV_VIEW_ON &&
 	    shared.shareddata.nvector > 0) {
 		/* get size according to viewbounds */
-		k0 = data->viewbounds[0] * data->primary_ny + data->viewbounds[2];
-		k1 = data->viewbounds[1] * data->primary_ny + data->viewbounds[3];
+		k0 = data->viewbounds[0] * data->primary_n_rows + data->viewbounds[2];
+		k1 = data->viewbounds[1] * data->primary_n_rows + data->viewbounds[3];
 		xx = data->primary_x[k1] - data->primary_x[k0];
 		yy = data->primary_y[k1] - data->primary_y[k0];
 		ballsize = 0.001 * sqrt(xx * xx + yy * yy);
