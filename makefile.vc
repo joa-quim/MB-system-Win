@@ -64,7 +64,13 @@ clean:
 	cd src/mbtrn
 	$(MAKE) /f makefile.vc clean
 	cd ../..
-	cd lib && del *.exp
+#	cd src/mbgrdviz
+#	$(MAKE) /f makefile.vc clean
+#	cd ../..
+#	cd src/mbeditviz
+#	$(MAKE) /f makefile.vc clean
+#	cd ../..
+	cd lib$(BITS) && del *.exp
 	cd ../..
 
 bsio_dir:
@@ -231,6 +237,16 @@ mbvelocitool_dir:
 	$(MAKE) /f makefile.vc
 	cd ../..
 
+mbgrdviz_dir:
+	cd src/mbgrdviz
+	$(MAKE) /f makefile.vc
+	cd ../..
+
+mbeditviz_dir:
+	cd src/mbeditviz
+	$(MAKE) /f makefile.vc
+	cd ../..
+
 mbtrn_dir:
 	cd src/mbtrn
 	copy /Y cbuffer.h ..\..\include
@@ -264,28 +280,35 @@ instal:
 	cd src/mbvelocitytool
 	$(MAKE) /f makefile.vc install
 	cd ../..
-	cd src/macros
-	copy /Y mbm_xbt           ..\..\bin$(BITS)\mbm_xbt
-	copy /Y mbm_plot          ..\..\bin$(BITS)\mbm_plot
-	copy /Y mbm_grdplot       ..\..\bin$(BITS)\mbm_grdplot
-	copy /Y mbm_grd3dplot     ..\..\bin$(BITS)\mbm_grd3dplot
-	copy /Y mbm_xyplot        ..\..\bin$(BITS)\mbm_xyplot
-	copy /Y mbm_stat          ..\..\bin$(BITS)\mbm_stat
-	copy /Y mbm_grid          ..\..\bin$(BITS)\mbm_grid
-	copy /Y mbm_grd2arc       ..\..\bin$(BITS)\mbm_grd2arc
-	copy /Y mbm_arc2grd       ..\..\bin$(BITS)\mbm_arc2grd
-	copy /Y mbm_grdcut        ..\..\bin$(BITS)\mbm_grdcut
-	copy /Y mbm_grdinfo       ..\..\bin$(BITS)\mbm_grdinfo
-	copy /Y mbm_grdtiff       ..\..\bin$(BITS)\mbm_grdtiff
-	copy /Y mbm_utm           ..\..\bin$(BITS)\mbm_utm
-	copy /Y mbm_grd2geovrml   ..\..\bin$(BITS)\mbm_grd2geovrml
-	copy /Y mbm_copy          ..\..\bin$(BITS)\mbm_copy
-	copy /Y mbm_route2mission ..\..\bin$(BITS)\mbm_route2mission
-	copy /Y mbm_makedatalist  ..\..\bin$(BITS)\mbm_makedatalist
-	copy /Y mbm_histplot      ..\..\bin$(BITS)\mbm_histplot
-	copy /Y mbm_multiprocess  ..\..\bin$(BITS)\mbm_multiprocess
-	copy /Y mbm_multidatalist ..\..\bin$(BITS)\mbm_multidatalist
-	copy /Y mbm_multicopy     ..\..\bin$(BITS)\mbm_multicopy
-	copy /Y mbm_bpr           ..\..\bin$(BITS)\mbm_bpr
-	cd ../..
+#	cd src/mbgrdviz
+#	$(MAKE) /f makefile.vc install
+#	cd ../..
+#	cd src/mbeditviz
+#	$(MAKE) /f makefile.vc install
+#	cd ../..
+
+#	cd src/macros
+#	copy /Y mbm_xbt           ..\..\bin$(BITS)\mbm_xbt
+#	copy /Y mbm_plot          ..\..\bin$(BITS)\mbm_plot
+#	copy /Y mbm_grdplot       ..\..\bin$(BITS)\mbm_grdplot
+#	copy /Y mbm_grd3dplot     ..\..\bin$(BITS)\mbm_grd3dplot
+#	copy /Y mbm_xyplot        ..\..\bin$(BITS)\mbm_xyplot
+#	copy /Y mbm_stat          ..\..\bin$(BITS)\mbm_stat
+#	copy /Y mbm_grid          ..\..\bin$(BITS)\mbm_grid
+#	copy /Y mbm_grd2arc       ..\..\bin$(BITS)\mbm_grd2arc
+#	copy /Y mbm_arc2grd       ..\..\bin$(BITS)\mbm_arc2grd
+#	copy /Y mbm_grdcut        ..\..\bin$(BITS)\mbm_grdcut
+#	copy /Y mbm_grdinfo       ..\..\bin$(BITS)\mbm_grdinfo
+#	copy /Y mbm_grdtiff       ..\..\bin$(BITS)\mbm_grdtiff
+#	copy /Y mbm_utm           ..\..\bin$(BITS)\mbm_utm
+#	copy /Y mbm_grd2geovrml   ..\..\bin$(BITS)\mbm_grd2geovrml
+#	copy /Y mbm_copy          ..\..\bin$(BITS)\mbm_copy
+#	copy /Y mbm_route2mission ..\..\bin$(BITS)\mbm_route2mission
+#	copy /Y mbm_makedatalist  ..\..\bin$(BITS)\mbm_makedatalist
+#	copy /Y mbm_histplot      ..\..\bin$(BITS)\mbm_histplot
+#	copy /Y mbm_multiprocess  ..\..\bin$(BITS)\mbm_multiprocess
+#	copy /Y mbm_multidatalist ..\..\bin$(BITS)\mbm_multidatalist
+#	copy /Y mbm_multicopy     ..\..\bin$(BITS)\mbm_multicopy
+#	copy /Y mbm_bpr           ..\..\bin$(BITS)\mbm_bpr
+#	cd ../..
 
