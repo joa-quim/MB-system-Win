@@ -1,6 +1,6 @@
 dnl--------------------------------------------------------------------
 dnl    The MB-system:    configure.ac    12/7/2011
-dnl    $Id: configure.ac 2341 2018-06-29 06:28:51Z caress $
+dnl    $Id: configure.ac 2350 2018-09-07 01:50:29Z caress $
 dnl
 dnl    Copyright (c) 2011-2017 by
 dnl    D. W. Caress (caress@lamont.ldgo.columbia.edu)
@@ -19,11 +19,11 @@ define([AC_CACHE_LOAD], )
 define([AC_CACHE_SAVE], )
 
 dnl Initialize and set version and version date
-AC_INIT([mbsystem],[5.5.2341],[http://listserver.mbari.org/sympa/arc/mbsystem],[mbsystem],[http://www.mbari.org/data/mbsystem/])
+AC_INIT([mbsystem],[5.5.2350],[http://listserver.mbari.org/sympa/arc/mbsystem],[mbsystem],[http://www.mbari.org/data/mbsystem/])
 
 AC_CONFIG_MACRO_DIR(m4)
 AC_LANG(C)
-AC_DEFINE(VERSION_DATE, "28 June 2018", [Set VERSION_DATE define in mb_config.h])
+AC_DEFINE(VERSION_DATE, "6 September 2018", [Set VERSION_DATE define in mb_config.h])
 
 dnl Check system arch
 AC_CANONICAL_HOST
@@ -32,7 +32,7 @@ AC_DISABLE_OPTION_CHECKING
 AS_ECHO([" "])
 AS_ECHO(["------------------------------------------------------------------------------"])
 AS_ECHO(["    The MB-system:    configure    12/7/2011"])
-AS_ECHO(["    $Id: configure.ac 2341 2018-06-29 06:28:51Z caress $"])
+AS_ECHO(["    $Id: configure.ac 2350 2018-09-07 01:50:29Z caress $"])
 AS_ECHO([" "])
 AS_ECHO(["    Copyright (c) 2011-2017 by"])
 AS_ECHO(["    D. W. Caress (caress@lamont.ldgo.columbia.edu)"])
