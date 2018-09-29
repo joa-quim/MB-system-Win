@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *    The MB-system:	mbswath.c	5/30/93
- *    $Id: mbswath.c 2312 2017-07-14 09:06:52Z caress $
+ *    $Id: mbswath.c 2344 2018-08-03 17:33:13Z caress $
  *
  *    Copyright (c) 1993-2017 by
  *    David W. Caress (caress@mbari.org)
@@ -85,7 +85,6 @@
 #define gmt_rgb_syntax GMT_rgb_syntax
 #define gmt_set_grddim GMT_set_grddim
 #define gmt_show_name_and_purpose GMT_show_name_and_purpose
-#endif
 
 EXTERN_MSC int GMT_mbswath(void *API, int mode, void *args);
 
