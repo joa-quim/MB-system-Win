@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdint.h>		/* For the int64_t */
 
 /*
  * Include stdlib.h and malloc.h if code is C++, ANSI, or Extended ANSI.
