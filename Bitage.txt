@@ -1,5 +1,14 @@
 # Sets the 'Bitage'. DLLs will have this as suffix but other .vc files uses this as well
-BITS=32
+BITS=64
 
 # The VS version (12 = VS2013; 14 >= VS2015)
 VC=14
+
+# Set the GMT version. Either '5' or '6'. This is used to set the path to GMT include & lib dirs
+GMTver=6
+
+# Uncomment for debug build
+#DEBUG=yes
+
+# The compiler
+CC = cl
